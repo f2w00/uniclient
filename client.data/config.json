@@ -1,0 +1,63 @@
+{
+	"LogConfig": {
+		"appenders": {
+			"client": {
+				"type": "file",
+				"filename": "C:Users\\Administrator\\Desktop\\test\\1.opcua",
+				"maxLogSize": 50000
+			}
+		},
+		"categories": {
+			"default": {
+				"appenders": [
+					"uaclient"
+				],
+				"level": "info"
+			}
+		}
+	},
+	"workbenchConfig": {
+		"leftSide": {
+			"selectDisplay": 0,
+			"width": 255,
+			"subDisplay": [
+				0,
+				1
+			],
+			"extraButtons": [
+				{
+					"name": "uaclient",
+					"iconPath": "",
+					"renderPath": "render",
+					"clickToSend": "render:leftSide.click-uaclient"
+				},
+				{
+					"name": "easy-report",
+					"iconPath": "",
+					"renderPath": "render",
+					"clickToSend": "render:leftSide.click-easy-report"
+				}
+			]
+		},
+		"rightSide": {
+			"selectDisplay": 0,
+			"width": 255
+		},
+		"downSide": {
+			"selectDisplay": 0,
+			"height": 100
+		},
+		"tutorial": [
+			{
+				"name": "uniclient",
+				"type": "local",
+				"url": "./tutorial.html"
+			},
+			{
+				"name": "uaclient",
+				"type": "local",
+				"url": "./tutorial.html"
+			}
+		]
+	}
+}

@@ -1,0 +1,64 @@
+{
+	"globalExtensionManager": {
+		"attributes": {
+			"workspaceName": "global",
+			"storagePath": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant"
+		},
+		"onStart": [
+			"uaclient"
+		],
+		"enabledExtensions": [
+			{
+				"version": "1",
+				"storage": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\plugin.json",
+				"main": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\extension.js",
+				"worker": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\ua.servant.js",
+				"render": null,
+				"engine": "兼容客户端版本",
+				"identifier": {
+					"id": "uaclient",
+					"uuid": null
+				},
+				"onEvents": [
+					"project:activate.opcua"
+				],
+				"projectExtend": [
+					"opcua"
+				]
+			}
+		],
+		"disabledExtensions": []
+	},
+	"extensionManagers": {
+		"_events": {},
+		"_eventsCount": 1,
+		"attributes": {
+			"workspaceName": "global",
+			"storagePath": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant"
+		},
+		"enabledExtensions": [
+			{
+				"version": "1",
+				"storage": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\plugin.json",
+				"main": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\extension.js",
+				"worker": "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\ua.servant.js",
+				"render": null,
+				"engine": "兼容客户端版本",
+				"identifier": {
+					"id": "uaclient",
+					"uuid": null
+				},
+				"onEvents": [
+					"project:activate.opcua"
+				],
+				"projectExtend": [
+					"opcua"
+				]
+			}
+		],
+		"disabledExtensions": [],
+		"onStart": [
+			"uaclient"
+		]
+	}
+}

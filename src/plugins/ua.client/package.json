@@ -1,0 +1,37 @@
+{
+    "name": "ua.client",
+    "productName": "ua.client",
+    "version": "1.0.0",
+    "description": "This client solve any problem with plugins in any system for 'Internet of Things'",
+    "type": "commonjs",
+    "scripts": {
+        "dev": "nodemon -e js,html,cjs --exec electron .",
+        "compile": "nodemon -e ts --exec npx ttsc"
+    },
+    "keywords": [],
+    "author": {
+        "name": "f2w00",
+        "email": "109409603+f2w00@users.noreply.github.com"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "dotenv": "^16.0.3",
+        "koa": "^2.14.1",
+        "koa-body": "^6.0.1",
+        "koa-router": "^12.0.0",
+        "log4js": "^6.7.1",
+        "node-gyp": "^9.3.1",
+        "node-opcua": "^2.96.0",
+        "reflect-metadata": "^0.1.13",
+        "typia": "^3.4.22",
+        "v8-compile-cache": "^2.3.0"
+    },
+    "devDependencies": {
+        "@types/koa-router": "^7.4.4",
+        "@types/node": "^18.15.3",
+        "ts-node": "^10.9.1",
+        "ttypescript": "^1.5.15",
+        "typescript": "^4.9.5",
+        "nodemon": "^2.0.20"
+    }
+}

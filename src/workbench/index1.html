@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="element-ui/css/index.css">
+    <link rel="stylesheet" href="css/index/index.css">
+    <link rel="stylesheet" href="css/index/indexTopbar.css">
+    <link rel="stylesheet" href="css/index/indexSubview.css">
+    <link rel="stylesheet" href="css/index/indexMainview.css">
+    <link rel="stylesheet" href="css/index/indexLogview.css">
+    <link rel="stylesheet" href="css/dialog/dialog.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <header class="top-container">
+                <div class="topLeft">
+                    <!-- <img class="logo" src="./assets/icon/icon.svg" /> -->
+                    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
+                        background-color="#eaeaeb" text-color="#4F4F50" active-text-color="#535457"
+                        menu-trigger="click">
+                        <el-submenu index="1">
+                            <template slot="title">File</template>
+                            <el-menu-item index="1-1">New</el-menu-item>
+                            <el-menu-item index="1-2">Open</el-menu-item>
+                            <el-menu-item index="1-3">Save</el-menu-item>
+                            <el-menu-item index="1-4">Save As</el-menu-item>
+                            <el-menu-item index="1-5">Recent Projects</el-menu-item>
+                            <el-menu-item index="1-6">Quit</el-menu-item>
+                        </el-submenu>
+                        <el-submenu index="2">
+                            <template slot="title">View</template>
+                            <el-menu-item index="2-1">Project</el-menu-item>
+                            <el-menu-item index="2-2">Address Space</el-menu-item>
+                            <el-menu-item index="2-3">Log</el-menu-item>
+                            <el-menu-item index="2-4">Attributes</el-menu-item>
+                            <el-menu-item index="2-5">References</el-menu-item>
+                            <el-menu-item index="2-6">File Toolbar</el-menu-item>
+                            <el-menu-item index="2-7">Server Toolbar</el-menu-item>
+                            <el-menu-item index="2-8">Document Toolbar</el-menu-item>
+                        </el-submenu>
+                        <el-submenu index="3">
+                            <template slot="title">Server</template>
+                            <el-menu-item index="3-1" @click="handleAddserver">Add</el-menu-item>
+                            <el-menu-item index="3-2">Remove</el-menu-item>
+                            <el-menu-item index="3-3">Connect</el-menu-item>
+                            <el-menu-item index="3-4">Disconnect</el-menu-item>
+                            <el-menu-item index="3-5">PRoperties</el-menu-item>
+                            <el-menu-item index="3-6">Change user</el-menu-item>
+                        </el-submenu>
+                        <el-submenu index="4">
+                            <template slot="title">Document</template>
+                            <el-menu-item index="4-1" @click="">Add</el-menu-item>
+                            <el-menu-item index="4-2">Remove</el-menu-item>
+                            <el-menu-item index="4-3">Hide / unhide all dock widgets</el-menu-item>
+                        </el-submenu>
+                        <el-submenu index="5">
+                            <template slot="title">Settings</template>
+                            <el-menu-item index="5-1" @click="">Plugins</el-menu-item>
+                            <el-menu-item index="5-2" @click="">Configure UaExpert</el-menu-item>
+                            <el-menu-item index="5-3">Manage Certificates</el-menu-item>
+                        </el-submenu>
+                        <el-submenu index="6">
+                            <template slot="title">Help</template>
+                            <el-menu-item index="6-1">UaExpert Manual</el-menu-item>
+                            <el-menu-item index="6-2">What's This?</el-menu-item>
+                            <el-menu-item index="6-3">Report a bug</el-menu-item>
+                            <el-menu-item index="6-4">License Status</el-menu-item>
+                            <el-menu-item index="6-5">Check for Updates</el-menu-item>
+                            <el-menu-item index="6-6">About UaExpert</el-menu-item>
+                        </el-submenu>
+                    </el-menu>
+                </div>
+                <el-input class="searchBox" v-model="search" @keyup.enter.native="searchHandler" placeholder="输入内容">
+                </el-input>
+                <div class="operationBox">
+                    <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
+                    <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
+                    <i class="el-icon-close close-btn" @click="handleClose"></i>
+                </div>
+            </header>
+            <div class="main-container">
+                <!-- TODO 默认宽度只能为最小宽度 -->
+                <div class="subview subviewLeft">
+                    <div class="resize horizontal"></div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewLeft-content">
+                        <el-tabs value="1" tab-position="left">
+                            <el-tab-pane v-for="(item, index) in subviewLeftTabs" label="" :name="item.name">
+                                <span slot="label" @dblclick="handleLeftShow" @click="handleTableft">
+                                    <img class="icon" :src="item.iconSrc" />
+                                </span>
+                                <div class="grid-box">
+                                    <!-- TODO titleBox高度会被顶的变小 -->
+                                    <div class="titleBox">{{item.content}}</div>
+                                    <div v-for="itemlist in item.itemList"
+                                        :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                                        <div class="subviewItembtn">
+                                            {{itemlist.title}}
+                                        </div>
+                                        <div class="subviewItemoptions">
+                                            <el-tree v-if="itemlist.title === 'Project'" :data="itemlist.items"
+                                                :props="subviewItemProjectProps"
+                                                @node-click="handleNodeClick"></el-tree>
+                                            <el-tree v-else-if="itemlist.title === 'Address'" :data="addressTreeData"
+                                                :indent="10" node-key="nodeId" :props="subviewItemAddressProps"
+                                                @node-click="handleAddressNodeClick" :load="loadAddressNode" lazy
+                                                @node-drag-start="handleDragStart" @node-drag-end="handleDragEnd"
+                                                draggable :allow-drop="allowDrop" :allow-drag="allowDrag"></el-tree>
+                                            <el-tree v-else :data="itemlist.items" :props="subviewItemoptionProps"
+                                                @node-click="handleNodeClick"></el-tree>
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                    <div class="subviewLeft-bottom">
+                        <img class="icon" src="./assets/icon/log-management.svg" @click="handleTabbottom"
+                            @dblclick="handleBottomShow" />
+                        <img class="icon" src="./assets/icon/log-management.svg" />
+                    </div>
+                </div>
+                <main class="main content-box">
+                    <div id="decisonBox" class="mainviewTop">
+                        <el-tabs v-model="mainTabsValue" type="border-card" closable>
+                            <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
+                                :name="item.name" :class="item.name+'Tabpane'">
+                                <iframe :src="item.src"></iframe>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                    <footer class="main-bottom">
+                        <div class="resize mian-vertical"></div>
+                        <div class="line"></div>
+                        <div class="logview">
+                            <el-tabs>
+                                <el-tab-pane label="日志">
+                                    <el-table class="logTable" :data="logTableData" height="100%" stripe
+                                        style="width: 100%;" border>
+                                        <el-table-column prop="timeStamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information">
+                                        </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="问题">
+                                    <el-table class="logTable" :data="problemTableData" height="100%" stripe border
+                                        style="width: 100%">
+                                        <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information">
+                                        </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="输出">
+                                    <button class="btn" @click="clientInit">点击注册</button>
+                                    <button class="btn" @click="addserverVisible = true">点击打开 Dialog</button>
+                                    <button class="btn" @click="handleSingle">点击订阅 single</button>
+                                    <button class="btn" @click="handleGroup">点击订阅 group</button>
+                                </el-tab-pane>
+                            </el-tabs>
+                        </div>
+                    </footer>
+                </main>
+                <div class="subview subviewRight">
+                    <div class="resize horizontal"></div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewRight-content">
+                        <el-tabs value="1" tab-position="right">
+                            <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
+                                <span slot="label" @dblclick="handleRightShow" @click="handleTabright">
+                                    <img class="icon" :src="item.iconSrc" />
+                                </span>
+                                <div class="grid-box">
+                                    <div class="titleBox">{{item.content}}</div>
+                                    <div v-for="itemlist in item.itemList"
+                                        :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                                        <div class="subviewItembtn">
+                                            {{itemlist.title}}
+                                        </div>
+                                        <div class="subviewItemoptions">
+                                            <el-table v-if="itemlist.title === 'Attributes'" :data="attributeTableData"
+                                                height="250" style="width: 100%;" row-key="nodeId" border
+                                                default-expand-all
+                                                :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                                                <el-table-column prop="attribute" label="attributes" width="150">
+                                                </el-table-column>
+                                                <el-table-column prop="value" label="values">
+                                                </el-table-column>
+                                            </el-table>
+                                            <el-table v-else :data="itemlist.items" height="250" style="width: 100%;"
+                                                row-key="id" border default-expand-all
+                                                :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                                                <el-table-column prop="date" label="References" width="150">
+                                                </el-table-column>
+                                                <el-table-column prop="name" label="Target DisplayName">
+                                                </el-table-column>
+                                            </el-table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+        </div>
+        <el-dialog class="addServerDialog" title="Add Server" :close-on-click-modal="false"
+            :visible.sync="addserverVisible" top="15px">
+            <div class="configName">
+                Configuration Name
+                <input class="configInput" type="text" v-model="configurationName" :placeholder="configurationName"
+                    style="color: #606266" />
+            </div>
+            <iframe name="addServerIframe" id="addServerIframe" src="./components/addServerView.html"></iframe>
+            <div slot="footer" class="dialog-footer">
+                <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
+                <button class="btn" @click="callChild">调用子iframe</button>
+                <el-button @click="addserverVisible = false">Cancle</el-button>
+                <el-button type="primary" @click="handleConnectServer">OK</el-button>
+            </div>
+        </el-dialog>
+    </div>
+    <el-dialog class="addServerDialog" title="Add Server" :close-on-click-modal="false"
+               :visible.sync="addserverVisible" top="15px">
+        <div class="configName">
+            Configuration Name
+            <input class="configInput" type="text" v-model="configurationName" :placeholder="configurationName"
+                   style="color: #606266"/>
+        </div>
+        <iframe name="addServerIframe" id="addServerIframe" src="./components/addServerView.html"></iframe>
+        <div slot="footer" class="dialog-footer">
+            <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
+            <button class="btn" @click="callChild">调用子iframe</button>
+            <el-button @click="addserverVisible = false">Cancle</el-button>
+            <el-button type="primary" @click="handleConnectServer">OK</el-button>
+        </div>
+    </el-dialog>
+</div>
+</body>
+<script src="vue/vue.js"></script>
+<script src="element-ui/index.js"></script>
+<script src="js/indexInject.js"></script>
+<script src="js/indexInside.js"></script>
+<script src="js/indexExtern.js"></script>
+<script type="module">
+    import clientApi from './api/clientApi.js'
+    import sessionApi from './api/sessionApi.js'
+    import subscriptApi from './api/subscriptApi.js'
+    let timer = null
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                addserverVisible: false,
+                configurationName: '',
+                isAutoConnect: false,
+                activeIndex: '1',
+                search: "", //当前输入框的值
+                mainTabsValue: '1',
+                mainTabs: [],
+                subviewLeftTabs: [],
+                subviewRightTabs: [],
+                addressTreeData: [],
+                logTableData: [],
+                problemTableData: [],
+                attributeTableData: [],
+                subviewItemoptionProps: {
+                    children: 'children',
+                    label: 'label'
+                },
+                subviewItemProjectProps: {
+                    children: 'children',
+                    label: 'label'
+                },
+                subviewItemAddressProps: {
+                    label: function (data, node) {
+                        // console.log(data, node);
+                        return data.displayName.text
+                    },
+                    children: 'zones',
+                    isLeaf: 'leaf'
+                },
+            }
+        },
+        computed: {},
+        methods: {
+            /* 接口类函数 */
+            clientInit() {
+                console.log('clientInit')
+                const param = {
+                    "applicationName": "NodeOPCUA-Client",
+                    "connectionStrategy": {
+                        "initialDelay": 1000,
+                        "maxRetry": 1
+                    },
+                    "securityMode": 1,
+                    "keepSessionAlive": true,
+                    "securityPolicy": "http://opcfoundation.org/UA/SecurityPolicy#None",
+                    "endpointMustExist": false
+                }
+                clientApi.clientInit(param).then(res => {
+                    console.log(res)
+                })
+            },
+            async sessionBrowse(node) {
+                const param = { node: null, browseNext: false }
+                param.node = node
+                return await sessionApi.sessionBrowse(param)
+            },
+            async sessionBrowseroot() {
+                const param = {}
+                return await sessionApi.sessionBrowseroot(param)
+            },
+            async subscriptInit() {
+                const param = {
+                    "requestedLifetimeCount": 60,
+                    "requestedPublishingInterval": 100,
+                    "requestedMaxKeepAliveCount": 10,
+                    "publishingEnabled": true,
+                    "maxNotificationsPerPublish": 100,
+                    "priority": 1
+                }
+                return await subscriptApi.subscriptInit(param)
+            },
+            async subscriptGroup() {
+                const param = {
+                    "itemsToMonitor": [{ "nodeId": "ns=3;i=1001" }, { "nodeId": "ns=3;i=1002" }],
+                    "displayNames": ["Counter", "Random"]
+                }
+                return await subscriptApi.subscriptGroup(param)
+            },
+            async subscriptSingle(nodeId) {
+                const param = {
+                    itemToMonitor: { nodeId: null },
+                    displayName: "Counter"
+                }
+                param.itemToMonitor.nodeId = nodeId
+                return await subscriptApi.subscriptSingle(param)
+            },
+
+            /* 元素调用类函数 */
+            searchHandler() {
+                console.log('+++: searchHandler')
+            },
+            handleConnectServer() {
+                var iframeDom = document.getElementById('addServerIframe');
+                iframeDom.contentWindow.connectServer(this.isAutoConnect);
+                this.addressTreeData.push({
+                    nodeId: "i=84[RootFolder]",
+                    browseName: {
+                        namespaceIndex: 0,
+                        name: "Root"
+                    },
+                    displayName: {
+                        text: "Root"
+                    },
+                    nodeClass: "object",
+                })
+                this.addserverVisible = false
+            },
+            handleNodeClick(data) {
+                console.log(data);
+            },
+            handleAddressNodeClick(data) {
+                // console.log(data)
+                //TODO MyObject收到两个相同的结果
+                this.attributeTableData = []
+                for (let key in data) {
+                    let item = {
+                        attribute: '',
+                        value: ''
+                    }
+                    item.attribute = key
+                    item.value = data[key]
+                    if (data[key].constructor === Object) {
+                        item.value = getObjValue(data[key])
+                    }
+                    if (item.attribute !== "isForward") {
+                        this.attributeTableData.push(item)
+                    }
+                }
+            },
+            async loadAddressNode(node, resolve) {
+                if (node.level === 0) {
+                    return resolve(this.addressTreeData);
+                } else if (node.level === 1) {
+                    let res = await this.sessionBrowseroot()
+                    return resolve(res.data);
+                } else {
+                    let res = await this.sessionBrowse(node.data.nodeId)
+                    // console.log(res.data.references)
+                    if (res.data.references.length === 0) {
+                        return resolve([]);
+                    } else {
+                        return resolve(res.data.references);
+                    }
+                }
+            },
+            handleMin() {
+                mainMini()
+            },
+            handleMax() {
+                mainMax()
+            },
+            handleClose() {
+                mainClose()
+            },
+            handleTableft() {
+                clearTimeout(timer);//清除第一次的单击事件
+                //250毫秒之后运行点击事件
+                timer = setTimeout(function () {
+                }, 250);
+            },
+            handleLeftShow() {
+                clearTimeout(timer);//清除第二次的单击事件
+                // console.log(document.querySelector(".subviewLeft-content .el-tabs__content"))
+                // console.log(document.querySelector(".subviewLeft .resize"))
+                let tabsContent = document.querySelector(".subviewLeft-content .el-tabs__content")
+                let resizeItem = document.querySelector(".subviewLeft .resize")
+                if (!tabsContent.style.display || tabsContent.style.display == "none") {
+                    tabsContent.style.display = "block"
+                    resizeItem.style.display = "block"
+                } else {
+                    tabsContent.style.display = "none"
+                    resizeItem.style.display = "none"
+                }
+            },
+            handleTabright() {
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                }, 250);
+            },
+            handleRightShow() {
+                clearTimeout(timer);
+                let tabsContent = document.querySelector(".subviewRight-content .el-tabs__content")
+                let resizeItem = document.querySelector(".subviewRight .resize")
+                if (!tabsContent.style.display || tabsContent.style.display == "none") {
+                    tabsContent.style.display = "block"
+                    resizeItem.style.display = "block"
+                } else {
+                    tabsContent.style.display = "none"
+                    resizeItem.style.display = "none"
+                }
+            },
+            handleTabbottom() {
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                }, 250);
+            },
+            handleBottomShow() {
+                clearTimeout(timer);
+                let tabsContent = document.querySelector(".main-bottom .el-tabs__content")
+                let resizeItem = document.querySelector(".main-bottom .resize")
+                if (!tabsContent.style.display || tabsContent.style.display == "none") {
+                    tabsContent.style.display = "block"
+                    resizeItem.style.display = "block"
+                } else {
+                    tabsContent.style.display = "none"
+                    resizeItem.style.display = "none"
+                }
+            },
+            handleAddserver() {
+                this.addserverVisible = true
+            },
+            // el-tree 拖动函数
+            handleDragStart(node, ev) {
+                let iframeList = document.querySelectorAll('iframe')
+                for (let i = 0; i < iframeList.length; i++) {
+                    iframeList[i].style['pointer-events'] = 'none'
+                }
+                let nodeData = JSON.stringify(node.data)
+                ev.dataTransfer.setData('node', nodeData)
+            },
+            handleDragEnd(draggingNode, dropNode, dropType, ev) {
+                let iframeList = document.querySelectorAll('iframe')
+                for (let i = 0; i < iframeList.length; i++) {
+                    iframeList[i].style['pointer-events'] = 'auto'
+                }
+            },
+            allowDrop(draggingNode, dropNode, type) {
+                return false
+            },
+            allowDrag(draggingNode) {
+                return true;
+            },
+
+            /* 初始化类函数 */
+            attributeObserver() {
+                var resizeDom = document.querySelectorAll('.container .resize')
+                resizeDom.forEach(item => {
+                    resizeObserve.observe(item, {
+                        attributes: true
+                    });
+                })
+            },
+
+            /* 监听类函数 */
+            async logErrorListener() {
+                let value = await getLogError()
+                this.logTableData.push(value)
+            },
+            async logWarnListener() {
+                let value = await getLogWarn()
+                this.logTableData.push(value)
+            },
+            async logInfoListener() {
+                let value = await getLogInfo()
+                this.logTableData.push(value)
+            },
+            triggerSubscript() {
+                var target = document.querySelectorAll("#decisonBox .el-tab-pane")
+                for (let i = 0; i < target.length; i++) {
+                    target[i].addEventListener("main:dragBack", async e => {
+                        let data = e.detail.data
+                        let res1 = await this.subscriptInit()
+                        let res2 = await this.subscriptSingle(data)
+                        console.log(res1, res2)
+                        let brokerPipe = await getPipe('ua')
+                        console.log(brokerPipe)
+                        brokerPipe.on("pushed", (message) => {
+                            console.log(message);
+                        })
+                    })
+                }
+                /* window.addEventListener("main:dragBack", e => {
+                    console.log(e)
+                }) */
+            },
+
+            /* 测试类函数 */
+            handleSingle() {
+                console.log("hangleSingle+:", this.subscriptInit())
+                let res = this.subscriptSingle()
+                console.log(res)
+            },
+            handleGroup() {
+                console.log("handleGroup+:", this.subscriptInit())
+                let res = this.subscriptGroup()
+                console.log(res)
+            },
+            callChild() {
+                console.log('+++: callChild')
+                var iframeDom = document.getElementById('addServerIframe');
+                iframeDom.contentWindow.childConsole('hello, child!');
+            },
+
+        },
+        mounted() {
+            subviewItemInit(window, document)
+            targetView(window, "#decisonBox .el-tab-pane")
+            this.attributeObserver()
+            this.triggerSubscript()
+            this.clientInit()
+        },
+        created() {
+            this.mainTabs = mainTabsF()
+            this.subviewLeftTabs = subviewLeftTabsF()
+            this.subviewRightTabs = subviewRightTabsF()
+            this.logTableData = logTableF()
+            this.problemTableData = problemTableF()
+            //hhhhh
+        }
+    })
+</script>
+<script type="text/javascript">
+    /* const { ipcRenderer } = require('electron')
+    ipcRenderer.on('main:log.error', (_event, value) => {
+        console.log(_event)
+        console.log(value)
+    })
+    ipcRenderer.on('main:log.info', (_event, value) => {
+        console.log(_event)
+        console.log(value)
+    })
+    ipcRenderer.on('main:log.warn', (_event, value) => {
+        console.log(_event)
+        console.log(value)
+    }) */
+    function parentConsole(data) {
+        console.log("parentConsole: " + data)
+    }
+</script>
+
+</html>

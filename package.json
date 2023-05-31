@@ -1,0 +1,60 @@
+{
+  "name": "uaclient",
+  "productName": "uaclient",
+  "version": "1.0.0",
+  "description": "This client solve any problem with plugins in any system for 'Internet of Things'",
+  "main": "src/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon -e js,html,cjs --exec electron . --delay 2",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\"",
+    "compile": "nodemon -e ts --exec npx ttsc",
+    "show": "electron .",
+    "rebuild": "electron-rebuild"
+  },
+  "keywords": [],
+  "author": {
+    "name": "f2w00",
+    "email": "109409603+f2w00@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.1.0",
+    "electron-window-state": "^5.0.3",
+    "koa": "^2.14.1",
+    "koa-body": "^6.0.1",
+    "koa-router": "^12.0.0",
+    "log4js": "^6.7.1",
+    "node-gyp": "^9.3.1",
+    "node-opcua": "^2.96.0",
+    "nodemon": "^2.0.20",
+    "pirates": "^4.0.5",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.29.3",
+    "sqlite3": "^5.1.6",
+    "typia": "^3.4.22",
+    "v8-compile-cache": "^2.3.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
+    "@electron-forge/maker-rpm": "^6.0.4",
+    "@electron-forge/maker-squirrel": "^6.0.4",
+    "@electron-forge/maker-zip": "^6.0.4",
+    "@types/better-sqlite3": "^7.6.3",
+    "@types/koa-router": "^7.4.4",
+    "@types/node": "^18.15.3",
+    "electron": "22.0.1",
+    "electron-rebuild": "^3.2.9",
+    "ts-node": "^10.9.1",
+    "ttypescript": "^1.5.15",
+    "typescript": "^4.9.5"
+  }
+}

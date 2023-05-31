@@ -1,0 +1,27 @@
+{
+    "recentManagers": [
+        {
+            "workspace": {
+                "workspaceName": "space",
+                "storagePath": "F:\\idea_projects\\uaclient\\src\\space"
+            },
+            "projects": []
+        },
+        {
+            "workspace": {
+                "workspaceName": "space2",
+                "storagePath": "F:\\idea_projects\\uaclient\\src\\space"
+            },
+            "projects": []
+        }
+    ],
+    "currentManager": {
+        "workspace": {
+            "workspaceName": "test",
+            "storagePath": "C:Users\\Administrator\\Desktop\\test"
+        },
+        "projects": ["1.opcua"],
+        "onStart": ["1.opcua"]
+    },
+    "projectExtend": ["opcua"]
+}

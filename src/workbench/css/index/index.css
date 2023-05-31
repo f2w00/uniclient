@@ -1,0 +1,229 @@
+/* 自定义变量 */
+:root {
+    --top-bar-height: 30px;
+    --left-view-width: 300px;
+    --left-view-minwidth: 180px;
+    --main-view-minwidth: 200px;
+    --main-view-minheight: 150px;
+    --right-view-width: 270px;
+    --right-view-minwidth: 160px;
+    --log-bar-height: 25px;
+    --log-view-height: 150px;
+    --log-view-minheight: 120px;
+    --sub-view-minheight: 50px;
+    --left-bar-width: 50px;
+    --right-bar-width: 26px;
+
+    /* TODO 统一字体样式 */
+    --font-color: #a69e9f;
+    --font-size-level1: 16px;
+    --font-size-level2: 14px;
+    --font-size-level3: 12px;
+}
+
+/* 框架 */
+* {
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+.container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    width: 100%;
+    height: var(--top-bar-height);
+    background-color: #eaeaeb;
+    position: relative;
+    overflow: hidden;
+    -webkit-app-region: drag;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+}
+
+.subview {
+    height: 100%;
+    min-width: var(--left-bar-width);
+    position: relative;
+    overflow: hidden;
+    background-color: #eaeaeb;
+}
+
+.subview.subviewRight {
+    min-width: var(--right-bar-width);
+}
+
+.main {
+    flex: 1;
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainviewTop {
+    min-width: var(--main-view-minwidth);
+    flex: 1;
+}
+
+.main-bottom {
+    width: 100%;
+    min-height: var(--log-bar-height);
+    border-top: 1px solid #d0d0d0;
+    background-color: #fafafa;
+    position: relative;
+    overflow: hidden;
+}
+
+.resize {
+    width: var(--left-view-width);
+    min-width: var(--left-view-minwidth);
+    height: 16px;
+    transform: scaleY(100);
+    transform-origin: left;
+    overflow: scroll;
+    resize: horizontal;
+    opacity: 0;
+}
+
+.line {
+    width: 0px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    transition: 0.3s;
+    pointer-events: none;
+}
+
+.resize:active + .line {
+    background-color: #eaeaeb;
+}
+
+.subviewRight.subview .resize {
+    width: var(--right-view-width);
+    min-width: var(--right-view-minwidth);
+    direction: rtl;
+}
+
+.subviewRight.subview .line {
+    right: auto;
+    left: 0;
+}
+
+.main-bottom .line {
+    height: 0px;
+    width: 100%;
+    right: 0;
+    left: 0;
+}
+
+.main-bottom .resize {
+    width: 16px;
+    min-width: 0;
+    max-height: 50vh;
+    min-height: var(--log-view-minheight);
+    resize: vertical;
+    transform: rotateX(180deg) scaleX(100);
+    transform-origin: left;
+}
+
+/* 通用样式 */
+.icon:hover {
+    filter: brightness(50%);
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.el-tabs__active-bar {
+    background-color: #424242 !important;
+}
+
+.el-tabs__item {
+    color: var(--font-color) !important;
+}
+
+.el-tabs__item:hover {
+    filter: brightness(50%);
+}
+
+.el-tabs__item.is-active {
+    filter: brightness(50%);
+}
+
+.el-tab-pane {
+    width: 100%;
+    height: 100%;
+}
+
+.el-table .el-table__cell {
+    padding: 0;
+    min-width: 150px;
+}
+
+.el-table .cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+}
+
+.el-table .cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+}
+/* 表格 滚动条 */
+.el-table__body-wrapper::-webkit-scrollbar {
+    width: 3px;
+    height: 5px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    background-color: #ccc;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(144, 147, 153, 0.3);
+}
+/* subviewItemoptions 滚动条 */
+.el-tree::-webkit-scrollbar {
+    width: 3px;
+    height: 5px;
+}
+.el-tree::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    background-color: #ccc;
+}
+.el-tree::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 1);
+}
+.el-tree::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(144, 147, 153, 0.3);
+}

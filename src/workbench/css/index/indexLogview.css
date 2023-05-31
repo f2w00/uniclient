@@ -1,0 +1,94 @@
+/* logView */
+.logview {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 5px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.logview > .el-tabs {
+    height: 100%;
+    width: 100%;
+    pointer-events: auto;
+}
+
+.logview .el-tabs__header {
+    margin-bottom: 5px;
+}
+
+.logview .el-tabs__active-bar {
+    height: 1px;
+    background-color: #424242;
+}
+
+.logview .el-tabs__nav-wrap::after {
+    height: 1px;
+    background-color: #fafafa;
+}
+
+.logview .el-tabs--bottom .el-tabs__item.is-bottom:nth-child(2),
+.logview .el-tabs--bottom .el-tabs__item.is-top:nth-child(2),
+.logview .el-tabs--top .el-tabs__item.is-bottom:nth-child(2),
+.logview .el-tabs--top .el-tabs__item.is-top:nth-child(2) {
+    padding-left: 20px;
+}
+
+.logview .el-tabs__item {
+    height: 25px;
+    line-height: 25px;
+    color: #909399;
+    font-size: var(--font-size-level2);
+}
+
+.logview .el-tabs__content {
+    height: calc(100% - 30px);
+    padding: 0;
+}
+
+.logview .el-tabs__nav-wrap.is-scrollable {
+    padding: 0 10px;
+}
+
+.logview .el-tab-pane {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.logview .el-tabs__nav-prev {
+    width: 10px;
+    height: 25px;
+    line-height: 25px;
+}
+
+.logview .el-tabs__nav-next {
+    width: 10px;
+    height: 25px;
+    line-height: 25px;
+}
+
+/* log table */
+.logview .el-table thead {
+    color: #6d6f73;
+    font-weight: 100;
+}
+
+.logview .el-table .el-table__cell {
+    padding: 0;
+    font-size: var(--font-size-level3);
+}
+.logview .el-table .cell {
+    /* overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all; */
+    /* line-height: var(--font-size-level3); */
+    line-height: calc(var(--font-size-level3) + 8px);
+}
+.logview .el-table .warning-row {
+    background: #C5A100;
+}
+.logview .el-table .success-row {
+    background: #FF6B65;
+}
