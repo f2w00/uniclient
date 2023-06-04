@@ -49,7 +49,7 @@
 		},
 		"tutorial": [
 			{
-				"name": "uniclient",
+				"name": "main-client",
 				"type": "local",
 				"url": "./tutorial.html"
 			},

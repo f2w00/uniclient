@@ -97,13 +97,6 @@ export class Broker {
         return true
     }
 
-    // static registerHandler(pipeId: pipeId,) {
-    //     let data = Broker.pipes.get(pipeId)
-    //     data?.on('pushed', () => {
-    //         ipcClient.emit('pipeId:ua.pushed')
-    //     })
-    // }
-
     static hasPipe(pipeId: string): boolean {
         return Broker.pipes.has(pipeId)
     }

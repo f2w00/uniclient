@@ -1,14 +1,16 @@
-import {TableCreateModes, UaErrors, UaSources} from '../../common/ua.enums'
-import {Config} from '../../config/config.default'
-import {CommunicateUtil, DbUtils} from '../utils/util'
-import {IDbData, IFieldNames} from '../models/params.model'
-import {DataTypes} from 'sequelize'
-import {UaMessage} from '../models/message.model'
-import {ClientError} from '../middlewares/agent.middleware'
+import { Persistence } from './../../../../platform/base/persist/persistence'
+import { TableCreateModes, UaErrors, UaSources } from '../../common/ua.enums'
+import { Config } from '../../config/config.default'
+import { CommunicateUtil, DbUtils } from '../utils/util'
+import { IDbData, IFieldNames } from '../models/params.model'
+import { DataTypes } from 'sequelize'
+import { UaMessage } from '../models/message.model'
+import { ClientError } from '../middlewares/agent.middleware'
 //todo 全面测试数据库模块
 export module DbService {
     export let defaultTableName: string = Config.defaultTable
     export let defaultAttributes: any = Config.defaultAttributes
+    export let persist!: Persistence
 
     /**
      * @description 用于初始化database,如果表名不存在则创建一个新表
@@ -91,8 +93,8 @@ export module DbService {
             }
             await DbService.createTable()
             //todo 注意这里需要创建一个pipe然后再进行注册
-            CommunicateUtil.emitToClient('Broker.create', [{name: Config.defaultPipeName}])
-            CommunicateUtil.emitToClient('pipe:' + Config.defaultPipeName + '.registerIpc', [{module: 'uaclient'}])
+            CommunicateUtil.emitToClient('Broker.create', [{ name: Config.defaultPipeName }])
+            CommunicateUtil.emitToClient('pipe:' + Config.defaultPipeName + '.registerIpc', [{ module: 'uaclient' }])
             CommunicateUtil.events.on('pipe:' + Config.defaultPipeName + '.full', (data: UaMessage[]) => {
                 DbService.insertMany(data)
             })
@@ -107,7 +109,7 @@ export module DbService {
      */
     export async function insert(data: IDbData) {
         try {
-            CommunicateUtil.emitToClient('Persistence.insert', [data])
+            persist.insert(data)
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorInsert, e.message, e.stack)
         }
@@ -119,7 +121,7 @@ export module DbService {
      */
     export async function insertMany(dataList: IDbData[]) {
         try {
-            CommunicateUtil.emitToClient('Persistence.insertMany', dataList)
+            persist.insertMany(dataList)
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorInsert, e.message, e.stack)
         }
@@ -134,21 +136,12 @@ export module DbService {
         try {
             let table = tableName ? tableName : defaultTableName
             let attribute = attributes ? attributes : defaultAttributes
-            // await Persistence.configureDb(table, attribute)
-            let storage = ''
-            //todo 测试storage问题
-            CommunicateUtil.emitToClient('Workspace.getProjectFileName', [{module: 'opcua'}])
-            CommunicateUtil.addListenerToCommunicate('project:fileName', (fileName: string) => {
-                storage = fileName + './database'
-            })
-            CommunicateUtil.emitToClient('Persistence.initAttributes', [
-                {
-                    persistId: 'opcua',
-                    modelAttributes: attribute,
-                    options: {dialect: 'sqlite', storage: storage, logging: false},
-                    tableName: tableName,
-                },
-            ])
+            let project = process.env.project_path
+            persist = new Persistence(
+                attribute,
+                { dialect: 'sqlite', storage: project + '/database/data.db', logging: false },
+                table
+            )
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorCreatTable, e.message, e.stack)
         }

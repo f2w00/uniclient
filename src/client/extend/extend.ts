@@ -1,11 +1,12 @@
-import {join} from 'path'
-import {existsSync} from 'fs'
+import { join } from 'path'
+import { existsSync } from 'fs'
 import EventEmitter from 'events'
-import {workspaceAttribute, GlobalWorkspaceManager} from '../workspace/workspace'
-import {ClientStore} from '../store/store.js'
-import {ExtensionActivator} from './activator.js'
-import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
-import {rendererEvents} from '../../platform/ipc/events/ipc.events.js'
+import { workspaceAttribute, GlobalWorkspaceManager } from '../workspace/workspace'
+import { ClientStore } from '../store/store.js'
+import { ExtensionActivator } from './activator.js'
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
+import { rendererEvents } from '../../platform/ipc/events/ipc.events.js'
+const { plugins, platform } = require('../paths.js')
 
 type extensionStorage = string
 type extensionActivateEvent = string
@@ -32,10 +33,8 @@ export interface IExtension {
 }
 
 export interface IExtensionManager {
-    attributes: workspaceAttribute
     onStart: string[]
     enabledExtensions: IExtension[]
-    disabledExtensions: IExtension[]
 }
 
 function verifyStoragePath(path: string) {
@@ -43,16 +42,12 @@ function verifyStoragePath(path: string) {
 }
 
 export class ExtensionManager extends EventEmitter implements IExtensionManager {
-    attributes: workspaceAttribute
     enabledExtensions: IExtension[]
-    disabledExtensions: IExtension[]
     onStart: string[]
 
     constructor(manager: IExtensionManager) {
         super()
-        this.attributes = manager.attributes
         this.enabledExtensions = manager.enabledExtensions
-        this.disabledExtensions = manager.disabledExtensions
         this.onStart = manager.onStart
         new ExtensionActivator()
         this.loadExtensions()
@@ -60,15 +55,13 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
 
     async loadExtensions() {
         this.enabledExtensions.forEach((extension: IExtension, index: number) => {
-            if (this.onStart.includes(extension.identifier.id)) {
-                ExtensionActivator.doActivateExtension(extension, true)
+            if (verifyStoragePath(plugins + extension.storage)) {
+                this.onStart.includes(extension.identifier.id)
+                    ? ExtensionActivator.doActivateExtension(extension, true)
+                    : ExtensionActivator.doActivateExtension(extension, false)
             } else {
-                if (verifyStoragePath(extension.storage)) {
-                    this.bindActivateEvents(extension)
-                } else {
-                    delete this.enabledExtensions[index]
-                    this.emit('extension-invalid', extension)
-                }
+                delete this.enabledExtensions[index]
+                this.emit('extension-invalid', extension)
             }
         })
     }
@@ -76,12 +69,6 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     findExtension(from: string, extension: IExtension): number {
         if (from == 'enabled') {
             this.enabledExtensions.find((extend, index) => {
-                if (extend.identifier === extension.identifier) {
-                    return index
-                }
-            })
-        } else {
-            this.disabledExtensions.find((extend, index) => {
                 if (extend.identifier === extension.identifier) {
                     return index
                 }
@@ -123,16 +110,6 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         })
     }
 
-    async bindActivateEvents(extension: IExtension, onStart?: boolean) {
-        await ExtensionActivator.doActivateExtension(extension, onStart)
-    }
-
-    modifyManager(attributes?: { workspaceName: string; storagePath: string }) {
-        if (attributes && verifyStoragePath(attributes.storagePath)) {
-            this.attributes = attributes
-        }
-    }
-
     beforeClose() {
         ExtensionActivator.beforeClose()
     }
@@ -140,18 +117,19 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
 
 export class GlobalExtensionManager {
     currentManager!: ExtensionManager
+    revert!: Function
 
     constructor() {
         ClientStore.create({
-                               name: storeNames.extension,
-                               fileExtension: 'json',
-                               clearInvalidConfig: true,
-                           })
+            name: storeNames.extension,
+            fileExtension: 'json',
+            clearInvalidConfig: true,
+        })
         this.startUp()
     }
 
     async startUp() {
-        await this.hookRequire(join(__dirname, '..', '..', '/platform/platform'))
+        this.revert = await this.hookRequire(platform)
         await this.loadManager()
         await this.bindEventsToMain()
     }
@@ -164,11 +142,18 @@ export class GlobalExtensionManager {
     async hookRequire(apiPath: string) {
         const pirates = await import('pirates')
         apiPath = apiPath.replace(/\\/g, '/')
-        pirates.addHook(
+        const matcher = (filename: string) => {
+            if (filename.includes('plugins')) {
+                return true
+            } else {
+                return false
+            }
+        }
+        return pirates.addHook(
             (code: string, filename: string) => {
                 return code.replace(/require\((['"])uniclient\1\)/, `require("${apiPath}")`)
             },
-            {exts: ['.js']}
+            { exts: ['.js'], matcher: matcher }
         )
     }
 
@@ -196,17 +181,15 @@ export class GlobalExtensionManager {
     }
 
     updateStoreOfManagers() {
-        if (ClientStore.set(storeNames.extension, 'extensionManagers', this.currentManager)) {
-            return true
-        } else {
-            console.log('出错')
-        }
+        ClientStore.set(storeNames.extension, 'globalExtensionManager', {
+            enabledExtensions: this.currentManager.enabledExtensions,
+            onStart: this.currentManager.onStart,
+        })
     }
 
     beforeClose() {
         this.updateStoreOfManagers()
+        this.revert()
         this.currentManager.beforeClose()
     }
 }
-
-//todo platform中的服务都是提供给插件可以使用的,应该重构代码模块

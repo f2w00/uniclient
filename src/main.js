@@ -2,11 +2,13 @@ const { app, Menu, ipcRenderer, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
 require('v8-compile-cache')
+const env = require('dotenv')
 const product = require('./client/product.json')
 
 if (process[1] == '--squirrel-firstrun') {
     //指定数据存储路径
 }
+env.config()
 
 const workspacePath = app.setPath('appData', getUserDataPath())
 Menu.setApplicationMenu(null)
@@ -52,4 +54,4 @@ function getCodeCachePath() {
 //     let exec = require("child_process").exec
 //     exec("npx node-opcua-pki createPKI")
 // }
-//todo 项目实现,手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题
+//todo 手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题

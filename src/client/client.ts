@@ -5,7 +5,6 @@ import { app, BrowserWindow } from 'electron'
 import { ErrorHandler } from './error/error.js'
 import { ClientError, Log } from '../platform/base/log/log.js'
 import async from 'async'
-import { PersistenceManager } from '../platform/base/persist/persistence.js'
 import { ClientStore } from './store/store.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
@@ -17,7 +16,7 @@ import path from 'path'
 class Client {
     workbench!: Workbench
     broker!: Broker
-    persist!: PersistenceManager
+    // persist!: PersistenceManager
     mainWindow!: BrowserWindow
     extensionManager!: GlobalExtensionManager
     static dev: boolean | undefined
@@ -55,6 +54,8 @@ class Client {
     private initErrorHandler() {
         new ErrorHandler()
         ErrorHandler.setUnexpectedErrorHandler((error: any) => {
+            console.log(error)
+
             if ('source' in error) {
                 Log.error(error)
             } else {
@@ -69,6 +70,7 @@ class Client {
             }
         })
         ErrorHandler.setUnhandledRejection((rejection: any) => {
+            console.log(rejection)
             Log.error(
                 new ClientError(
                     'UnhandledRejection',
@@ -118,11 +120,6 @@ class Client {
                 // 初始化Broker中间转发者服务
                 async () => {
                     this.broker = new Broker()
-                },
-                //初始化ORM服务
-                async () => {
-                    // let defaultAttributes: ModelAttributes = ClientStore.get('config', 'modelAttribute')
-                    this.persist = new PersistenceManager() //TODO 处理数据库自动命名的问题
                 },
                 //初始化进程管理者
                 async () => {

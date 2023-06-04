@@ -1,4 +1,4 @@
-import {IExtension} from './extend.js'
+import { IExtension } from './extend.js'
 
 /**
  * @description activate是插件激活时执行的函数,
@@ -14,7 +14,8 @@ class WorkerActivator {
 
     static async activate(iExtension: IExtension) {
         try {
-            let {extension} = await import(iExtension.main)
+            console.log(iExtension.main)
+            let { extension } = await require(iExtension.main)
             let instance: IExtensionInstance = extension
             instance.activate()
             WorkerActivator.beforeExtensionClose = instance.beforeClose
@@ -31,7 +32,7 @@ class WorkerActivator {
     }
 }
 
-process.on('message', (param: { event: string, message?: IExtension }) => {
+process.on('message', (param: { event: string; message?: IExtension }) => {
     switch (param.event) {
         case 'extension:activate':
             if (param.message) WorkerActivator.activate(param.message)
