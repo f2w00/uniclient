@@ -39,7 +39,7 @@ export interface IDbData {
     displayName: string
     value: string
     dataType: string
-    sourceTimestamp: string
+    // sourceTimestamp: string
     serverTimestamp: string
     statusCode: string
 }

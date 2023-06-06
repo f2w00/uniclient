@@ -102,3 +102,5 @@ src/platform/**/*.js
 src/plugins/ua.client/**/*.js
 !src/workbench/**/*.js
 *.zip
+*.idea
+*.vscode

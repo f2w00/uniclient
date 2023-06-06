@@ -69,11 +69,11 @@ export module DbService {
                                 allowNull: false,
                                 field: fields.dataTypeF,
                             },
-                            sourceTimestamp: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.sourceTimestampF,
-                            },
+                            // sourceTimestamp: {
+                            //     type: DataTypes.STRING,
+                            //     allowNull: false,
+                            //     field: fields.sourceTimestampF,
+                            // },
                             serverTimestamp: {
                                 type: DataTypes.STRING,
                                 allowNull: false,
@@ -136,12 +136,14 @@ export module DbService {
         try {
             let table = tableName ? tableName : defaultTableName
             let attribute = attributes ? attributes : defaultAttributes
-            let project = process.env.project_path
-            persist = new Persistence(
-                attribute,
-                { dialect: 'sqlite', storage: project + '/database/data.db', logging: false },
-                table
-            )
+            CommunicateUtil.emitToClient('Workspace.getProjectFileName', ['uaclient'])
+            CommunicateUtil.events.on('Workspace.getProjectFileName', (project) => {
+                persist = new Persistence(
+                    attribute,
+                    { dialect: 'sqlite', storage: project + '/database/data.db', logging: false },
+                    table
+                )
+            })
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorCreatTable, e.message, e.stack)
         }

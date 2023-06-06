@@ -8,30 +8,20 @@ import { CertificateRouter } from './routers/certificate.router'
 import { DbRouter } from './routers/db.router'
 import { ErrorMiddleware } from './middlewares/error.middleware'
 import { CommunicateUtil, RecordUtil } from './utils/util'
+import { parallel } from 'async'
 
 export module Server {
-    export const app = new Koa()
-    let routers = [
-        ClientRouter.router,
-        SessionRouter.router,
-        SubscriptRouter.router,
-        CertificateRouter.router,
-        DbRouter.router,
-    ]
-
-    export function activateServer() {
-        let projectFileName = ''
+    export async function activateServer() {
+        const app = new Koa()
         app.use(koaBody())
         app.use(ErrorMiddleware.handleError)
-        routers.forEach((router) => {
-            app.use(router.routes())
-        })
-        // CommunicateUtil.emitToClient('Workspace.getProjectFileName', ['uaclient'])
-        // CommunicateUtil.events.on('project:fileName', (message: string) => {
-        //     projectFileName = message
-        //     let configure = Config.createLogConfigure(message)
-        //     CommunicateUtil.emitToClient('Log.configure', [configure])
-        // })
+        parallel([
+            async () => app.use(ClientRouter.router.routes()),
+            async () => app.use(SessionRouter.router.routes()),
+            async () => app.use(SubscriptRouter.router.routes()),
+            async () => app.use(CertificateRouter.router.routes()),
+            async () => app.use(DbRouter.router.routes()),
+        ])
         try {
             app.listen(Config.port, () => {
                 console.log('complete')
@@ -41,7 +31,6 @@ export module Server {
             CommunicateUtil.emitToClient('Log.error', [e])
         }
         new RecordUtil()
-        console.log(process.env)
     }
 }
 Server.activateServer()

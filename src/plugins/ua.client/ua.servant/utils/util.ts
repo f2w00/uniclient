@@ -1,7 +1,7 @@
-import {existsSync, writeFileSync} from 'fs'
-import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
+import { existsSync, writeFileSync } from 'fs'
+import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
 import EventEmitter from 'events'
-import {Config} from '../../config/config.default'
+import { Config } from '../../config/config.default'
 
 // const Log = require('../../../../platform/base/log/log')
 
@@ -33,8 +33,7 @@ export module DbUtils {
     export function formatDateYMW(date: Date) {
         let day = date.getDay()
         let d = date.getDate()
-        return `week_${date.getFullYear()}_${date.getMonth() + 1}_${Math.ceil((
-                                                                                  d + 6 - day) / 7)}`
+        return `week_${date.getFullYear()}_${date.getMonth() + 1}_${Math.ceil((d + 6 - day) / 7)}`
     }
 
     export function formatDateY(date: Date) {
@@ -54,8 +53,7 @@ export module DbUtils {
 
 export module CertUtils {
     export function validateCertOptions(param: CreateSelfSignCertificateParam1) {
-        if (!(
-            typeof param.subject === 'string')) {
+        if (!(typeof param.subject === 'string')) {
             if (param.subject.country) {
                 if (param.subject.country.length > 2) {
                     return false
@@ -67,36 +65,39 @@ export module CertUtils {
     }
 }
 
-export module CommunicateUtil {
-    export let events: EventEmitter = new EventEmitter()
-    addListenerToProcess()
+export class CommunicateUtil {
+    static events: EventEmitter = new EventEmitter()
 
-    export function emitToClient(event: string, args?: any[]) {
-        process.send
-        ? process.send({
-                           purpose: 'sendToClient',
-                           event: event,
-                           args: args,
-                       })
-        : null
+    constructor() {
+        CommunicateUtil.addListenerToProcess()
     }
 
-    export function addListenerToClient(event: string, handler: (...args: any[]) => void) {
+    static emitToClient(event: string, args?: any[]) {
         process.send
-        ? process.send({
-                           purpose: 'addListenerToClient',
-                           event: event,
-                           handler: handler,
-                       })
-        : null
+            ? process.send({
+                  purpose: 'sendToClient',
+                  event: event,
+                  args: args,
+              })
+            : null
     }
 
-    export function addListenerToCommunicate(event: string, handler: (...args: any[]) => void) {
+    static addListenerToClient(event: string, handler: (...args: any[]) => void) {
+        process.send
+            ? process.send({
+                  purpose: 'addListenerToClient',
+                  event: event,
+                  handler: handler,
+              })
+            : null
+    }
+
+    static addListenerToCommunicate(event: string, handler: (...args: any[]) => void) {
         CommunicateUtil.events.on(event, handler)
     }
 
-    export function addListenerToProcess() {
-        process.on('message', (message: { event: string, message: any }) => {
+    static addListenerToProcess() {
+        process.on('message', (message: { event: string; message: any }) => {
             CommunicateUtil.events.emit(message.event, message.message)
         })
     }
@@ -111,7 +112,7 @@ export class RecordUtil {
     }
 
     static recordParams(module: string, param: any) {
-        RecordUtil.paramsToRecord.set(module, {...param})
+        RecordUtil.paramsToRecord.set(module, { ...param })
     }
 
     static getRecord() {

@@ -60,7 +60,11 @@ export class WorkspaceManager implements IWorkspaceManager {
             return this.createProject(projectName, projectType)
         })
         ipcClient.onClient('Workspace.getProjectFileName', (module: string) => {
-            ipcClient.emitToChild('project:fileName', module, ProjectManagerFactory.currentProject.storagePath)
+            ipcClient.emitToChild(
+                'Workspace.getProjectFileName',
+                module,
+                ProjectManagerFactory.currentProject.storagePath
+            )
         })
         ipcClient.onLocal('extension:loaded', () => {
             this.toStart()
