@@ -28,7 +28,6 @@ export interface IGlobalWorkSpaceInfo {
 }
 
 export interface IClientInfo {
-    //todo 写这个
     currentProject?: IProject | null
     currentWorkspace: workspaceAttribute
     recentWorkspaces: workspaceAttribute[]
@@ -108,7 +107,6 @@ export class WorkspaceManager implements IWorkspaceManager {
         let project: IProject = require(fileName + '/.project/project.json')
         ProjectManagerFactory.produceProjectManager(project)
         return { project: ProjectManagerFactory.currentProject, subFiles: FileUtils.openFolder(fileName) }
-        // ipcClient.emitToRender('project:loaded', ProjectManagerFactory.currentProject, FileUtils.openFolder(fileName))
     }
 }
 
@@ -120,20 +118,14 @@ export class GlobalWorkspaceManager {
     constructor() {
         GlobalWorkspaceManager.recent = new Map()
         GlobalWorkspaceManager.projectExtend = []
-        ClientStore.create({
-            name: 'workspace',
-            fileExtension: 'json',
-            clearInvalidConfig: true,
-        })
         this.initBind()
         GlobalWorkspaceManager.loadWorkspace()
-        // ipcClient.emit('file:ready')
     }
 
     initBind() {
         ipcClient.handle('folder:open', (event, fileName: string) => {
             let files = FileUtils.openFolder(fileName)
-            if (files.includes('project.json')) {
+            if (files.includes('.project')) {
                 ipcClient.emitLocal('project:load', fileName, files)
                 return null
             } else {

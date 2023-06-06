@@ -1,10 +1,6 @@
-import { app } from 'electron'
 import Store from 'electron-store'
-
-export enum ConfigNames {
-    persistence = 'PersistConfig',
-    log = 'LogConfig',
-}
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
+import { appDataPath } from '../paths'
 
 export type storeOptions = {
     name: string
@@ -12,22 +8,28 @@ export type storeOptions = {
     clearInvalidConfig: boolean
 }
 
-type storeName = string
 export class ClientStore {
-    static stores: Map<storeName, Store>
+    static stores: Map<string, Store>
     static cwd: string
+    private renderStore: Store
 
     constructor(cwd?: string) {
-        ClientStore.cwd = cwd ? cwd : app.getPath('appData')
+        ClientStore.cwd = cwd ? cwd : appDataPath
         ClientStore.stores = new Map<string, Store>()
         ClientStore.create({
             name: 'config',
             fileExtension: 'json',
-            clearInvalidConfig: true,
+            clearInvalidConfig: false,
         })
+        this.renderStore = new Store({
+            name: 'render',
+            fileExtension: 'json',
+            clearInvalidConfig: false,
+        })
+        this.initBind()
     }
 
-    static set(storeName: storeName, key: string, content: any): boolean {
+    static set(storeName: string, key: string, content: any): boolean {
         let store = ClientStore.stores.get(storeName)
         if (store) {
             store.set(key, content)
@@ -37,7 +39,7 @@ export class ClientStore {
         }
     }
 
-    static get(storeName: storeName, key: string): any {
+    static get(storeName: string, key: string): any {
         let store = ClientStore.stores.get(storeName)
         if (store) {
             return store.get(key)
@@ -46,7 +48,7 @@ export class ClientStore {
         }
     }
 
-    static del(storeName: storeName, key: string) {
+    static del(storeName: string, key: string) {
         let store = ClientStore.stores.get(storeName)
         if (store) {
             store.delete(key)
@@ -56,7 +58,7 @@ export class ClientStore {
         }
     }
 
-    static has(storeName: storeName, key: string): boolean {
+    static has(storeName: string, key: string): boolean {
         let store = ClientStore.stores.get(storeName)
         if (store) {
             return store.has(key)
@@ -71,8 +73,32 @@ export class ClientStore {
         } else {
             let store = new Store({ ...options, cwd: ClientStore.cwd })
             ClientStore.stores.set(options.name, store)
-            store.openInEditor()
+            // store.openInEditor()
             return store
         }
+    }
+
+    private initBind() {
+        ipcClient.handle('render:store', (event, purpose: string, key: string, value?: any) => {
+            let result = undefined
+            switch (purpose) {
+                case 'set':
+                    {
+                        this.renderStore.set(key, value)
+                        result = true
+                    }
+                    break
+                case 'get':
+                    result = this.renderStore.get(key)
+                    break
+                case 'del': {
+                    this.renderStore.delete(key)
+                    result = true
+                }
+                default:
+                    break
+            }
+            return result
+        })
     }
 }

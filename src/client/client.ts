@@ -4,7 +4,7 @@ import { Broker } from '../platform/base/broker/broker.js'
 import { app, BrowserWindow } from 'electron'
 import { ErrorHandler } from './error/error.js'
 import { ClientError, Log } from '../platform/base/log/log.js'
-import async from 'async'
+import { parallel, series } from 'async'
 import { ClientStore } from './store/store.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
@@ -13,20 +13,18 @@ import { ProcessManager } from './process/process.js'
 
 import path from 'path'
 
-class Client {
+export class Client {
     workbench!: Workbench
     broker!: Broker
-    // persist!: PersistenceManager
     mainWindow!: BrowserWindow
-    extensionManager!: GlobalExtensionManager
-    static dev: boolean | undefined
+    extension!: GlobalExtensionManager
+    dev: boolean | undefined
 
     constructor(dev?: boolean) {
         try {
-            Client.dev = dev
+            this.dev = dev
             this.requestSingleInstance()
             this.startup()
-            this.bindQuitEvents()
         } catch (e: any) {
             console.error(e.message)
             app.exit(1)
@@ -41,10 +39,11 @@ class Client {
 
     private async startup() {
         try {
-            this.createBaseService()
-            this.createWorkbench()
             this.initErrorHandler()
+            this.createBaseService()
+            await this.createWorkbench()
             await this.initServices()
+            this.bindQuitEvents()
         } catch (e: any) {
             console.log('出错了')
             throw e
@@ -100,7 +99,7 @@ class Client {
         this.workbench = new Workbench(
             path.join(__dirname, '../workbench/preload.js'),
             path.join(__dirname, '../workbench/index.html'),
-            Client.dev
+            this.dev
         )
         this.mainWindow = this.workbench.getMainWindow()
         this.mainWindow.webContents.once('dom-ready', () => {
@@ -115,54 +114,46 @@ class Client {
     }
 
     private async initServices() {
-        async
-            .parallel([
-                // 初始化Broker中间转发者服务
-                async () => {
-                    this.broker = new Broker()
-                },
-                //初始化进程管理者
-                async () => {
-                    new ProcessManager()
-                },
-                //初始化log服务
-                async () => {
-                    new Log()
-                },
-                //初始化postbox服务
-                async () => {},
-            ])
-            .then(() => {
-                this.extensionManager = new GlobalExtensionManager()
-                new GlobalWorkspaceManager()
-            })
-    }
-
-    private setErrorHandler(errorHandler: (error: any) => void) {
-        ErrorHandler.setUnexpectedErrorHandler(errorHandler)
+        parallel([
+            // 初始化Broker中间转发者服务
+            async () => {
+                this.broker = new Broker()
+            },
+            //初始化进程管理者
+            async () => {
+                new ProcessManager()
+            },
+            //初始化log服务
+            async () => {
+                new Log()
+            },
+            //初始化postbox服务
+            async () => {},
+        ]).then(() => {
+            this.extension = new GlobalExtensionManager()
+            new GlobalWorkspaceManager()
+        })
     }
 
     private quit() {
-        this.workbench.beforeClose()
-        ProcessManager.beforeClose()
-        async
-            .series([
-                //终结broker转发者服务
-                async () => {
-                    this.broker.beforeClose()
-                },
-                //结束extensionManager服务
-                async () => {
-                    this.extensionManager.beforeClose()
-                },
-                async () => {
-                    this.broker.beforeClose()
-                },
-            ])
-            .then(() => {
-                app.quit()
-            })
+        series([
+            //终结broker转发者服务
+            async () => {
+                this.broker.beforeClose()
+            },
+            //结束extensionManager服务
+            async () => {
+                this.extension.beforeClose()
+            },
+            async () => {
+                this.broker.beforeClose()
+            },
+        ]).then(() => {
+            this.workbench.beforeClose()
+            ProcessManager.beforeClose()
+            app.quit()
+        })
     }
 }
 
-const client = new Client(true)
+// const client = new Client(true)

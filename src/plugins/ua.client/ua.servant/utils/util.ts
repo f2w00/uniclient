@@ -106,9 +106,8 @@ export class CommunicateUtil {
 export class RecordUtil {
     static paramsToRecord: Map<string, any>
 
-    constructor() {
-        let obj = RecordUtil.restoreRecordFromJson(Config.recordJsonFileName)
-        RecordUtil.paramsToRecord = new Map<string, any>(Object.entries(obj))
+    constructor(recordFile?: string) {
+        let obj = recordFile ? RecordUtil.restoreRecordFromJson(recordFile) : RecordUtil.restoreRecordFromJson()
     }
 
     static recordParams(module: string, param: any) {
@@ -119,11 +118,18 @@ export class RecordUtil {
         return RecordUtil.paramsToRecord
     }
 
-    static restoreRecordFromJson(fileName: string) {
-        if (!existsSync(fileName)) {
-            writeFileSync(fileName, JSON.stringify({}), 'utf-8')
+    static restoreRecordFromJson(fileName?: string) {
+        if (fileName) {
+            if (!existsSync(fileName)) {
+                writeFileSync(fileName, JSON.stringify({}), 'utf-8')
+            }
+            Config.usualConfig['usingRecord'] = fileName
+        } else {
+            fileName = (Config.recordJsonFilePath + Config.usualConfig['usingRecord']) as string
         }
-        return require(fileName)
+        let obj = require(fileName)
+        RecordUtil.paramsToRecord = new Map<string, any>(Object.entries(obj))
+        return obj
     }
 
     static recordToJson(fileName: string) {

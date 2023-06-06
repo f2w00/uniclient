@@ -1,9 +1,8 @@
-const { app, Menu, ipcRenderer, ipcMain } = require('electron')
-const path = require('path')
-const fs = require('fs')
-require('v8-compile-cache')
+const { app, Menu } = require('electron')
+const { existsSync } = require('fs')
 const env = require('dotenv')
 const product = require('./client/product.json')
+require('v8-compile-cache')
 
 if (process[1] == '--squirrel-firstrun') {
     //指定数据存储路径
@@ -23,7 +22,8 @@ app.whenReady().then(() => {
 })
 
 async function startUp(cachePath, workspacePath, appDataPath, config) {
-    await import('./client/client.js')
+    const { Client } = await require('./client/client.js')
+    new Client(product['dev'])
 }
 
 async function onReady() {
@@ -32,8 +32,9 @@ async function onReady() {
 
 function getUserDataPath() {
     let dataPath = product['appData']
-    if (!dataPath || !fs.existsSync(dataPath)) {
-        dataPath = path.join(__dirname, '../client.data')
+    if (!dataPath || !existsSync(dataPath)) {
+        const { join } = require('path')
+        dataPath = join(__dirname, '../client.data')
         product['appData'] = dataPath
         fs.writeFile('./src/client/product.json', JSON.stringify(product), (err) => {
             console.log(err)
@@ -54,4 +55,4 @@ function getCodeCachePath() {
 //     let exec = require("child_process").exec
 //     exec("npx node-opcua-pki createPKI")
 // }
-//todo 手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题
+//todo 手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载

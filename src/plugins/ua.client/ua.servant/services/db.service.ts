@@ -6,7 +6,6 @@ import { IDbData, IFieldNames } from '../models/params.model'
 import { DataTypes } from 'sequelize'
 import { UaMessage } from '../models/message.model'
 import { ClientError } from '../middlewares/agent.middleware'
-//todo 全面测试数据库模块
 export module DbService {
     export let defaultTableName: string = Config.defaultTable
     export let defaultAttributes: any = Config.defaultAttributes
