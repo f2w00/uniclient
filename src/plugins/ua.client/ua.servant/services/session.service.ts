@@ -12,19 +12,18 @@ import {
     UserTokenType,
     WriteValueOptions,
 } from 'node-opcua'
-import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
-import {ClientService} from './client.service'
-import {is} from 'typia'
-import {HistoryValueParam} from '../models/params.model'
-import {ClientError, ClientWarn} from '../../../../platform/base/log/log'
+import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
+import { ClientService } from './client.service'
+import { is } from 'typia'
+import { HistoryValueParam } from '../models/params.model'
+import { ClientError, ClientWarn } from '../../../../platform/base/log/log'
 
 export module SessionService {
     export let session!: ClientSession
-    export let userIdentity: UserIdentityInfo = {type: UserTokenType.Anonymous}
+    export let userIdentity: UserIdentityInfo = { type: UserTokenType.Anonymous }
 
     export async function createSession(userInfo?: UserIdentityInfo) {
         try {
-
             if (userInfo) userIdentity = userInfo
             session = await ClientService.client.createSession(userIdentity)
             if (ClientService.client.endpoint) {
@@ -137,7 +136,7 @@ export module SessionService {
 
     export async function readHistoryValue(param: HistoryValueParam) {
         try {
-            let {nodeToRead, start, end, options} = param
+            let { nodeToRead, start, end, options } = param
             if (options) return await session.readHistoryValue(nodeToRead, start, end, options)
             return await session.readHistoryValue(nodeToRead, start, end)
         } catch (e: any) {

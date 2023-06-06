@@ -18,10 +18,8 @@ export class Persistence {
     }
 
     /**
-     *
      * @param record
      * @example
-     *
      */
     async insert(record: any) {
         try {
@@ -76,8 +74,8 @@ export class Persistence {
     async initDataModel(attributes: ModelAttributes, tableName?: string) {
         try {
             tableName = tableName ? tableName : 'uniclient'
-            await this.sequelize.authenticate()
-            this.currentModel = await this.sequelize.define(tableName, attributes, { timestamps: false })
+            this.sequelize.authenticate()
+            this.currentModel = this.sequelize.define(tableName, attributes, { timestamps: false })
             await this.currentModel.sync()
         } catch (e: any) {
             throw e

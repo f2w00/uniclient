@@ -9,6 +9,7 @@ import { DbRouter } from './routers/db.router'
 import { ErrorMiddleware } from './middlewares/error.middleware'
 import { CommunicateUtil, RecordUtil } from './utils/util'
 import { parallel } from 'async'
+import { Log } from '../../../platform/base/log/log'
 
 export module Server {
     export async function activateServer() {
@@ -30,6 +31,8 @@ export module Server {
         } catch (e: any) {
             CommunicateUtil.emitToClient('Log.error', [e])
         }
+        new Log()
+        new CommunicateUtil()
         new RecordUtil()
     }
 }

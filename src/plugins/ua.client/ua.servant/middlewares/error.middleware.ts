@@ -14,9 +14,12 @@ export module ErrorMiddleware {
                 Log.warn(e)
                 ctx.body = new ResponseModel(e, ServerMessage.warn, ServerStatusCodes.success)
             } else if (e instanceof ClientError) {
+                console.log(e)
                 Log.error(e)
                 ctx.body = new ResponseModel(e, ServerMessage.error, ServerStatusCodes.internalError)
             } else {
+                console.log(e)
+
                 let err = new ClientError(UaSources.server, UaErrors.internalError, e.message)
                 Log.error(err)
                 ctx.body = new ResponseModel(err, ServerMessage.error, ServerStatusCodes.internalError)

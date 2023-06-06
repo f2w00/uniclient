@@ -1,10 +1,9 @@
 import { app } from 'electron'
-import log, { Configuration, Logger } from 'log4js'
+import * as log4js from 'log4js'
 import { MainEvents } from '../../ipc/events/ipc.events.js'
 import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
 import { ClientStore, ConfigNames } from '../../../client/store/store.js'
-
-const { configure, getLogger } = log
+const { appData } = require('../../../client/paths')
 
 type Source = string | undefined
 type Warn = string
@@ -56,11 +55,11 @@ export class ClientInfo extends InfoModel {
  * 如果调用本Log,那么默认是向公共目录下进行记录,如果希望使用更改log路径和配置,请使用LogPrivate
  */
 export class Log {
-    private static clientLogger: Logger
+    private static clientLogger: log4js.Logger
 
-    constructor(loggerName: loggerName = 'client', config?: Configuration) {
-        Log.clientLogger = getLogger(loggerName)
+    constructor(loggerName: loggerName = 'client', config?: log4js.Configuration) {
         this.configureLog(config)
+        Log.clientLogger = log4js.getLogger(loggerName)
     }
 
     static info(info: ClientInfo) {
@@ -106,7 +105,7 @@ export class Log {
      * @description 具体参考log4js配置方法
      * @param conf
      */
-    configureLog(conf?: Configuration) {
+    configureLog(conf?: log4js.Configuration) {
         try {
             if (conf) {
                 ClientStore.set('config', ConfigNames.log, conf)
@@ -115,7 +114,7 @@ export class Log {
                     appenders: {
                         client: {
                             type: 'file',
-                            filename: app.getPath('appData') + '/logs/client.log',
+                            filename: appData + '/logs/client.log',
                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
                         },
                     },
@@ -125,7 +124,7 @@ export class Log {
                     ClientStore.set('config', ConfigNames.log, conf)
                 }
             }
-            configure(conf)
+            log4js.configure(conf)
         } catch (e: any) {
             throw e
         }
@@ -133,10 +132,10 @@ export class Log {
 }
 
 export class LogPrivate {
-    private clientLogger: Logger
+    private clientLogger: log4js.Logger
 
-    constructor(loggerName: loggerName = 'client', config?: Configuration) {
-        this.clientLogger = getLogger(loggerName)
+    constructor(loggerName: loggerName = 'client', config?: log4js.Configuration) {
+        this.clientLogger = log4js.getLogger(loggerName)
         this.configureLog(config)
     }
 
@@ -183,7 +182,7 @@ export class LogPrivate {
      * @description 具体参考log4js配置方法
      * @param conf
      */
-    configureLog(conf?: Configuration) {
+    configureLog(conf?: log4js.Configuration) {
         try {
             if (!conf) {
                 conf = {
@@ -197,7 +196,7 @@ export class LogPrivate {
                     categories: { default: { appenders: ['client'], level: 'info' } },
                 }
             }
-            configure(conf)
+            log4js.configure(conf)
         } catch (e: any) {
             throw e
         }

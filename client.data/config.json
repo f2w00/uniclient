@@ -3,14 +3,14 @@
 		"appenders": {
 			"client": {
 				"type": "file",
-				"filename": "C:Users\\Administrator\\Desktop\\test\\1.opcua",
+				"filename": "D:\\works\\idea_projects\\uniclient\\client.data/logs/client.log",
 				"maxLogSize": 50000
 			}
 		},
 		"categories": {
 			"default": {
 				"appenders": [
-					"uaclient"
+					"client"
 				],
 				"level": "info"
 			}
@@ -49,7 +49,7 @@
 		},
 		"tutorial": [
 			{
-				"name": "main-client",
+				"name": "uniclient",
 				"type": "local",
 				"url": "./tutorial.html"
 			},

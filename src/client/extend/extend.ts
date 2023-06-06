@@ -1,7 +1,6 @@
-import { join } from 'path'
 import { existsSync } from 'fs'
 import EventEmitter from 'events'
-import { workspaceAttribute, GlobalWorkspaceManager } from '../workspace/workspace'
+import { GlobalWorkspaceManager } from '../workspace/workspace'
 import { ClientStore } from '../store/store.js'
 import { ExtensionActivator } from './activator.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
@@ -143,11 +142,7 @@ export class GlobalExtensionManager {
         const pirates = await import('pirates')
         apiPath = apiPath.replace(/\\/g, '/')
         const matcher = (filename: string) => {
-            if (filename.includes('plugins')) {
-                return true
-            } else {
-                return false
-            }
+            return filename.includes('plugins')
         }
         return pirates.addHook(
             (code: string, filename: string) => {

@@ -104,3 +104,4 @@ src/plugins/ua.client/**/*.js
 *.zip
 *.idea
 *.vscode
+backup/

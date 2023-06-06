@@ -4,7 +4,7 @@ import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { FileUtils } from '../../platform/base/utils/utils.js'
 
 enum storeNames {
-    workspaceManager = 'workspaceManagers',
+    workspaceManager = 'recentManagers',
     currentManager = 'currentManager',
     projectExtend = 'projectExtend',
     moduleStoreName = 'workspace',

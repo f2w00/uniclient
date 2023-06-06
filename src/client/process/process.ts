@@ -1,4 +1,4 @@
-import child_process, {ChildProcess} from 'child_process'
+import {ChildProcess,fork,ForkOptions} from 'child_process'
 import {ipcClient} from '../../platform/ipc/handlers/ipc.handler'
 import {ErrorHandler} from '../error/error'
 
@@ -32,8 +32,8 @@ export class ProcessManager {
      * @param options
      */
     static async createChildProcess(
-        fileName: string, module: string, message?: any, options?: child_process.ForkOptions) {
-        let child = await child_process.fork(fileName, options)
+        fileName: string, module: string, message?: any, options?: ForkOptions) {
+        let child = await fork(fileName, options)
         if (child.pid) {
             ProcessManager.bindEvent(child)
             ProcessManager.processes.set(module, child)
@@ -57,7 +57,8 @@ export class ProcessManager {
                 }
             }
         })
-        child.on('error', ErrorHandler.currentHandler)
+        child.on('uncaughtException', ErrorHandler.currentHandler)
+        child.on('unhandledRejection',ErrorHandler.rejectionHandler)
     }
 
     static killProcess(module: string) {

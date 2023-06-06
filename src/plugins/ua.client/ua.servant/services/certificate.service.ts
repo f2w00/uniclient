@@ -11,7 +11,7 @@ export module CertificateService {
     export let certificate = new OPCUACertificateManager({
         rootFolder: Config.certRoot,
         name: 'pki',
-        automaticallyAcceptUnknownCertificate: false,
+        automaticallyAcceptUnknownCertificate: true,
     })
 
     //todo node-opcua-pki命令测试
