@@ -51,16 +51,16 @@ export module Config {
             allowNull: false,
             field: 'dataType',
         },
-        // sourceTimestamp: {
-        //     type: DataTypes.STRING,
-        //     allowNull: false,
-        //     field: 'sourceTimestamp',
-        // },
-        serverTimestamp: {
+        sourceTimestamp: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: 'serverTimestamp',
+            field: 'sourceTimestamp',
         },
+        // serverTimestamp: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false,
+        //     field: 'serverTimestamp',
+        // },
         statusCode: {
             type: DataTypes.STRING,
             allowNull: false,

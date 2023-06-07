@@ -1,4 +1,4 @@
-const { ipcRenderer, contextBridge } = require('electron')
+const { ipcRenderer } = require('electron')
 const { rendererEvents } = require('../platform/ipc/events/ipc.events')
 
 function exposeInMain() {
@@ -37,8 +37,11 @@ function exposeInMain() {
             return ipcRenderer.invoke(event, ...args)
         },
         rendererEvents: rendererEvents,
+        tabDraw: (e) => {
+            console.log(e)
+        },
     }
-    contextBridge.exposeInMainWorld('uniclient', mainFunctions)
+    window.uniclient = mainFunctions
 }
 exposeInMain()
 // window.uniclient.store('set', 'leftSide','ok')

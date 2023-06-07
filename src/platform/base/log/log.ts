@@ -110,9 +110,7 @@ export class Log {
      */
     configureLog(conf?: Configuration) {
         try {
-            if (conf) {
-                ClientStore.set('config', ConfigNames.log, conf)
-            } else {
+            if (!conf) {
                 conf = {
                     appenders: {
                         client: {
@@ -122,9 +120,6 @@ export class Log {
                         },
                     },
                     categories: { default: { appenders: ['client'], level: 'info' } },
-                }
-                if (!ClientStore.has('config', ConfigNames.log)) {
-                    ClientStore.set('config', ConfigNames.log, conf)
                 }
             }
             configure(conf)

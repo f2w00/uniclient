@@ -10,6 +10,7 @@ import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
 import { GlobalWorkspaceManager } from './workspace/workspace'
 import { ProcessManager } from './process/process.js'
+import { globalShortcut } from 'electron'
 
 import path from 'path'
 
@@ -98,8 +99,7 @@ export class Client {
         let initOptions: initModel = ClientStore.get('config', 'workbenchConfig')
         this.workbench = new Workbench(
             path.join(__dirname, '../workbench/preload.js'),
-            path.join(__dirname, '../workbench/index.html'),
-            this.dev
+            path.join(__dirname, '../workbench/index.html')
         )
         this.mainWindow = this.workbench.getMainWindow()
         this.mainWindow.webContents.once('dom-ready', () => {
@@ -110,6 +110,17 @@ export class Client {
             ipcClient.registerToEmit('emitToRender', (event, ...args) => {
                 this.mainWindow.webContents.send(event, ...args)
             })
+        })
+        this.registerShortCut()
+    }
+
+    private registerShortCut() {
+        globalShortcut.register('Alt+d', () => {
+            if (this.mainWindow.isFocused()) {
+                this.mainWindow.webContents.isDevToolsOpened()
+                    ? this.mainWindow.webContents.closeDevTools()
+                    : this.mainWindow.webContents.openDevTools()
+            }
         })
     }
 
@@ -136,6 +147,7 @@ export class Client {
     }
 
     private quit() {
+        this.mainWindow.hide()
         series([
             //终结broker转发者服务
             async () => {

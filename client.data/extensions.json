@@ -1,8 +1,5 @@
 {
 	"globalExtensionManager": {
-		"onStart": [
-			"uaclient"
-		],
 		"enabledExtensions": [
 			{
 				"version": "1",
@@ -10,14 +7,14 @@
 				"main": "\\ua.client\\extension.js",
 				"worker": "\\ua.client\\ua.servant\\ua.servant.js",
 				"render": null,
-				"engine": "1.0",
+				"engine": "兼容客户端版本",
 				"identifier": {
 					"id": "uaclient",
 					"uuid": null
 				},
 				"onEvents": [
 					"project:activate.opcua",
-					"render:click.uaclient"
+					"render:leftSide.click-uaclient"
 				],
 				"projectExtend": [
 					"opcua"
@@ -30,8 +27,11 @@
 						"renderPath": "render",
 						"clickToSend": "render:leftSide.click-uaclient"
 					}
-        		]
+				]
 			}
+		],
+		"onStart": [
+			"uaclient"
 		]
 	}
 }

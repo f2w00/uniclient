@@ -26,10 +26,10 @@
             "allowNull": false,
             "field": "dataType"
         },
-        "serverTimestamp": {
+        "sourceTimestamp": {
             "type": "DataTypes.STRING",
             "allowNull": false,
-            "field": "serverTimestamp"
+            "field": "sourceTimestamp"
         },
         "statusCode": {
             "type": "DataTypes.STRING",

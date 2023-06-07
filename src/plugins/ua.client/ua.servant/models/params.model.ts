@@ -1,20 +1,20 @@
-import {ClientMonitoredItem, MonitoringParametersOptions, ReadValueIdOptions, TimestampsToReturn} from 'node-opcua'
-import {NodeIdLike} from 'node-opcua-nodeid'
-import {DateTime} from 'node-opcua-basic-types'
-import {ExtraReadHistoryValueParameters, HistoryReadValueIdOptions2} from 'node-opcua-client/source/client_session'
+import { ClientMonitoredItem, MonitoringParametersOptions, ReadValueIdOptions, TimestampsToReturn } from 'node-opcua'
+import { NodeIdLike } from 'node-opcua-nodeid'
+import { DateTime } from 'node-opcua-basic-types'
+import { ExtraReadHistoryValueParameters, HistoryReadValueIdOptions2 } from 'node-opcua-client/source/client_session'
 
 export interface SubscriptSingleParam {
-    itemToMonitor: ReadValueIdOptions,
-    displayName: string,
-    timeStampToReturn?: TimestampsToReturn,
-    parameters?: MonitoringParametersOptions,
+    itemToMonitor: ReadValueIdOptions
+    displayName: string
+    timeStampToReturn?: TimestampsToReturn
+    parameters?: MonitoringParametersOptions
 }
 
 export interface SubscriptGroupParam {
-    itemsToMonitor: ReadValueIdOptions[],
-    displayNames: string[],
-    timeStampToReturn?: TimestampsToReturn,
-    parameters?: MonitoringParametersOptions,
+    itemsToMonitor: ReadValueIdOptions[]
+    displayNames: string[]
+    timeStampToReturn?: TimestampsToReturn
+    parameters?: MonitoringParametersOptions
 }
 
 export interface ItemAndName {
@@ -39,14 +39,14 @@ export interface IDbData {
     displayName: string
     value: string
     dataType: string
-    // sourceTimestamp: string
-    serverTimestamp: string
+    sourceTimestamp: string
+    // serverTimestamp: string
     statusCode: string
 }
 
 export interface IDbParam {
-    values: IDbData,
-    tableName?: string,
+    values: IDbData
+    tableName?: string
     /**
      * @default {
      *     serverF:'Server',
@@ -63,15 +63,15 @@ export interface IDbParam {
 }
 
 export interface EndpointParam {
-    reduce?: boolean,
-    clientExist?: boolean,
+    reduce?: boolean
+    clientExist?: boolean
     endpoint?: string
 }
 
 export interface HistoryValueParam {
-    nodeToRead: NodeIdLike | HistoryReadValueIdOptions2,
-    start: DateTime,
-    end: DateTime,
+    nodeToRead: NodeIdLike | HistoryReadValueIdOptions2
+    start: DateTime
+    end: DateTime
     options?: ExtraReadHistoryValueParameters
 }
 

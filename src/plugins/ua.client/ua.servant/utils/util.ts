@@ -104,6 +104,7 @@ export class CommunicateUtil {
 }
 
 export class RecordUtil {
+    //todo record出错
     static paramsToRecord: Map<string, any>
 
     constructor(recordFile?: string) {

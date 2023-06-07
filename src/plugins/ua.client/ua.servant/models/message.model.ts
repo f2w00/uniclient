@@ -10,23 +10,23 @@ export class UaMessage implements IDbData {
     nodeId: string
     displayName: string
     statusCode: string
-    // sourceTimestamp: string
-    serverTimestamp: string
+    sourceTimestamp: string
+    // serverTimestamp: string
     value: string
     dataType: string
 
     constructor(dataValue: DataValue, nodeId: string, displayName: string) {
         this.server = ClientService.currentServer
         this.displayName = displayName
-        this.nodeId = nodeId.toString()
+        this.nodeId = String(nodeId)
         this.statusCode = dataValue.statusCode.name.toString()
-        this.serverTimestamp = dataValue.serverTimestamp
-            ? dataValue.serverTimestamp.toLocaleString()
-            : new Date().toLocaleDateString()
-        // this.sourceTimestamp = dataValue.sourceTimestamp
-        //     ? dataValue.sourceTimestamp.toLocaleString()
+        // this.serverTimestamp = dataValue.serverTimestamp
+        //     ? dataValue.serverTimestamp.toLocaleString()
         //     : new Date().toLocaleDateString()
-        this.value = dataValue.value.value.toString()
-        this.dataType = DataType[dataValue.value.dataType].toString()
+        this.sourceTimestamp = dataValue.sourceTimestamp
+            ? dataValue.sourceTimestamp.toLocaleString()
+            : new Date().toLocaleDateString()
+        this.value = String(dataValue.value.value)
+        this.dataType = String(DataType[dataValue.value.dataType])
     }
 }

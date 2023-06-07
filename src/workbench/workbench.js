@@ -20,10 +20,10 @@ class Workbench extends events_1.EventEmitter {
             defaultWidth: (electron_1.screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
             defaultHeight: (electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         });
-        this.createMainWindow(preload, homeViewPath, dev, electron_1.screen.getPrimaryDisplay().workAreaSize.width / 4, electron_1.screen.getPrimaryDisplay().workAreaSize.height / 4, width, height);
+        this.createMainWindow(preload, homeViewPath, electron_1.screen.getPrimaryDisplay().workAreaSize.width / 4, electron_1.screen.getPrimaryDisplay().workAreaSize.height / 4, width, height);
         this.existViews = new Map();
     }
-    async createMainWindow(preloadPath, indexHtmlPath, dev = false, minWidth, minHeight, width, height) {
+    async createMainWindow(preloadPath, indexHtmlPath, minWidth, minHeight, width, height) {
         this.mainWindow = new electron_1.BrowserWindow({
             x: this.winState.x,
             y: this.winState.y,
@@ -41,9 +41,6 @@ class Workbench extends events_1.EventEmitter {
                 contextIsolation: false,
             },
         });
-        if (dev) {
-            this.mainWindow.webContents.openDevTools();
-        }
         await this.mainWindow.loadFile(indexHtmlPath);
         this.initBind(this.mainWindow);
         this.winState.manage(this.mainWindow);
@@ -53,12 +50,7 @@ class Workbench extends events_1.EventEmitter {
             mainWindow.minimize();
         });
         ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.benchEvents.maximize, () => {
-            if (mainWindow.isMaximized()) {
-                mainWindow.restore();
-            }
-            else {
-                mainWindow.maximize();
-            }
+            mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
         });
         ipc_handler_js_1.ipcClient.on('render:config.update', (event, configName, configData) => {
             let config = configData;

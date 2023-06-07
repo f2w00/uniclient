@@ -68,16 +68,16 @@ export module DbService {
                                 allowNull: false,
                                 field: fields.dataTypeF,
                             },
-                            // sourceTimestamp: {
-                            //     type: DataTypes.STRING,
-                            //     allowNull: false,
-                            //     field: fields.sourceTimestampF,
-                            // },
-                            serverTimestamp: {
+                            sourceTimestamp: {
                                 type: DataTypes.STRING,
                                 allowNull: false,
-                                field: fields.serverTimestampF,
+                                field: fields.sourceTimestampF,
                             },
+                            // serverTimestamp: {
+                            //     type: DataTypes.STRING,
+                            //     allowNull: false,
+                            //     field: fields.serverTimestampF,
+                            // },
                             statusCode: {
                                 type: DataTypes.STRING,
                                 allowNull: false,

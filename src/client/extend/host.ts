@@ -1,4 +1,5 @@
 import { IExtension } from './extend.js'
+import { plugins } from '../paths.js'
 
 /**
  * @description activate是插件激活时执行的函数,
@@ -14,13 +15,12 @@ class WorkerActivator {
 
     static async activate(iExtension: IExtension) {
         try {
-            console.log(iExtension.main)
-            let { extension } = await require(iExtension.main)
+            let { extension } = await require(plugins + iExtension.main)
             let instance: IExtensionInstance = extension
             instance.activate()
             WorkerActivator.beforeExtensionClose = instance.beforeClose
             if (iExtension.worker) {
-                await require(iExtension.worker)
+                await require(plugins + iExtension.worker)
             }
         } catch (e: any) {
             throw e

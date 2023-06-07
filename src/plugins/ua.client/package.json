@@ -34,7 +34,7 @@
     },
     "uniPlugin": {
         "version": "1",
-        "storage": "\\ua.client\\plugin.json",
+        "storage": "\\ua.client\\package.json",
         "main": "\\ua.client\\extension.js",
         "worker": "\\ua.client\\ua.servant\\ua.servant.js",
         "render": null,
@@ -58,6 +58,7 @@
                 "renderPath": "render",
                 "clickToSend": "render:leftSide.click-uaclient"
             }
-        ]
+        ],
+        "defaultStart": true
     }
 }

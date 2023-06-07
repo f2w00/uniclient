@@ -45,7 +45,6 @@ export class Workbench extends EventEmitter {
         this.createMainWindow(
             preload,
             homeViewPath,
-            dev,
             screen.getPrimaryDisplay().workAreaSize.width / 4,
             screen.getPrimaryDisplay().workAreaSize.height / 4,
             width,
@@ -57,7 +56,6 @@ export class Workbench extends EventEmitter {
     private async createMainWindow(
         preloadPath: string,
         indexHtmlPath: string,
-        dev: boolean = false,
         minWidth?: number,
         minHeight?: number,
         width?: number,
@@ -80,11 +78,7 @@ export class Workbench extends EventEmitter {
                 contextIsolation: false,
             },
         })
-        if (dev) {
-            this.mainWindow.webContents.openDevTools()
-        }
         await this.mainWindow.loadFile(indexHtmlPath)
-        // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.initBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
     }

@@ -25,14 +25,11 @@ export class ExtensionActivator {
     static extensionInstanceManagers: Map<extensionId, IExtensionInstanceManager> = new Map()
 
     static async doActivateExtension(iExtension: IExtension, onStart?: boolean) {
-        iExtension.main = plugins + iExtension.main
-        iExtension.worker = plugins + iExtension.worker
-        iExtension.storage = plugins + iExtension.storage
         if (onStart) {
             if (iExtension.worker) {
                 ExtensionActivator.activateWorker(iExtension)
             } else {
-                let { extension } = await require(iExtension.main)
+                let { extension } = await require(plugins + iExtension.main)
                 let instance: IExtensionInstance = extension
                 await instance.activate()
                 ExtensionActivator.extensionInstanceManagers.set(iExtension.identifier.id, {
@@ -49,7 +46,7 @@ export class ExtensionActivator {
                 ipcClient.emitLocal('extension:loaded')
             } else {
                 ExtensionActivator.bindActivateEvents(iExtension.onEvents, async () => {
-                    let { extension } = await require(iExtension.main)
+                    let { extension } = await require(plugins + iExtension.main)
                     let instance: IExtensionInstance = extension
                     ExtensionActivator.extensionInstanceManagers.set(iExtension.identifier.id, {
                         identifier: iExtension.identifier,
@@ -71,12 +68,10 @@ export class ExtensionActivator {
                     message: iExtension,
                 }
             )
-            let { extension } = await require(iExtension.main)
-            let instance = extension
             ExtensionActivator.extensionInstanceManagers.set(iExtension.identifier.id, {
                 identifier: iExtension.identifier,
-                worker: worker,
-                instance: instance,
+                worker: plugins + worker,
+                instance: undefined,
             })
         }
     }

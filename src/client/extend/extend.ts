@@ -28,6 +28,7 @@ export interface IExtension {
     onEvents: extensionActivateEvent[]
     projectExtend: string[]
     extraButtons: string[]
+    defaultStart: boolean
     worker: string | null
     render: string | null
 }

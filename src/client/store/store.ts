@@ -11,22 +11,26 @@ export type storeOptions = {
 export class ClientStore {
     static stores: Map<string, Store>
     static cwd: string
-    private renderStore: Store
+    static inited = false
+    private renderStore!: Store
 
     constructor(cwd?: string) {
-        ClientStore.cwd = cwd ? cwd : appDataPath
-        ClientStore.stores = new Map<string, Store>()
-        ClientStore.create({
-            name: 'config',
-            fileExtension: 'json',
-            clearInvalidConfig: false,
-        })
-        this.renderStore = new Store({
-            name: 'render',
-            fileExtension: 'json',
-            clearInvalidConfig: false,
-        })
-        this.initBind()
+        if (!ClientStore.inited) {
+            ClientStore.cwd = cwd ? cwd : appDataPath
+            ClientStore.stores = new Map<string, Store>()
+            ClientStore.create({
+                name: 'config',
+                fileExtension: 'json',
+                clearInvalidConfig: false,
+            })
+            this.renderStore = new Store({
+                name: 'render',
+                fileExtension: 'json',
+                clearInvalidConfig: false,
+            })
+            ClientStore.inited = true
+            this.initBind()
+        }
     }
 
     static set(storeName: string, key: string, content: any): boolean {
@@ -69,7 +73,7 @@ export class ClientStore {
 
     static create(options: storeOptions) {
         let result = ClientStore.stores.get(options.name)
-        if (result) {
+        if (!result) {
             let store = new Store({ ...options, cwd: ClientStore.cwd })
             ClientStore.stores.set(options.name, store)
             // store.openInEditor()

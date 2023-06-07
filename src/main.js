@@ -1,6 +1,7 @@
 const { app, Menu } = require('electron')
 const env = require('dotenv')
 const product = require('./client/product.json')
+const { map } = require('async')
 require('v8-compile-cache')
 
 if (process[1] == '--squirrel-firstrun') {
@@ -23,16 +24,18 @@ async function startUp(cachePath, workspacePath, appDataPath, config) {
  * @returns
  */
 function generateUserDataPath() {
+    const { existsSync, writeFile, mkdirSync } = require('fs')
     let dataPath = product['appData']
-    if (!dataPath || !existsSync(dataPath)) {
+    if (!dataPath) {
         const { join } = require('path')
-        const { existsSync, writeFile, mkdirSync, readdirSync } = require('fs')
         dataPath = join(__dirname, '../client.data')
         product['appData'] = dataPath
         writeFile('./src/client/product.json', JSON.stringify(product), (err) => {
             console.log(err)
         })
-        mkdirSync(dataPath)
+        if (!existsSync(dataPath)) {
+            mkdirSync(dataPath)
+        }
         generateConfigs(dataPath)
     }
     return dataPath
@@ -41,43 +44,47 @@ function generateUserDataPath() {
 function generateConfigs(filePath) {
     const { ClientStore } = require('./client/store/store')
     new ClientStore(filePath)
-    let plugins = detectPlugins()
+    let pluginsInfo = detectPlugins()
     ClientStore.create({
         name: 'extensions',
         fileExtension: 'json',
         clearInvalidConfig: false,
     })
     ClientStore.set('extensions', 'globalExtensionManager', {
-        onStart: [],
-        enabledExtensions: plugins.plugins,
+        onStart: pluginsInfo.plugins.onStart,
+        enabledExtensions: pluginsInfo.plugins.list,
     })
     ClientStore.create({
         name: 'workspace',
         fileExtension: 'json',
         clearInvalidConfig: false,
     })
-    ClientStore.set('workspace', 'globalWorkspaceManager', {
-        recentManagers: [],
-        currentManager: {},
-        projectExtend: plugins.infos.projectExtend,
-    })
+    ClientStore.set('workspace', 'recentManagers', [])
+    ClientStore.set('workspace', 'currentManager', {})
+    ClientStore.set('workspace', 'projectExtend', pluginsInfo.infos.projectExtend)
 }
 
 function detectPlugins() {
     const { join } = require('path')
     const { existsSync, readdirSync } = require('fs')
-    let paths = readdirSync(join(__dirname, './plugins'))
+    let pluginPath = join(__dirname, './plugins')
+    let paths = readdirSync(pluginPath)
     let plugins = []
-    let infos = { projectExtend: [] }
+    let onStart = []
+    let extend = new Map()
     paths.forEach((value, index) => {
-        if (existsSync(value + '/package.json')) {
-            let { uniExtension: uniPlugin } = require(value + '/package.json')
+        let acualPath = pluginPath + '/' + value + '/package.json'
+        if (existsSync(acualPath)) {
+            let { uniPlugin } = require(acualPath)
             uniPlugin ? plugins.push(uniPlugin) : null
             if ('projectExtend' in uniPlugin) {
-                infos.projectExtend.push(uniPlugin.projectExtend)
+                uniPlugin.projectExtend.forEach((value) => {
+                    extend.set(value, value)
+                })
+                if (uniPlugin.defaultStart) onStart.push(uniPlugin.identifier.id)
             }
         }
     })
-    return { plugins: plugins, infos: infos }
+    return { plugins: { list: plugins, onStart: onStart }, infos: { projectExtend: extend.values() } }
 }
 //todo 手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载
