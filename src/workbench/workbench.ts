@@ -15,6 +15,7 @@ type sideStyle = {
     subDisplay: number[]
     extraButtons: {
         name: string
+        loc: string
         iconPath: string
         renderPath: string
         clickToSend: string
@@ -93,11 +94,7 @@ export class Workbench extends EventEmitter {
             mainWindow.minimize()
         })
         ipcClient.on(rendererEvents.benchEvents.maximize, () => {
-            if (mainWindow.isMaximized()) {
-                mainWindow.restore()
-            } else {
-                mainWindow.maximize()
-            }
+            mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize()
         })
         ipcClient.on('render:config.update', (event, configName, configData) => {
             let config: initModel = configData

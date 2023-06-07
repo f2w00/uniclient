@@ -1,1 +1,9 @@
-{ "dev": true, "appData": "D:\\works\\idea_projects\\uniclient\\client.data" }
+{
+    "dev": true,
+    "appData": "D:\\works\\idea_projects\\uniclient\\client.data",
+    "firstRunConfigs": {
+        "config": {},
+        "extensions": {},
+        "workspace": {}
+    }
+}

@@ -31,5 +31,33 @@
         "ts-node": "^10.9.1",
         "ttypescript": "^1.5.15",
         "typescript": "^4.9.5"
+    },
+    "uniPlugin": {
+        "version": "1",
+        "storage": "\\ua.client\\plugin.json",
+        "main": "\\ua.client\\extension.js",
+        "worker": "\\ua.client\\ua.servant\\ua.servant.js",
+        "render": null,
+        "engine": "兼容客户端版本",
+        "identifier": {
+            "id": "uaclient",
+            "uuid": null
+        },
+        "onEvents": [
+            "project:activate.opcua",
+            "render:leftSide.click-uaclient"
+        ],
+        "projectExtend": [
+            "opcua"
+        ],
+        "extraButtons": [
+            {
+                "name": "uaclient",
+                "loc": "leftSide",
+                "iconPath": "",
+                "renderPath": "render",
+                "clickToSend": "render:leftSide.click-uaclient"
+            }
+        ]
     }
 }

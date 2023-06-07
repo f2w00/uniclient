@@ -37,3 +37,7 @@ export module Server {
     }
 }
 Server.activateServer()
+// export function createPKI() {
+//     let exec = require("child_process").exec
+//     exec("npx node-opcua-pki createPKI")
+// }

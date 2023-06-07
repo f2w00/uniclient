@@ -118,21 +118,25 @@ export class GlobalWorkspaceManager {
     constructor() {
         GlobalWorkspaceManager.recent = new Map()
         GlobalWorkspaceManager.projectExtend = []
+        ClientStore.create({
+            name: storeNames.moduleStoreName,
+            fileExtension: 'json',
+            clearInvalidConfig: false,
+        })
         this.initBind()
         GlobalWorkspaceManager.loadWorkspace()
     }
 
     initBind() {
-        ipcClient.handle('folder:open', (event, fileName: string) => {
+        ipcClient.handle('render:folder.open', (_, fileName: string) => {
             let files = FileUtils.openFolder(fileName)
             if (files.includes('.project')) {
                 ipcClient.emitLocal('project:load', fileName, files)
-                return null
-            } else {
-                return files
             }
+            let result = FileUtils.deleteFile(files, fileName)
+            return result
         })
-        ipcClient.handle('render:workspace.load', (event, workspace: workspaceAttribute) => {
+        ipcClient.handle('render:workspace.load', (_, workspace: workspaceAttribute) => {
             GlobalWorkspaceManager.loadWorkspace(workspace)
             let recent: workspaceAttribute[] = []
             GlobalWorkspaceManager.recent.forEach((value) => {

@@ -91,6 +91,7 @@ out/
 !/client.data/config.json
 !/client.data/extensions.json
 !/client.data/workspace.json
+!/client.data/render.json
 /.VSCodeCounter/
 /.vscode/
 /.idea/
@@ -100,6 +101,7 @@ package-lock.json
 src/client/**/*.js
 src/platform/**/*.js
 src/plugins/ua.client/**/*.js
+!src/plugins/ua.client/extension.js
 !src/workbench/**/*.js
 *.zip
 *.idea

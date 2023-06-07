@@ -48,7 +48,8 @@ export class Utils {
 
 type file = {
     name: string
-    child: Object[] | null
+    isDir: boolean
+    child: Object[] | null | undefined
 }
 
 export class FileUtils {
@@ -60,8 +61,22 @@ export class FileUtils {
         // })
     }
 
-    static openFolder(fileName: string): string[] {
-        return readdirSync(fileName)
+    static openFolder(fileName: string) {
+        let files = readdirSync(fileName)
+        return files
+    }
+
+    static deleteFile(files: string[], fileName: string) {
+        let result: file[] = []
+        files.forEach((value) => {
+            let isDir = statSync(fileName + '/' + value).isDirectory()
+            result.push({
+                name: value,
+                isDir: isDir,
+                child: null,
+            })
+        })
+        return result
     }
 
     static getSubfolders(fileName: string) {
@@ -80,9 +95,9 @@ export class FileUtils {
         let results: file[] = []
         files.forEach((file) => {
             if (statSync(fileName + '/' + file).isDirectory()) {
-                results.push({ name: file, child: readdirSync(fileName + '/' + file) })
+                results.push({ name: file, isDir: true, child: readdirSync(fileName + '/' + file) })
             } else {
-                results.push({ name: file, child: null })
+                results.push({ name: file, isDir: false, child: null })
             }
         })
         return results

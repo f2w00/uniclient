@@ -68,13 +68,14 @@ export class ClientStore {
     }
 
     static create(options: storeOptions) {
-        if (ClientStore.stores.has(options.name)) {
-            return false
-        } else {
+        let result = ClientStore.stores.get(options.name)
+        if (result) {
             let store = new Store({ ...options, cwd: ClientStore.cwd })
             ClientStore.stores.set(options.name, store)
             // store.openInEditor()
             return store
+        } else {
+            return result
         }
     }
 

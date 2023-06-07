@@ -122,7 +122,7 @@ export class GlobalExtensionManager {
         ClientStore.create({
             name: storeNames.extension,
             fileExtension: 'json',
-            clearInvalidConfig: true,
+            clearInvalidConfig: false,
         })
         this.startUp()
     }
