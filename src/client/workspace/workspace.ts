@@ -68,7 +68,7 @@ export class WorkspaceManager implements IWorkspaceManager {
         ipcClient.onLocal('extension:loaded', () => {
             this.toStart()
         })
-        ipcClient.handle('client:infos', (event, ...args) => {
+        ipcClient.handle('client:info', (event, ...args) => {
             return {
                 currentProject: ProjectManagerFactory.currentProject,
                 currentWorkspace: this.workspace,

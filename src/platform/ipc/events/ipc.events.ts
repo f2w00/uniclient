@@ -10,6 +10,7 @@ export namespace rendererEvents {
         install = 'render:extension.install',
         uninstall = 'render:extension.uninstall',
         activate = 'render:extension.activate',
+        onStart = 'render:extension.onStart',
     }
 
     export enum workspaceEvents {
@@ -18,6 +19,10 @@ export namespace rendererEvents {
 
     export enum persistEvents {
         init = 'render:persist.init',
+        insert = 'render:persist.insert',
+        insertMany = 'render:persist.insertMany',
+        remove = 'render:persist.remove',
+        update = 'render:persist.update',
     }
 
     export enum viewEvents {
@@ -31,7 +36,7 @@ export namespace rendererEvents {
     }
 }
 
-export namespace MainEvents {
+export namespace LocalEvents {
     export enum logEmitEvents {
         error = 'main:log.error',
         info = 'main:log.info',

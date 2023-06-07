@@ -1,7 +1,8 @@
 const { ipcRenderer, contextBridge } = require('electron')
+const { rendererEvents } = require('../platform/ipc/events/ipc.events')
 
 function exposeInMain() {
-    let mainFunctions = {
+    const mainFunctions = {
         /**
          * @description 操作持久化,存放在client.data/render.json中
          * @param {'set'|'get'|'del'} purpose 指明动作意图
@@ -12,8 +13,22 @@ function exposeInMain() {
         store: async (purpose, key, value) => {
             return await ipcRenderer.invoke('render:store', purpose, key, value)
         },
-        file: async (fileName) => {
-            return await ipcRenderer.invoke('render:folder.open', fileName)
+        /**
+         * @param {'open'|'loadWorkspace'} purpose
+         * @param {string} fileName
+         * @returns {{name: string,isDir: boolean,child: Object[] | undefined}[]}
+         */
+        file: async (purpose, fileName, ...args) => {
+            return await ipcRenderer.invoke('render:folder' + `.${purpose}`, fileName, ...args)
+        },
+        /**
+         *
+         * @param {'info'} purpose
+         * @param  {...any} args
+         * @returns
+         */
+        client: async (purpose, ...args) => {
+            return await ipcRenderer.invoke('render:client' + `.${purpose}`, ...args)
         },
         send: async (event, ...args) => {
             ipcRenderer.send(event, ...args)
@@ -21,6 +36,7 @@ function exposeInMain() {
         invoke: async (event, ...args) => {
             return ipcRenderer.invoke(event, ...args)
         },
+        rendererEvents: rendererEvents,
     }
     contextBridge.exposeInMainWorld('uniclient', mainFunctions)
 }

@@ -27,6 +27,7 @@ export interface IExtension {
     storage: extensionStorage
     onEvents: extensionActivateEvent[]
     projectExtend: string[]
+    extraButtons: string[]
     worker: string | null
     render: string | null
 }
@@ -79,7 +80,6 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     installExtension(extension: IExtension) {
         if (verifyStoragePath(extension.storage)) {
             this.enabledExtensions.push(extension)
-            //插入project extend到全局workspace管理的空间中
             GlobalWorkspaceManager.addProjectExtend(extension.projectExtend)
         }
     }
@@ -166,11 +166,11 @@ export class GlobalExtensionManager {
      */
     bindEventsToMain() {
         //绑定插件安装
-        ipcClient.on(rendererEvents.extensionEvents.install, (event, workspace: string, extension: IExtension) => {
+        ipcClient.on(rendererEvents.extensionEvents.install, (event, extension: IExtension) => {
             this.currentManager.installExtension(extension)
         })
         //绑定插件卸载方法
-        ipcClient.on(rendererEvents.extensionEvents.uninstall, (event, workspace: string, extension: IExtension) => {
+        ipcClient.on(rendererEvents.extensionEvents.uninstall, (event, extension: IExtension) => {
             this.currentManager.uninstallExtension(extension)
         })
     }

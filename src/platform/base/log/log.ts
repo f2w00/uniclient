@@ -1,5 +1,5 @@
 import { configure, getLogger, Configuration, Logger } from 'log4js'
-import { MainEvents } from '../../ipc/events/ipc.events.js'
+import { LocalEvents } from '../../ipc/events/ipc.events.js'
 import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
 import { ClientStore } from '../../../client/store/store.js'
 import { appDataPath } from '../../../client/paths.js'
@@ -71,7 +71,7 @@ export class Log {
                 source: info.source,
                 ...info.message,
             })
-            ipcClient.emitToRender(MainEvents.logEmitEvents.info, info)
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
         } catch (e: any) {
             throw e
         }
@@ -85,7 +85,7 @@ export class Log {
                 stack: info.trace,
                 ...info.message,
             })
-            ipcClient.emitToRender(MainEvents.logEmitEvents.error, info)
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
         } catch (e: any) {
             throw e
         }
@@ -98,7 +98,7 @@ export class Log {
                 warn: info.warn,
                 ...info.message,
             })
-            ipcClient.emitToRender(MainEvents.logEmitEvents.warn, info)
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
         } catch (e: any) {
             throw e
         }
@@ -148,7 +148,7 @@ export class LogPrivate {
                 source: info.source,
                 ...info.message,
             })
-            ipcClient.emitToRender(MainEvents.logEmitEvents.info, info)
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
         } catch (e: any) {
             throw e
         }
@@ -162,7 +162,7 @@ export class LogPrivate {
                 stack: info.trace,
                 ...info.message,
             })
-            ipcClient.emitToRender(MainEvents.logEmitEvents.error, info)
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
         } catch (e: any) {
             throw e
         }
@@ -175,7 +175,7 @@ export class LogPrivate {
                 warn: info.warn,
                 ...info.message,
             })
-            ipcClient.emitToRender(MainEvents.logEmitEvents.warn, info)
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
         } catch (e: any) {
             throw e
         }
