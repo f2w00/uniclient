@@ -5,10 +5,6 @@ export class ipcClient {
     static localEvents: EventEmitter = new EventEmitter()
     static clientEvents: EventEmitter = new EventEmitter()
 
-    // constructor(send: (channel: string, ...args: any[]) => void) {
-    //     ipcClient.currentWindow = send
-    // }
-
     static on(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.on(event, eventHandler)
     }

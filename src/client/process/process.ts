@@ -1,6 +1,7 @@
 import {ChildProcess,fork,ForkOptions} from 'child_process'
 import {ipcClient} from '../../platform/ipc/handlers/ipc.handler'
 import {ErrorHandler} from '../error/error'
+import {StartRecord} from '../store/store'
 
 export type IpcCommunicateModel = {
     purpose: string
@@ -22,6 +23,7 @@ export class ProcessManager {
                 value.send({event: 'project:fileName', message: fileName})
             })
         })
+        StartRecord.completeLoading('process')
     }
 
     /**

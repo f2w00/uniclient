@@ -1,5 +1,5 @@
 import { IProject, ProjectManagerFactory } from '../../platform/base/project/project'
-import { ClientStore } from '../store/store.js'
+import {ClientStore, StartRecord} from '../store/store.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { FileUtils } from '../../platform/base/utils/utils.js'
 
@@ -45,6 +45,7 @@ export class WorkspaceManager implements IWorkspaceManager {
         this.folders = ws.folders
         this.onStart = ws.onStart
         this.initBind()
+        this.toStart()
     }
 
     initBind() {
@@ -65,10 +66,7 @@ export class WorkspaceManager implements IWorkspaceManager {
                 ProjectManagerFactory.currentProject.storagePath
             )
         })
-        ipcClient.onLocal('extension:loaded', () => {
-            this.toStart()
-        })
-        ipcClient.handle('client:info', (event, ...args) => {
+        ipcClient.handle('client:info', (_, ...args) => {
             return {
                 currentProject: ProjectManagerFactory.currentProject,
                 currentWorkspace: this.workspace,
@@ -81,6 +79,7 @@ export class WorkspaceManager implements IWorkspaceManager {
         if (this.onStart && !this.loadedProjects.has(this.onStart)) {
             ipcClient.emitLocal('project:load', this.workspace.storagePath + '/' + this.onStart)
             this.loadProject(this.workspace.storagePath + '/' + this.onStart)
+            StartRecord.completeLoading('workspace')
         }
     }
 
@@ -133,8 +132,7 @@ export class GlobalWorkspaceManager {
             if (files.includes('.project')) {
                 ipcClient.emitLocal('project:load', fileName, files)
             }
-            let result = FileUtils.deleteFile(files, fileName)
-            return result
+            return FileUtils.deleteFile(files, fileName)
         })
         ipcClient.handle('render:workspace.load', (_, workspace: workspaceAttribute) => {
             GlobalWorkspaceManager.loadWorkspace(workspace)
@@ -167,7 +165,7 @@ export class GlobalWorkspaceManager {
                 GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
             }
             if (recent) {
-                recent.forEach((value, index) => {
+                recent.forEach((value) => {
                     GlobalWorkspaceManager.recent.set(value.workspace.workspaceName, value)
                 })
             }

@@ -14,7 +14,7 @@
     <body>
         <div id="app">
             <div class="container">
-                <header class="top-container">
+                <!-- <header class="top-container">
                     <div class="topLeft">
                         <div class="logoBox">
                             <img class="logo" src="./assets/icon/icon.svg" />
@@ -94,7 +94,7 @@
                         <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
                         <i class="el-icon-close close-btn" @click="handleClose"></i>
                     </div>
-                </header>
+                </header> -->
                 <div class="main-container">
                     <div class="subview subviewLeft">
                         <div class="resizeShow">
@@ -175,7 +175,21 @@
                                 >
                                     <iframe :class="item.name+'Iframe'" :src="item.src"></iframe>
                                 </el-tab-pane>
+                                <!-- <el-tab-pane>
+                                    <span slot="label" class="operationBox">
+                                        <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
+                                        <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
+                                        <i class="el-icon-close close-btn" @click="handleClose"></i>
+                                    </span>
+                                </el-tab-pane> -->
                             </el-tabs>
+
+                            <!-- todo 这里 -->
+                            <div class="operationBox">
+                                <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
+                                <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
+                                <i class="el-icon-close close-btn" @click="handleClose"></i>
+                            </div>
                         </div>
                         <footer class="main-bottom">
                             <div class="resize mian-vertical"></div>
@@ -571,9 +585,14 @@
                 handleClose() {
                     mainClose()
                 },
+                //TODO 修改了
                 handleTableft(tab, event) {
-                    if (this.leftTabActivate !== tab._props.name) {
+                    let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
+                    let resizeItem = document.querySelector('.subviewLeft .resizeShow')
+                    if (this.leftTabActivate != tab._props.name) {
                         this.leftTabActivate = tab._props.name
+                        tabsContent.style.display = 'block'
+                        resizeItem.style.display = 'block'
                     } else {
                         let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
                         let resizeItem = document.querySelector('.subviewLeft .resizeShow')
@@ -587,11 +606,13 @@
                     }
                 },
                 handleTabright(tab, event) {
+                    let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
+                    let resizeItem = document.querySelector('.subviewRight .resizeShow')
                     if (this.rightTabActivate !== tab._props.name) {
                         this.rightTabActivate = tab._props.name
+                        tabsContent.style.display = 'block'
+                        resizeItem.style.display = 'block'
                     } else {
-                        let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
-                        let resizeItem = document.querySelector('.subviewRight .resizeShow')
                         if (tabsContent.style.display == 'none') {
                             tabsContent.style.display = 'block'
                             resizeItem.style.display = 'block'
@@ -605,11 +626,12 @@
                     // let tabsContent = document.querySelector(".main-bottom .el-tabs__content")
                     // let resizeItem = document.querySelector(".main-bottom .resize")
                     let tabsContent = document.querySelector('.main-bottom')
-                    if (tabsContent.style.display == 'none') {
-                        tabsContent.style.display = 'block'
+                    if (tabsContent.style.display == 'block') {
+                        tabsContent.style.display = 'none'
+
                         // resizeItem.style.display = "block"
                     } else {
-                        tabsContent.style.display = 'none'
+                        tabsContent.style.display = 'block'
                         // resizeItem.style.display = "none"
                     }
                 },
@@ -743,6 +765,10 @@
                     const el = document.querySelector('.el-table')
                     console.log(getStyle(el, 'width'))
                 },
+                async handleInit() {
+                    // let resizeItem = document.querySelector('.subviewRight .resizeShow')
+                    let configs = await window.uniclient.store('get', 'workbenchConfig')
+                },
             },
             mounted() {
                 subviewItemInit(window, document)
@@ -755,6 +781,7 @@
                 this.logWarnListener()
                 this.logErrorListener()
                 this.subscriptListener()
+                this.handleInit()
                 // subscript()
             },
             created() {

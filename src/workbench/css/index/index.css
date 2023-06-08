@@ -6,7 +6,7 @@
     --main-view-minwidth: 200px;
     --main-view-minheight: 150px;
     --right-view-width: 270px;
-    --right-view-minwidth: 160px;
+    --right-view-minwidth: 220px;
     --log-bar-height: 25px;
     --log-view-height: 150px;
     --log-view-minheight: 120px;
@@ -15,7 +15,7 @@
     --right-bar-width: 26px;
 
     /* TODO 统一字体样式 */
-    --font-color: #a69e9f;
+    --font-color: #273849;
     --font-size-level1: 16px;
     --font-size-level2: 14px;
     --font-size-level3: 12px;
@@ -74,6 +74,7 @@ header {
 }
 
 .main-bottom {
+    display: none;
     width: 100%;
     min-height: var(--log-bar-height);
     border-top: 1px solid #d0d0d0;
@@ -138,7 +139,7 @@ header {
 
 /* 通用样式 */
 .icon:hover {
-    filter: brightness(50%);
+    filter: brightness(70%);
 }
 
 iframe {
@@ -148,7 +149,7 @@ iframe {
 }
 
 .el-tabs__active-bar {
-    background-color: #424242 !important;
+    background-color: #e06035 !important;
 }
 
 .el-tabs__item {
@@ -156,11 +157,11 @@ iframe {
 }
 
 .el-tabs__item:hover {
-    filter: brightness(50%);
+    filter: brightness(80%);
 }
 
 .el-tabs__item.is-active {
-    filter: brightness(50%);
+    filter: brightness(70%);
 }
 
 .el-tab-pane {

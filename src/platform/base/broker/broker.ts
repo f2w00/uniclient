@@ -1,4 +1,5 @@
 import { ipcClient } from './../../ipc/handlers/ipc.handler.js'
+import {StartRecord} from '../../../client/store/store'
 
 type pipeId = string
 
@@ -72,6 +73,7 @@ export class Broker {
         ipcClient.onClient('Broker.create', async (param: { name: string }) => {
             Broker.createPipe(param.name)
         })
+        StartRecord.completeLoading('broker')
     }
 
     /**

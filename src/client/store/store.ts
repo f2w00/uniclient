@@ -12,7 +12,7 @@ export class ClientStore {
     static stores: Map<string, Store>
     static cwd: string
     static inited = false
-    private renderStore!: Store
+    static renderStore: Store
 
     constructor(cwd?: string) {
         if (!ClientStore.inited) {
@@ -23,7 +23,7 @@ export class ClientStore {
                 fileExtension: 'json',
                 clearInvalidConfig: false,
             })
-            this.renderStore = new Store({
+            ClientStore.renderStore = new Store({
                 name: 'render',
                 fileExtension: 'json',
                 clearInvalidConfig: false,
@@ -76,7 +76,6 @@ export class ClientStore {
         if (!result) {
             let store = new Store({ ...options, cwd: ClientStore.cwd })
             ClientStore.stores.set(options.name, store)
-            // store.openInEditor()
             return store
         } else {
             return result
@@ -89,21 +88,35 @@ export class ClientStore {
             switch (purpose) {
                 case 'set':
                     {
-                        this.renderStore.set(key, value)
+                        ClientStore.renderStore.set(key, value)
                         result = true
                     }
                     break
                 case 'get':
-                    result = this.renderStore.get(key)
+                    result = ClientStore.renderStore.get(key)
                     break
                 case 'del': {
-                    this.renderStore.delete(key)
+                    ClientStore.renderStore.delete(key)
                     result = true
                 }
+                break
                 default:
                     break
             }
             return result
         })
+    }
+}
+
+export class StartRecord {
+    static moduleNum=5
+    static startedServices:string[]=[]
+
+    static completeLoading(module:string){
+        StartRecord.startedServices.push(module)
+        if (module=='extension') ipcClient.emitLocal('extension:loaded')
+        if (StartRecord.startedServices.length>=StartRecord.moduleNum){
+            ipcClient.emitLocal('client:start.complete')
+        }
     }
 }

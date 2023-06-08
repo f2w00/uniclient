@@ -6,7 +6,7 @@
     "main": "src/main.js",
     "type": "commonjs",
     "scripts": {
-        "dev": "nodemon -e js,html,cjs --exec electron . --delay 2",
+        "dev": "nodemon -e js,html,cjs,css --exec electron . --delay 2",
         "start": "electron-forge start",
         "package": "electron-forge package",
         "make": "electron-forge make",

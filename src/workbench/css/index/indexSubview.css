@@ -26,7 +26,7 @@
 }
 
 .subviewLeft-content .el-tabs--left .el-tabs__active-bar.is-left {
-    width: 1px;
+    width: 2px;
     margin-left: 1px;
     right: auto;
     left: 0;
@@ -39,7 +39,7 @@
 .subviewLeft-content .el-tabs__header.is-left {
     width: var(--left-bar-width);
     margin-right: 0px;
-    background-color: #fafafa;
+    background-color: #2a2b2b;
 }
 
 .subviewLeft-content .el-tabs__item {
@@ -133,7 +133,7 @@
     height: 35px;
     line-height: 35px;
     padding-left: 10px;
-    background-color: #eaeaeb;
+    /* background-color: #eaeaeb; */
     font-size: var(--font-size-level2);
 }
 

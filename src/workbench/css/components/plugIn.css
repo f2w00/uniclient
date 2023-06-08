@@ -1,6 +1,6 @@
 /* 自定义变量 */
 :root {
-    --font-color: #a69e9f;
+    --font-color: #273849;
     --font-size-level1: 16px;
     --font-size-level2: 14px;
     --font-size-level3: 12px;
@@ -56,6 +56,7 @@ body {
     padding: 3px 0;
     font-size: var(--font-size-level3);
 }
+/* todo zhe  */
 .el-table .cell {
     line-height: calc(var(--font-size-level3) + 6px);
     padding: 0 3px;
@@ -64,6 +65,7 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     word-break: break-all;
+    color: brown;
 }
 .el-table .el-table__row--level-0 {
     background-color: #73cbfa;

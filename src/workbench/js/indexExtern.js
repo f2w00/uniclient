@@ -27,7 +27,7 @@ function getLogWarn(callback) {
     })
 }
 function subscript(callback) {
-    ipcRenderer.on('pipe:uaclient.pushed', (event, value) => {
+    ipcRenderer.on("pipe:uaclient.pushed", (event, value) => {
         // console.log(value)
         callback(value)
     })

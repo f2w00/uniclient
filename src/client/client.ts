@@ -1,11 +1,11 @@
 import { GlobalExtensionManager } from './extend/extend.js'
-import { initModel, Workbench } from './../workbench/workbench.js'
+import { initModel, Workbench } from '../workbench/workbench'
 import { Broker } from '../platform/base/broker/broker.js'
 import { app, BrowserWindow } from 'electron'
 import { ErrorHandler } from './error/error.js'
 import { ClientError, Log } from '../platform/base/log/log.js'
 import { parallel, series } from 'async'
-import { ClientStore } from './store/store.js'
+import {ClientStore, StartRecord} from './store/store.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
 import { GlobalWorkspaceManager } from './workspace/workspace'
@@ -125,6 +125,9 @@ export class Client {
     }
 
     private async initServices() {
+        ipcClient.onceLocal('extension:loaded',()=>{
+            new GlobalWorkspaceManager()
+        })
         parallel([
             // 初始化Broker中间转发者服务
             async () => {
@@ -138,12 +141,11 @@ export class Client {
             async () => {
                 new Log()
             },
-            //初始化postbox服务
-            async () => {},
-        ]).then(() => {
-            this.extension = new GlobalExtensionManager()
-            new GlobalWorkspaceManager()
-        })
+            //初始化插件服务
+            async () => {
+                this.extension = new GlobalExtensionManager()
+            }
+        ])
     }
 
     private quit() {

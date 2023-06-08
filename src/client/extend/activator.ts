@@ -22,20 +22,25 @@ export interface IExtensionInstanceManager {
 }
 
 export class ExtensionActivator {
+    //todo 用起始事件代替直接加载
     static extensionInstanceManagers: Map<extensionId, IExtensionInstanceManager> = new Map()
 
     static async doActivateExtension(iExtension: IExtension, onStart?: boolean) {
         if (onStart) {
             if (iExtension.worker) {
-                ExtensionActivator.activateWorker(iExtension)
+                ipcClient.onceLocal('client:start.complete', () => {
+                    ExtensionActivator.activateWorker(iExtension)
+                })
             } else {
-                let { extension } = await require(plugins + iExtension.main)
-                let instance: IExtensionInstance = extension
-                await instance.activate()
-                ExtensionActivator.extensionInstanceManagers.set(iExtension.identifier.id, {
-                    identifier: iExtension.identifier,
-                    worker: undefined,
-                    instance: instance,
+                ipcClient.onceLocal('client:start.complete', async () => {
+                    let { extension } = await require(plugins + iExtension.main)
+                    let instance: IExtensionInstance = extension
+                    await instance.activate()
+                    ExtensionActivator.extensionInstanceManagers.set(iExtension.identifier.id, {
+                        identifier: iExtension.identifier,
+                        worker: undefined,
+                        instance: instance,
+                    })
                 })
             }
         } else {
@@ -43,7 +48,7 @@ export class ExtensionActivator {
                 ExtensionActivator.bindActivateEvents(iExtension.onEvents, async () => {
                     ExtensionActivator.activateWorker(iExtension)
                 })
-                ipcClient.emitLocal('extension:loaded')
+                // ipcClient.emitLocal('extension:loaded')
             } else {
                 ExtensionActivator.bindActivateEvents(iExtension.onEvents, async () => {
                     let { extension } = await require(plugins + iExtension.main)

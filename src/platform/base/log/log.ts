@@ -1,7 +1,7 @@
 import { configure, getLogger, Configuration, Logger } from 'log4js'
 import { LocalEvents } from '../../ipc/events/ipc.events.js'
 import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
-import { ClientStore } from '../../../client/store/store.js'
+import {ClientStore, StartRecord} from '../../../client/store/store.js'
 import { appDataPath } from '../../../client/paths.js'
 
 enum ConfigNames {
@@ -63,6 +63,7 @@ export class Log {
     constructor(loggerName: loggerName = 'client', config?: Configuration) {
         this.configureLog(config)
         Log.clientLogger = getLogger(loggerName)
+        StartRecord.completeLoading('log')
     }
 
     static info(info: ClientInfo) {

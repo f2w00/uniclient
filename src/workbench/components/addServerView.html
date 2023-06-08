@@ -1,253 +1,95 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8"/>
-    <link rel="stylesheet" href="../element-ui/css/index.css"/>
-    <link rel="stylesheet" href="../css/dialog/addServerView.css"/>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../element-ui/css/index.css">
+    <link rel="stylesheet" href="../css/dialog/addServerView.css">
 </head>
 
 <body>
-<div id="app">
-    <el-tabs type="border-card">
-        <el-tab-pane label="discovery">
-            <div class="discoverySubView">
-                <div class="discoveryfilterBox">
-                    <div class="filterBox">
-                        Endpoint Filter:
-                        <el-select @change="selectChanged" v-model="pointFilterName" placeholder="No Filter">
-                            <el-option
-                                    v-for="item in pointFilterList"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.label"
-                            >
-                            </el-option>
-                        </el-select>
-                    </div>
-                    <el-tree
-                            class="discovery-filter-tree"
-                            :data="discoveryFilterData"
-                            :props="defaultProps"
-                            default-expand-all
-                            :filter-node-method="discoveryfilterNode"
-                            ref="discoveryFilterTree"
-                    >
-                    </el-tree>
-                </div>
-                <div class="verificationBox">
-                    <el-divider content-position="left">Authentication Settings</el-divider>
-                    <div style="padding: 0 15px">
-                        <div class="anonymousBox">
-                            <div class="radioDefined">
-                                <div class="radioBox">
-                                    <input type="radio" v-model="verification" label="1"/>
-                                </div>
-                                <div class="radioContent">Anonymous</div>
-                            </div>
-                        </div>
-                        <div class="accountBox">
-                            <div class="radioDefined">
-                                <div class="radioBox" style="line-height: 72px">
-                                    <input type="radio" v-model="verification" label="2"/>
-                                </div>
-                                <div class="radioContent">
-                                    <div class="radioContentTop">
-                                        <div class="item-input-suffix">
-                                            Username
-                                            <el-input
-                                                    v-model="authentUsername"
-                                                    :disabled="true"
-                                                    style="margin-left: 10px"
-                                            >
-                                            </el-input>
-                                            <el-checkbox v-model="authentStorechecked">Store</el-checkbox>
-                                        </div>
-                                    </div>
-                                    <div class="radioContentBottom">
-                                        <div class="item-input-suffix">
-                                            Password
-                                            <el-input
-                                                    v-model="authentPassword"
-                                                    :disabled="true"
-                                                    style="margin-left: 15px"
-                                            >
-                                            </el-input>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="certificateBox">
-                            <div class="radioDefined">
-                                <div class="radioBox" style="line-height: 72px">
-                                    <input type="radio" v-model="verification" label="3"/>
-                                </div>
-                                <div class="radioContent">
-                                    <div class="radioContentTop">
-                                        <div class="item-input-suffix">
-                                            Certificate
-                                            <el-input
-                                                    v-model="authentCertificate"
-                                                    :disabled="true"
-                                                    style="margin-left: 10px"
-                                            >
-                                            </el-input>
-                                            <button class="moreBtn">
-                                                <i class="el-icon-more"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="radioContentBottom">
-                                        <div class="item-input-suffix">
-                                            Private Key
-                                            <el-input
-                                                    v-model="authentKey"
-                                                    :disabled="true"
-                                                    style="margin-left: 5px"
-                                            >
-                                            </el-input>
-                                            <button class="moreBtn">
-                                                <i class="el-icon-more"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </el-tab-pane>
-        <el-tab-pane label="advanced">
-            <div class="advancedSubView">
-                <div class="serInformation setBox">
-                    <el-divider content-position="left">Server Infornation</el-divider>
-                    <div style="padding: 0 15px">
-                        <div class="pointBox">
-                            <div class="item-input-suffix">
-                                Endpoint Url
-                                <el-input
-                                        v-model="endpointUrl"
-                                        :disabled="false"
-                                        style="margin-left: 33px"
-                                        spellcheck="false"
-                                >
-                                </el-input>
-                            </div>
-                        </div>
-                        <div class="reverseBox">
-                            <span class="contentName">Reverse Connect</span>
-                            <el-checkbox v-model="reversechecked" style="margin-left: 6px"></el-checkbox>
-                        </div>
-                    </div>
-                </div>
-                <div class="securitySet setBox">
-                    <el-divider content-position="left">Security Settings</el-divider>
-                    <div style="padding: 0 15px">
-                        <div class="policyBox">
-                            <span class="contentName">Security Policy </span>
-                            <el-select v-model="securityPolicy" placeholder="None" style="margin-left: 22px">
-                                <el-option
-                                        v-for="item in securityPolicyList"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                >
+    <div id="app">
+        <el-tabs type="border-card">
+            <el-tab-pane label="discovery">
+                <div class="discoverySubView">
+                    <div class="discoveryfilterBox">
+                        <div class="filterBox">
+                            Endpoint Filter:
+                            <el-select @change="selectChanged" v-model="pointFilterName" placeholder="No Filter">
+                                <el-option v-for="item in pointFilterList" :key="item.value" :label="item.label"
+                                    :value="item.label">
                                 </el-option>
                             </el-select>
                         </div>
-                        <div class="modeBox">
-                            <span class="contentName longContent">Message Security Mode</span>
-                            <el-select v-model="securityMode" placeholder="None" style="margin-left: 18px">
-                                <el-option
-                                        v-for="item in securityModeList"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                >
-                                </el-option>
-                            </el-select>
-                        </div>
+                        <el-tree class="discovery-filter-tree" :data="discoveryFilterData" :props="defaultProps"
+                            default-expand-all :filter-node-method="discoveryfilterNode" ref="discoveryFilterTree">
+                        </el-tree>
                     </div>
-                </div>
-                <div class="authenticationSet setBox">
-                    <el-divider content-position="left">Authentication Settings</el-divider>
-                    <div style="padding: 0 15px">
-                        <div class="anonymousBox">
-                            <div class="radioDefined">
-                                <div class="radioBox">
-                                    <input type="radio" v-model="advanceVerification" label="1"/>
-                                </div>
-                                <div class="radioContent">Anonymous</div>
-                            </div>
-                        </div>
-                        <div class="accountBox">
-                            <div class="radioDefined">
-                                <div class="radioBox" style="line-height: 72px">
-                                    <input type="radio" v-model="advanceVerification" label="2"/>
-                                </div>
-                                <div class="radioContent">
-                                    <div class="radioContentTop">
-                                        <div class="item-input-suffix">
-                                            Username
-                                            <el-input
-                                                    v-model="advanceAuthentUsername"
-                                                    :disabled="true"
-                                                    style="margin-left: 18px"
-                                            >
-                                            </el-input>
-                                            <el-checkbox v-model="advanceAuthentStorechecked"
-                                            >Store
-                                            </el-checkbox
-                                            >
-                                        </div>
+                    <div class="verificationBox">
+                        <el-divider content-position="left">Authentication Settings</el-divider>
+                        <div style="padding: 0 15px">
+                            <div class="anonymousBox">
+                                <div class="radioDefined">
+                                    <div class="radioBox">
+                                        <input type="radio" v-model="verification" label="1" />
                                     </div>
-                                    <div class="radioContentBottom">
-                                        <div class="item-input-suffix">
-                                            Password
-                                            <el-input
-                                                    v-model="advanceAuthentPassword"
-                                                    :disabled="true"
-                                                    style="margin-left: 22px"
-                                            >
-                                            </el-input>
+                                    <div class="radioContent">Anonymous
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accountBox">
+                                <div class="radioDefined">
+                                    <div class="radioBox" style="line-height: 72px;">
+                                        <input type="radio" v-model="verification" label="2" />
+                                    </div>
+                                    <div class="radioContent">
+                                        <div class="radioContentTop">
+                                            <div class="item-input-suffix">
+                                                Username
+                                                <el-input v-model="authentUsername" :disabled="true"
+                                                    style="margin-left: 10px;">
+                                                </el-input>
+                                                <el-checkbox v-model="authentStorechecked">Store</el-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="radioContentBottom">
+                                            <div class="item-input-suffix">
+                                                Password
+                                                <el-input v-model="authentPassword" :disabled="true"
+                                                    style="margin-left: 15px;">
+                                                </el-input>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="certificateBox">
-                            <div class="radioDefined">
-                                <div class="radioBox" style="line-height: 72px">
-                                    <input type="radio" v-model="advanceVerification" label="3"/>
-                                </div>
-                                <div class="radioContent">
-                                    <div class="radioContentTop">
-                                        <div class="item-input-suffix">
-                                            Certificate
-                                            <el-input
-                                                    v-model="advanceAuthentCertificate"
-                                                    :disabled="true"
-                                                    style="margin-left: 16px"
-                                            >
-                                            </el-input>
-                                            <button class="moreBtn">
-                                                <i class="el-icon-more"></i>
-                                            </button>
-                                        </div>
+                            <div class="certificateBox">
+                                <div class="radioDefined">
+                                    <div class="radioBox" style="line-height: 72px;">
+                                        <input type="radio" v-model="verification" label="3" />
                                     </div>
-                                    <div class="radioContentBottom">
-                                        <div class="item-input-suffix">
-                                            Private Key
-                                            <el-input
-                                                    v-model="advanceAuthentKey"
-                                                    :disabled="true"
-                                                    style="margin-left: 10px"
-                                            >
-                                            </el-input>
-                                            <button class="moreBtn">
-                                                <i class="el-icon-more"></i>
-                                            </button>
+                                    <div class="radioContent">
+                                        <div class="radioContentTop">
+                                            <div class="item-input-suffix">
+                                                Certificate
+                                                <el-input v-model="authentCertificate" :disabled="true"
+                                                    style="margin-left: 10px;">
+                                                </el-input>
+                                                <button class="moreBtn">
+                                                    <i class="el-icon-more"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="radioContentBottom">
+                                            <div class="item-input-suffix">
+                                                Private Key
+                                                <el-input v-model="authentKey" :disabled="true"
+                                                    style="margin-left: 5px;">
+                                                </el-input>
+                                                <button class="moreBtn">
+                                                    <i class="el-icon-more"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -255,22 +97,133 @@
                         </div>
                     </div>
                 </div>
-                <div class="sessionSet setBox">
-                    <el-divider content-position="left">Session Settings</el-divider>
-                    <div style="padding: 0 15px">
-                        <div class="sessionName">
-                            <div class="item-input-suffix">
-                                Session Name
-                                <el-input v-model="sessionName" :disabled="false" style="margin-left: 20px">
-                                </el-input>
+            </el-tab-pane>
+            <el-tab-pane label="advanced">
+                <div class="advancedSubView">
+                    <div class="serInformation setBox">
+                        <el-divider content-position="left">Server Infornation</el-divider>
+                        <div style="padding: 0 15px">
+                            <div class="pointBox">
+                                <div class="item-input-suffix">
+                                    Endpoint Url
+                                    <el-input v-model="endpointUrl" :disabled="false" style="margin-left: 33px;"
+                                        spellcheck="false">
+                                    </el-input>
+                                </div>
+                            </div>
+                            <div class="reverseBox">
+                                <span class="contentName">Reverse Connect</span>
+                                <el-checkbox v-model="reversechecked" style="margin-left: 6px;"></el-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="securitySet setBox">
+                        <el-divider content-position="left">Security Settings</el-divider>
+                        <div style="padding: 0 15px">
+                            <div class="policyBox">
+                                <span class="contentName">Security Policy </span>
+                                <el-select v-model="securityPolicy" placeholder="None" style="margin-left: 22px;">
+                                    <el-option v-for="item in securityPolicyList" :key="item.value" :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                            <div class="modeBox">
+                                <span class="contentName longContent">Message Security Mode</span>
+                                <el-select v-model="securityMode" placeholder="None" style="margin-left: 18px;">
+                                    <el-option v-for="item in securityModeList" :key="item.value" :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="authenticationSet setBox">
+                        <el-divider content-position="left">Authentication Settings</el-divider>
+                        <div style="padding: 0 15px">
+                            <div class="anonymousBox">
+                                <div class="radioDefined">
+                                    <div class="radioBox">
+                                        <input type="radio" v-model="advanceVerification" label="1" />
+                                    </div>
+                                    <div class="radioContent">Anonymous</div>
+                                </div>
+                            </div>
+                            <div class="accountBox">
+                                <div class="radioDefined">
+                                    <div class="radioBox" style="line-height: 72px;">
+                                        <input type="radio" v-model="advanceVerification" label="2" />
+                                    </div>
+                                    <div class="radioContent">
+                                        <div class="radioContentTop">
+                                            <div class="item-input-suffix">
+                                                Username
+                                                <el-input v-model="advanceAuthentUsername" :disabled="true"
+                                                    style="margin-left: 18px;">
+                                                </el-input>
+                                                <el-checkbox v-model="advanceAuthentStorechecked">Store</el-checkbox>
+                                            </div>
+                                        </div>
+                                        <div class="radioContentBottom">
+                                            <div class="item-input-suffix">
+                                                Password
+                                                <el-input v-model="advanceAuthentPassword" :disabled="true"
+                                                    style="margin-left: 22px;">
+                                                </el-input>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="certificateBox">
+                                <div class="radioDefined">
+                                    <div class="radioBox" style="line-height: 72px;">
+                                        <input type="radio" v-model="advanceVerification" label="3" />
+                                    </div>
+                                    <div class="radioContent">
+                                        <div class="radioContentTop">
+                                            <div class="item-input-suffix">
+                                                Certificate
+                                                <el-input v-model="advanceAuthentCertificate" :disabled="true"
+                                                    style="margin-left: 16px;">
+                                                </el-input>
+                                                <button class="moreBtn">
+                                                    <i class="el-icon-more"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="radioContentBottom">
+                                            <div class="item-input-suffix">
+                                                Private Key
+                                                <el-input v-model="advanceAuthentKey" :disabled="true"
+                                                    style="margin-left: 10px;">
+                                                </el-input>
+                                                <button class="moreBtn">
+                                                    <i class="el-icon-more"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sessionSet setBox">
+                        <el-divider content-position="left">Session Settings</el-divider>
+                        <div style="padding: 0 15px">
+                            <div class="sessionName">
+                                <div class="item-input-suffix">
+                                    Session Name
+                                    <el-input v-model="sessionName" :disabled="false" style="margin-left: 20px;">
+                                    </el-input>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </el-tab-pane>
-    </el-tabs>
-</div>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
 </body>
 <script src="../vue/vue.js"></script>
 <script src="../element-ui/index.js"></script>
@@ -289,7 +242,7 @@
                 authentPassword: '',
                 authentCertificate: '',
                 authentKey: '',
-                endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer',
+                endpointUrl: 'opc.tcp://DESKTOP-7O3FAUK:53530/OPCUA/SimulationServer',
                 reversechecked: '',
                 pointFilterName: '',
                 securityPolicy: '',
@@ -303,119 +256,104 @@
                 pointFilterList: [
                     {
                         value: '0',
-                        label: 'No Filter',
+                        label: 'No Filter'
                     },
                     {
                         value: '1',
-                        label: 'opc.tcp',
+                        label: 'opc.tcp'
                     },
                     {
                         value: '2',
-                        label: 'http',
+                        label: 'http'
                     },
                     {
                         value: '3',
-                        label: 'https',
-                    },
+                        label: 'https'
+                    }
                 ],
                 securityPolicyList: [
                     {
                         value: '0',
-                        label: 'None',
+                        label: 'None'
                     },
                     {
                         value: '1',
-                        label: 'Basic128Rsa15',
+                        label: 'Basic128Rsa15'
                     },
                     {
                         value: '2',
-                        label: 'Basic256',
+                        label: 'Basic256'
                     },
                     {
                         value: '3',
-                        label: 'Basic256sha256',
+                        label: 'Basic256sha256'
                     },
                     {
                         value: '4',
-                        label: 'Aes128sha256RsaOaep',
+                        label: 'Aes128sha256RsaOaep'
                     },
                     {
                         value: '5',
-                        label: 'Aes256sha256RsaPss',
-                    },
+                        label: 'Aes256sha256RsaPss'
+                    }
                 ],
                 securityModeList: [
                     {
                         value: '0',
-                        label: 'None',
+                        label: 'None'
                     },
                     {
                         value: '1',
-                        label: 'Sign',
+                        label: 'Sign'
                     },
                     {
                         value: '2',
-                        label: 'Sign & Encrypt',
-                    },
+                        label: 'Sign & Encrypt'
+                    }
                 ],
                 serverList: [
-                    {serverName: 'SimulationServer@DESKTOP-REOKHRI'},
-                    {serverName: 'SimulationServer@REOKHRI-DESKTOP'},
+                    { serverName: 'SimulationServer@DESKTOP-REOKHRI' },
+                    { serverName: 'SimulationServer@REOKHRI-DESKTOP' }
                 ],
-                discoveryFilterData: [
-                    {
-                        id: 1,
-                        label: '一级 1',
-                        children: [
-                            {
-                                id: 4,
-                                label: '二级 1-1',
-                                children: [
-                                    {
-                                        id: 9,
-                                        label: '三级 1-1-1',
-                                    },
-                                    {
-                                        id: 10,
-                                        label: '三级 1-1-2',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    {
-                        id: 2,
-                        label: '一级 2',
-                        children: [
-                            {
-                                id: 5,
-                                label: '二级 2-1',
-                            },
-                            {
-                                id: 6,
-                                label: '二级 2-2',
-                            },
-                        ],
-                    },
-                    {
-                        id: 3,
-                        label: '一级 3',
-                        children: [
-                            {
-                                id: 7,
-                                label: '二级 3-1',
-                            },
-                            {
-                                id: 8,
-                                label: '二级 3-2',
-                            },
-                        ],
-                    },
-                ],
+                discoveryFilterData: [{
+                    id: 1,
+                    label: '一级 1',
+                    children: [{
+                        id: 4,
+                        label: '二级 1-1',
+                        children: [{
+                            id: 9,
+                            label: '三级 1-1-1'
+                        }, {
+                            id: 10,
+                            label: '三级 1-1-2'
+                        }]
+                    }]
+                }, {
+                    id: 2,
+                    label: '一级 2',
+                    children: [{
+                        id: 5,
+                        label: '二级 2-1'
+                    }, {
+                        id: 6,
+                        label: '二级 2-2'
+                    }]
+                }, {
+                    id: 3,
+                    label: '一级 3',
+                    children: [{
+                        id: 7,
+                        label: '二级 3-1'
+                    }, {
+                        id: 8,
+                        label: '二级 3-2'
+                    }]
+                }],
                 defaultProps: {
                     children: 'children',
-                    label: 'label',
-                },
+                    label: 'label'
+                }
             }
         },
         computed: {},
@@ -424,22 +362,22 @@
                 console.log(value)
             },
             discoveryfilterNode(value, data) {
-                if (!value) return true
-                return data.label.indexOf(value) !== -1
+                if (!value) return true;
+                return data.label.indexOf(value) !== -1;
             },
             clearEndpointUrl() {
-                this.endpointUrl = ''
+                this.endpointUrl = '';
             },
             async clientConnect() {
-                const param = {endpointUrl: ''}
+                const param = { endpointUrl: "" }
                 param.endpointUrl = this.endpointUrl
                 return await clientApi.clientConnect(param)
             },
             async sessionInit() {
                 const param = {
-                    type: 1,
-                    userName: 'uaclient',
-                    password: 'uaclient',
+                    "type": 1,
+                    "userName": "uaclient",
+                    "password": "uaclient"
                 }
                 return await sessionApi.sessionInit(param)
             },
@@ -450,7 +388,7 @@
         },
         watch: {
             pointFilterName(val) {
-                this.$refs.discoveryFilterTree.filter(val)
+                this.$refs.discoveryFilterTree.filter(val);
             },
         },
         mounted() {
@@ -460,8 +398,8 @@
             window.clientConnect = this.clientConnect
             window.sessionInit = this.sessionInit
             window.sessionBrowseroot = this.sessionBrowseroot
-        },
-    })
+        }
+    });
 </script>
 <script type="text/javascript">
     async function connectServer(autoConnect) {
@@ -469,15 +407,16 @@
             let res1 = await clientConnect()
             let res2 = await sessionInit()
             if (res2.code === 200) {
-                window.top.postMessage(res2.code)
+                window.top.postMessage(res2.code);
             }
         } else {
-            console.log('非自动连接')
+            console.log("非自动连接")
             await clientConnect()
         }
         clearEndpointUrl()
     }
 </script>
+
 </html>
 <style scoped>
     ::-webkit-scrollbar {

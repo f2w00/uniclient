@@ -13,8 +13,6 @@ export class ProjectManagerFactory {
     static currentManager: ProjectManager
     static currentProject: IProject
 
-    constructor() {}
-
     static produceProjectManager(project: IProject) {
         let manager = new ProjectManager(project)
         ProjectManagerFactory.currentProject = project

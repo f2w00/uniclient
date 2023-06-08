@@ -27,11 +27,10 @@
 						"renderPath": "render",
 						"clickToSend": "render:leftSide.click-uaclient"
 					}
-				]
+				],
+				"defaultStart": true
 			}
 		],
-		"onStart": [
-			"uaclient"
-		]
+		"onStart": []
 	}
 }

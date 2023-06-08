@@ -1,7 +1,6 @@
 import { existsSync } from 'fs'
 import EventEmitter from 'events'
-import { GlobalWorkspaceManager } from '../workspace/workspace'
-import { ClientStore } from '../store/store.js'
+import {ClientStore, StartRecord} from '../store/store.js'
 import { ExtensionActivator } from './activator.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../../platform/ipc/events/ipc.events.js'
@@ -50,7 +49,6 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         super()
         this.enabledExtensions = manager.enabledExtensions
         this.onStart = manager.onStart
-        new ExtensionActivator()
         this.loadExtensions()
     }
 
@@ -65,6 +63,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
                 this.emit('extension-invalid', extension)
             }
         })
+        StartRecord.completeLoading('extension')
     }
 
     findExtension(from: string, extension: IExtension): number {
@@ -81,7 +80,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     installExtension(extension: IExtension) {
         if (verifyStoragePath(extension.storage)) {
             this.enabledExtensions.push(extension)
-            GlobalWorkspaceManager.addProjectExtend(extension.projectExtend)
+            // GlobalWorkspaceManager.addProjectExtend(extension.projectExtend)
         }
     }
 
