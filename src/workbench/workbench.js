@@ -14,34 +14,43 @@ class Workbench extends events_1.EventEmitter {
     existViews;
     mainWindow;
     winState;
-    constructor(preload, homeViewPath, dev = false, width, height) {
+    constructor(preload, homeViewPath, icon, width, height) {
         super();
         this.winState = (0, electron_window_state_1.default)({
-            defaultWidth: (electron_1.screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
-            defaultHeight: (electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
+            defaultWidth: Math.floor((electron_1.screen.getPrimaryDisplay().workAreaSize.width * 3) / 4),
+            defaultHeight: Math.floor((electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3) / 4),
         });
-        this.createMainWindow(preload, homeViewPath, electron_1.screen.getPrimaryDisplay().workAreaSize.width / 4, electron_1.screen.getPrimaryDisplay().workAreaSize.height / 4, width, height);
+        this.createMainWindow({
+            preloadPath: preload,
+            indexHtmlPath: homeViewPath,
+            width: width,
+            height: height,
+            minHeight: 600,
+            minWidth: 800,
+            icon: icon,
+        });
         this.existViews = new Map();
     }
-    async createMainWindow(preloadPath, indexHtmlPath, minWidth, minHeight, width, height) {
+    async createMainWindow(options) {
         this.mainWindow = new electron_1.BrowserWindow({
             x: this.winState.x,
             y: this.winState.y,
             width: this.winState.width,
-            minWidth: 600,
-            minHeight: 400,
+            minWidth: options.minWidth,
+            minHeight: options.minHeight,
             height: this.winState.height,
             frame: false,
             center: true,
             show: false,
+            icon: options.icon,
             webPreferences: {
-                preload: preloadPath,
+                preload: options.preloadPath,
                 devTools: true,
                 nodeIntegration: true,
                 contextIsolation: false,
             },
         });
-        await this.mainWindow.loadFile(indexHtmlPath);
+        await this.mainWindow.loadFile(options.indexHtmlPath);
         this.initBind(this.mainWindow);
         this.winState.manage(this.mainWindow);
     }

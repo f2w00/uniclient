@@ -9,7 +9,6 @@ import { DbRouter } from './routers/db.router'
 import { ErrorMiddleware } from './middlewares/error.middleware'
 import { CommunicateUtil, RecordUtil } from './utils/util'
 import { parallel } from 'async'
-import { Log } from '../../../platform/base/log/log'
 
 export module Server {
     export async function activateServer() {
@@ -24,14 +23,13 @@ export module Server {
             async () => app.use(DbRouter.router.routes()),
         ])
         try {
-            app.listen(Config.port, () => {
+            await app.listen(Config.port, () => {
                 console.log('complete')
                 app.emit('serverCreated', Config.port)
             })
         } catch (e: any) {
             CommunicateUtil.emitToClient('Log.error', [e])
         }
-        new Log()
         new CommunicateUtil()
         new RecordUtil()
     }

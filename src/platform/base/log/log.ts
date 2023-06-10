@@ -1,7 +1,7 @@
 import { configure, getLogger, Configuration, Logger } from 'log4js'
 import { LocalEvents } from '../../ipc/events/ipc.events.js'
 import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
-import {ClientStore, StartRecord} from '../../../client/store/store.js'
+import { ClientStore, StartRecord } from '../../../client/store/store.js'
 import { appDataPath } from '../../../client/paths.js'
 
 enum ConfigNames {
@@ -61,6 +61,15 @@ export class Log {
     private static clientLogger: Logger
 
     constructor(loggerName: loggerName = 'client', config?: Configuration) {
+        ipcClient.onClient('Log:info', (info: any) => {
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
+        })
+        ipcClient.onClient('Log:error', (info: any) => {
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
+        })
+        ipcClient.onClient('Log:warn', (info: any) => {
+            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
+        })
         this.configureLog(config)
         Log.clientLogger = getLogger(loggerName)
         StartRecord.completeLoading('log')
@@ -144,7 +153,7 @@ export class LogPrivate {
                 source: info.source,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
+            this.emitToClient('Log:info', info)
         } catch (e: any) {
             throw e
         }
@@ -158,7 +167,7 @@ export class LogPrivate {
                 stack: info.trace,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
+            this.emitToClient('Log:error', info)
         } catch (e: any) {
             throw e
         }
@@ -171,7 +180,7 @@ export class LogPrivate {
                 warn: info.warn,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
+            this.emitToClient('Log:warn', info)
         } catch (e: any) {
             throw e
         }
@@ -199,5 +208,15 @@ export class LogPrivate {
         } catch (e: any) {
             throw e
         }
+    }
+
+    emitToClient(event: string, ...args: any) {
+        process.send
+            ? process.send({
+                  purpose: 'sendToClient',
+                  event: event,
+                  ...args,
+              })
+            : null
     }
 }

@@ -36,6 +36,11 @@ function exposeInMain() {
         invoke: async (event, ...args) => {
             return ipcRenderer.invoke(event, ...args)
         },
+        mainNotice: async (callback) => {
+            ipcRenderer.on('notice', (_, message) => {
+                callback(message)
+            })
+        },
         rendererEvents: rendererEvents,
         tabDraw: (e) => {
             console.log(e)

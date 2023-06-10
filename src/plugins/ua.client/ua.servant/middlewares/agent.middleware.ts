@@ -25,7 +25,8 @@ import {
 import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
 import { Certificate } from 'node-opcua-crypto'
 import { CertUtils, CommunicateUtil, DbUtils, RecordUtil } from '../utils/util'
-import { Log } from '../../../../platform/base/log/log'
+import { LogPrivate } from '../../../../platform/base/log/log'
+import { appDataPath } from '../../../../client/paths'
 
 type Source = string | undefined
 type Warn = string
@@ -76,6 +77,17 @@ export class ClientInfo extends InfoModel {
  * @description 检查参数/日志登记/记录参数
  */
 export module AgentMiddleware {
+    export const Log = new LogPrivate('uaclient', {
+        appenders: {
+            uaclient: {
+                type: 'file',
+                filename: appDataPath + '/logs/uaclient.log',
+                maxLogSize: 20000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+            },
+        },
+        categories: { default: { appenders: ['uaclient'], level: 'info' } },
+    })
+
     export async function clientValidator(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next

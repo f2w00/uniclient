@@ -2,11 +2,11 @@
 :root {
     --top-bar-height: 30px;
     --left-view-width: 300px;
-    --left-view-minwidth: 180px;
-    --main-view-minwidth: 200px;
+    --left-view-minwidth: 250px;
+    --main-view-minwidth: 250px;
     --main-view-minheight: 150px;
     --right-view-width: 270px;
-    --right-view-minwidth: 220px;
+    --right-view-minwidth: 250px;
     --log-bar-height: 25px;
     --log-view-height: 150px;
     --log-view-minheight: 120px;
@@ -74,7 +74,6 @@ header {
 }
 
 .main-bottom {
-    display: none;
     width: 100%;
     min-height: var(--log-bar-height);
     border-top: 1px solid #d0d0d0;
@@ -228,3 +227,8 @@ iframe {
 .el-tree::-webkit-scrollbar-thumb:hover {
     background-color: rgba(144, 147, 153, 0.3);
 }
+/* .el-tabs__active-bar {
+    transition: none !important;
+    transition: none !important;
+    transition: none, none !important;
+} */

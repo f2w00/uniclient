@@ -44,6 +44,13 @@ body {
 .el-table__indent {
     padding: 0 !important;
 }
+.el-table--border{
+    border: none;
+}
+.el-table__body{
+    /* TODO 行间距 */
+    -webkit-border-vertical-spacing: 10px;
+}
 .el-table--border .el-table__cell:first-child .cell {
     padding: 0px;
     text-align: center;
@@ -65,8 +72,13 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     word-break: break-all;
-    color: brown;
+    /* TODO 处理分组色块 */
+    /* border-top: 5px solid #eaeaeb;
+    border-bottom: 5px solid #eaeaeb; */
+    /* box-shadow: 0 0 10px 10px #eaeaeb; */
 }
+.el-table .cell::b
+
 .el-table .el-table__row--level-0 {
     background-color: #73cbfa;
 }
@@ -94,3 +106,8 @@ body {
 .tableTooltip .tipBox{
     background-color: antiquewhite;
 }
+/* .el-tabs__active-bar {
+    transition: none !important;
+    transition: none !important;
+    transition: none, none !important;
+} */

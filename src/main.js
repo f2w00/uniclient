@@ -1,7 +1,7 @@
 const { app, Menu } = require('electron')
-const env = require('dotenv')
 const product = require('./client/product.json')
-const { map } = require('async')
+const { config } = require('dotenv')
+config()
 require('v8-compile-cache')
 
 if (process[1] == '--squirrel-firstrun') {
@@ -13,8 +13,7 @@ app.whenReady().then(() => {
     startUp()
 })
 
-async function startUp(cachePath, workspacePath, appDataPath, config) {
-    env.config()
+async function startUp() {
     const { Client } = await require('./client/client.js')
     new Client(product['dev'])
 }
@@ -87,4 +86,4 @@ function detectPlugins() {
     })
     return { plugins: { list: plugins, onStart: onStart }, infos: { projectExtend: extend.values() } }
 }
-//todo 手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载
+//todo 手动输入命令实现,electron-squirrel-startup处理安装问题,主进程中实现html页面的加载

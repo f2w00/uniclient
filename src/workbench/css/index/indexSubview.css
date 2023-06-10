@@ -40,6 +40,7 @@
     width: var(--left-bar-width);
     margin-right: 0px;
     background-color: #2a2b2b;
+    -webkit-app-region: drag;
 }
 
 .subviewLeft-content .el-tabs__item {
@@ -47,6 +48,7 @@
     line-height: 50px;
     padding: 0 14px 0 10px;
     font-size: 26px;
+    -webkit-app-region: no-drag;
 }
 
 .subviewLeft-content .el-tabs__item span {
@@ -78,6 +80,7 @@
     position: absolute;
     bottom: 0;
     left: 0;
+    -webkit-app-region: no-drag;
 }
 
 .subviewLeft .subviewLeft-bottom .icon {

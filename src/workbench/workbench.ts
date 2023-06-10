@@ -36,49 +36,52 @@ export class Workbench extends EventEmitter {
     private mainWindow!: BrowserWindow
     private winState: windowStateKeeper.State
 
-    constructor(preload: string, homeViewPath: string, dev: boolean = false, width?: number, height?: number) {
+    constructor(preload: string, homeViewPath: string, icon?: string, width?: number, height?: number) {
         super()
         this.winState = windowStateKeeper({
-            defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
-            defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
+            defaultWidth: Math.floor((screen.getPrimaryDisplay().workAreaSize.width * 3) / 4),
+            defaultHeight: Math.floor((screen.getPrimaryDisplay().workAreaSize.height * 3) / 4),
         })
-        this.createMainWindow(
-            preload,
-            homeViewPath,
-            screen.getPrimaryDisplay().workAreaSize.width / 4,
-            screen.getPrimaryDisplay().workAreaSize.height / 4,
-            width,
-            height
-        )
+        this.createMainWindow({
+            preloadPath: preload,
+            indexHtmlPath: homeViewPath,
+            width: width,
+            height: height,
+            minHeight: 600,
+            minWidth: 800,
+            icon: icon,
+        })
         this.existViews = new Map()
     }
 
-    private async createMainWindow(
-        preloadPath: string,
-        indexHtmlPath: string,
-        minWidth?: number,
-        minHeight?: number,
-        width?: number,
+    private async createMainWindow(options: {
+        preloadPath: string
+        indexHtmlPath: string
+        icon?: string
+        minWidth?: number
+        minHeight?: number
+        width?: number
         height?: number
-    ) {
+    }) {
         this.mainWindow = new BrowserWindow({
             x: this.winState.x,
             y: this.winState.y,
             width: this.winState.width,
-            minWidth: 600,
-            minHeight: 400,
+            minWidth: options.minWidth,
+            minHeight: options.minHeight,
             height: this.winState.height,
             frame: false,
             center: true,
             show: false,
+            icon: options.icon,
             webPreferences: {
-                preload: preloadPath,
+                preload: options.preloadPath,
                 devTools: true,
                 nodeIntegration: true,
                 contextIsolation: false,
             },
         })
-        await this.mainWindow.loadFile(indexHtmlPath)
+        await this.mainWindow.loadFile(options.indexHtmlPath)
         this.initBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
     }

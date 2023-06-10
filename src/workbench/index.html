@@ -175,13 +175,6 @@
                                 >
                                     <iframe :class="item.name+'Iframe'" :src="item.src"></iframe>
                                 </el-tab-pane>
-                                <!-- <el-tab-pane>
-                                    <span slot="label" class="operationBox">
-                                        <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
-                                        <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
-                                        <i class="el-icon-close close-btn" @click="handleClose"></i>
-                                    </span>
-                                </el-tab-pane> -->
                             </el-tabs>
 
                             <!-- todo 这里 -->
@@ -211,6 +204,8 @@
                                             <el-table-column prop="source" label="Source" width="100">
                                             </el-table-column>
                                             <el-table-column prop="information" label="Information"> </el-table-column>
+                                            <el-table-column prop="error" label="Error"> </el-table-column>
+                                            <el-table-column prop="warn" label="Warn"> </el-table-column>
                                         </el-table>
                                     </el-tab-pane>
                                     <el-tab-pane label="问题">
@@ -227,6 +222,7 @@
                                             <el-table-column prop="source" label="Source" width="100">
                                             </el-table-column>
                                             <el-table-column prop="information" label="Information"> </el-table-column>
+                                            <el-table-column prop="error" label="Error"> </el-table-column>
                                         </el-table>
                                     </el-tab-pane>
                                     <el-tab-pane label="输出">
@@ -238,6 +234,9 @@
                                     </el-tab-pane>
                                 </el-tabs>
                             </div>
+                            <div class="operationBox">
+                                <i class="el-icon-minus minimize-btn" @click="handleTabbottom"></i>
+                            </div>
                         </footer>
                     </main>
                     <div class="subview subviewRight">
@@ -245,6 +244,7 @@
                             <div class="resize horizontal"></div>
                         </div>
                         <div class="line"></div>
+
                         <div class="subview-content subviewRight-content">
                             <el-tabs :value="rightTabActivate" tab-position="right" @tab-click="handleTabright">
                                 <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
@@ -339,7 +339,7 @@
                     leftTabActivate: '1',
                     rightTabActivate: '1',
                     bottomTabActivate: '1',
-                    addserverVisible: false,
+                    addserverVisible: true,
                     configurationName: '',
                     isAutoConnect: false,
                     activeIndex: '1',
@@ -626,12 +626,11 @@
                     // let tabsContent = document.querySelector(".main-bottom .el-tabs__content")
                     // let resizeItem = document.querySelector(".main-bottom .resize")
                     let tabsContent = document.querySelector('.main-bottom')
-                    if (tabsContent.style.display == 'block') {
-                        tabsContent.style.display = 'none'
-
+                    if (tabsContent.style.display == 'none') {
+                        tabsContent.style.display = 'block'
                         // resizeItem.style.display = "block"
                     } else {
-                        tabsContent.style.display = 'block'
+                        tabsContent.style.display = 'none'
                         // resizeItem.style.display = "none"
                     }
                 },
@@ -765,9 +764,36 @@
                     const el = document.querySelector('.el-table')
                     console.log(getStyle(el, 'width'))
                 },
+                //TODO 我加的
                 async handleInit() {
                     // let resizeItem = document.querySelector('.subviewRight .resizeShow')
                     let configs = await window.uniclient.store('get', 'workbenchConfig')
+                },
+
+                //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
+                getSub() {
+                    setTimeout(() => {
+                        let tutorial = document.querySelector('.tutorialIframe')
+                        let elements = tutorial.contentWindow.document.querySelectorAll('h1,h2,h3,h4,h5,h6')
+                        let headers = []
+                        elements.forEach((value) => {
+                            headers.push({
+                                tag: value.tagName,
+                                id: value.id,
+                                level: parseInt(value.tagName.replace('H', '')),
+                                element: value,
+                            })
+                        })
+                    }, 10000)
+                },
+                onNoticeFromMain() {
+                    window.uniclient.mainNotice((message) => {
+                        let d = document.createElement('div')
+                        m.innerHTML = message
+                        m.style.cssText =
+                            'font-size: .32rem;z-index:999;color: rgb(255, 255, 255);background-color: rgba(0, 0, 0, 0.6);padding: 10px 15px;margin: 0 0 0 -60px;border-radius: 4px;position: fixed;    top: 50%;left: 50%;width: 130px;text-align: center;'
+                        document.getElementById('app').appendChild(d)
+                    })
                 },
             },
             mounted() {
@@ -781,7 +807,10 @@
                 this.logWarnListener()
                 this.logErrorListener()
                 this.subscriptListener()
+                //TODO 我加的
                 this.handleInit()
+                this.getSub()
+                this.onNoticeFromMain()
                 // subscript()
             },
             created() {

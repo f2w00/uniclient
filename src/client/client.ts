@@ -5,7 +5,7 @@ import { app, BrowserWindow } from 'electron'
 import { ErrorHandler } from './error/error.js'
 import { ClientError, Log } from '../platform/base/log/log.js'
 import { parallel, series } from 'async'
-import {ClientStore, StartRecord} from './store/store.js'
+import { ClientStore, StartRecord } from './store/store.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
 import { GlobalWorkspaceManager } from './workspace/workspace'
@@ -99,12 +99,13 @@ export class Client {
         let initOptions: initModel = ClientStore.get('config', 'workbenchConfig')
         this.workbench = new Workbench(
             path.join(__dirname, '../workbench/preload.js'),
-            path.join(__dirname, '../workbench/index.html')
+            path.join(__dirname, '../workbench/index.html'),
+            path.join(__dirname, '../workbench/assets/icon/icon.ico')
         )
         this.mainWindow = this.workbench.getMainWindow()
-        this.mainWindow.webContents.once('dom-ready', () => {
-            ipcClient.emitToRender('client:init', initOptions)
-        })
+        // this.mainWindow.webContents.once('dom-ready', () => {
+        //     ipcClient.emitToRender('client:init', initOptions)
+        // })
         this.mainWindow.webContents.once('did-finish-load', async () => {
             await this.mainWindow.show()
             ipcClient.registerToEmit('emitToRender', (event, ...args) => {
@@ -122,10 +123,20 @@ export class Client {
                     : this.mainWindow.webContents.openDevTools()
             }
         })
+        globalShortcut.register('CommandOrControl+PageUp', () => {
+            let current = this.mainWindow.webContents.getZoomLevel()
+            this.mainWindow.webContents.setZoomLevel(current + 0.1)
+            ipcClient.emitToRender('notice', `${(current + 0.1) * 100}%`)
+        })
+        globalShortcut.register('CommandOrControl+PageDown', () => {
+            let current = this.mainWindow.webContents.getZoomLevel()
+            this.mainWindow.webContents.setZoomLevel(current - 0.1)
+            ipcClient.emitToRender('notice', `${(current - 0.1) * 100}%`)
+        })
     }
 
     private async initServices() {
-        ipcClient.onceLocal('extension:loaded',()=>{
+        ipcClient.onceLocal('extension:loaded', () => {
             new GlobalWorkspaceManager()
         })
         parallel([
@@ -144,7 +155,7 @@ export class Client {
             //初始化插件服务
             async () => {
                 this.extension = new GlobalExtensionManager()
-            }
+            },
         ])
     }
 
