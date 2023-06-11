@@ -1,23 +1,25 @@
 import { writeFileSync } from 'fs'
 import { MessageSecurityMode, SecurityPolicy } from 'node-opcua'
-import { DbUtils } from '../ua.servant/utils/util.js'
+import { CommunicateUtil, DbUtils } from '../ua.servant/utils/util.js'
 import path from 'path'
 import { DataTypes } from 'sequelize'
-const dotenv = require('dotenv')
 let Path = require('path')
 export module Config {
     export let usualConfig = require('../config.json')
-    dotenv.config({
-        path: Path.join(__dirname, '..', '..', '..', '..', '.env').toString(),
-    })
 
     export let port = process.env.APP_PORT ? process.env.APP_PORT : 3030
 
     export let mqLength = process.env.MQ_LENGTH ? process.env.MQ_LENGTH : 200
 
-    export let dbPath = process.env.DB_PATH
-        ? Path.join(__dirname, '..', process.env.DB_PATH).toString()
-        : Path.join(__dirname, '..', '/databases/data.db').toString()
+    let _dbPath = ''
+    export let getDbPath = () => {
+        return _dbPath
+    }
+
+    CommunicateUtil.emitToClient('Workspace.getProjectFileName', ['uaclient'])
+    CommunicateUtil.events.on('Workspace.getProjectFileName', (project) => {
+        _dbPath = project
+    })
 
     export let recordJsonFilePath = Path.join(__dirname, '../ua.servant/records/')
     export let usingRecord = usualConfig.usingRecord ? usualConfig.usingRecord : 'default.json'

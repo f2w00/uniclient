@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import EventEmitter from 'events'
-import {ClientStore, StartRecord} from '../store/store.js'
+import { ClientStore, StartRecord } from '../store/store.js'
 import { ExtensionActivator } from './activator.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../../platform/ipc/events/ipc.events.js'
@@ -13,9 +13,19 @@ enum storeNames {
     extension = 'extensions',
 }
 
-export interface IExtensionIdentifier {
+export type IExtensionIdentifier = {
     id: string
     uuid: string | null
+}
+
+export type ButtonInfo = {
+    name: string
+    loc: string
+    iconPath: string
+    mainViewPath: string | null
+    sideViewPath: string | null
+    clickToSendInWindow: string | null
+    clickToSendInMain: string | null
 }
 
 export interface IExtension {
@@ -24,12 +34,11 @@ export interface IExtension {
     main: string
     identifier: IExtensionIdentifier
     storage: extensionStorage
-    onEvents: extensionActivateEvent[]
-    projectExtend: string[]
-    extraButtons: string[]
-    defaultStart: boolean
-    worker: string | null
-    render: string | null
+    onEvents: extensionActivateEvent[] | null | undefined
+    projectExtend: string[] | null | undefined
+    defaultStart: boolean | null | undefined
+    worker: string | null | undefined
+    render: { extraButtons: ButtonInfo[] } | null | undefined
 }
 
 export interface IExtensionManager {
@@ -49,7 +58,14 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         super()
         this.enabledExtensions = manager.enabledExtensions
         this.onStart = manager.onStart
+        this.initBind()
         this.loadExtensions()
+    }
+
+    initBind() {
+        ipcClient.handle('extension:infos.get', (_) => {
+            return { enabledExtensions: this.enabledExtensions, onStart: this.onStart }
+        })
     }
 
     async loadExtensions() {

@@ -57,7 +57,7 @@
     },
     "build": {
         "win": {
-            "icon": ""
+            "icon": "D:\\works\\idea_projects\\uniclient\\src\\workbench\\assets\\icon\\icon.ico"
         }
     }
 }

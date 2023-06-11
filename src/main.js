@@ -15,7 +15,7 @@ app.whenReady().then(() => {
 
 async function startUp() {
     const { Client } = await require('./client/client.js')
-    new Client(product['dev'])
+    new Client()
 }
 
 /**
@@ -23,7 +23,7 @@ async function startUp() {
  * @returns
  */
 function generateUserDataPath() {
-    const { existsSync, writeFile, mkdirSync } = require('fs')
+    const { existsSync, writeFile, mkdirSync, appendFile } = require('fs')
     let dataPath = product['appData']
     if (!dataPath) {
         const { join } = require('path')
@@ -33,9 +33,14 @@ function generateUserDataPath() {
             console.log(err)
         })
         if (!existsSync(dataPath)) {
-            mkdirSync(dataPath)
+            mkdir(dataPath)
         }
         generateConfigs(dataPath)
+    }
+    if (!process.env['V8_COMPILE_CACHE_CACHE_DIR']) {
+        appendFile(String.raw('../.env'), `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}'`, (err) => {
+            console.log(err)
+        })
     }
     return dataPath
 }

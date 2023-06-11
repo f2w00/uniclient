@@ -37,7 +37,19 @@
         "storage": "\\ua.client\\package.json",
         "main": "\\ua.client\\extension.js",
         "worker": "\\ua.client\\ua.servant\\ua.servant.js",
-        "render": null,
+        "render": {
+            "extraButtons": [
+                {
+                    "name": "uaclient",
+                    "loc": "leftSide",
+                    "iconPath": "",
+                    "mainViewPath": "render",
+                    "sideViewPath": "side",
+                    "clickToSendInWindow": null,
+                    "clickToSendInMain": "render:leftSide.click-uaclient"
+                }
+            ]
+        },
         "engine": "兼容客户端版本",
         "identifier": {
             "id": "uaclient",
@@ -49,15 +61,6 @@
         ],
         "projectExtend": [
             "opcua"
-        ],
-        "extraButtons": [
-            {
-                "name": "uaclient",
-                "loc": "leftSide",
-                "iconPath": "",
-                "renderPath": "render",
-                "clickToSend": "render:leftSide.click-uaclient"
-            }
         ],
         "defaultStart": true
     }

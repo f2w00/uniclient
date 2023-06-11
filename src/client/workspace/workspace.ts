@@ -1,5 +1,5 @@
 import { IProject, ProjectManagerFactory } from '../../platform/base/project/project'
-import {ClientStore, StartRecord} from '../store/store.js'
+import { ClientStore, StartRecord } from '../store/store.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { FileUtils } from '../../platform/base/utils/utils.js'
 
@@ -76,11 +76,11 @@ export class WorkspaceManager implements IWorkspaceManager {
     }
 
     toStart() {
-        if (this.onStart && !this.loadedProjects.has(this.onStart)) {
+        if (this.onStart && this.onStart.length > 0 && !this.loadedProjects.has(this.onStart)) {
             ipcClient.emitLocal('project:load', this.workspace.storagePath + '/' + this.onStart)
             this.loadProject(this.workspace.storagePath + '/' + this.onStart)
-            StartRecord.completeLoading('workspace')
         }
+        StartRecord.completeLoading('workspace')
     }
 
     createProject(projectName: string, projectType: string) {

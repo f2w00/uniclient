@@ -25,7 +25,7 @@ export class ExtensionActivator {
     //todo 用起始事件代替直接加载
     static extensionInstanceManagers: Map<extensionId, IExtensionInstanceManager> = new Map()
 
-    static async doActivateExtension(iExtension: IExtension, onStart?: boolean) {
+    static doActivateExtension(iExtension: IExtension, onStart?: boolean) {
         if (onStart) {
             if (iExtension.worker) {
                 ipcClient.onceLocal('client:start.complete', () => {
@@ -45,12 +45,12 @@ export class ExtensionActivator {
             }
         } else {
             if (iExtension.worker) {
-                ExtensionActivator.bindActivateEvents(iExtension.onEvents, async () => {
+                ExtensionActivator.bindActivateEvents(iExtension.onEvents ? iExtension.onEvents : [], async () => {
                     ExtensionActivator.activateWorker(iExtension)
                 })
                 // ipcClient.emitLocal('extension:loaded')
             } else {
-                ExtensionActivator.bindActivateEvents(iExtension.onEvents, async () => {
+                ExtensionActivator.bindActivateEvents(iExtension.onEvents ? iExtension.onEvents : [], async () => {
                     let { extension } = await require(plugins + iExtension.main)
                     let instance: IExtensionInstance = extension
                     ExtensionActivator.extensionInstanceManagers.set(iExtension.identifier.id, {

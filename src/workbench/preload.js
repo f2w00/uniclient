@@ -42,9 +42,9 @@ function exposeInMain() {
             })
         },
         rendererEvents: rendererEvents,
-        tabDraw: (e) => {
-            console.log(e)
-        },
+        // getExtensions: async () => {
+        //     return await ipcRenderer.invoke('extension:infos.get')
+        // }
     }
     window.uniclient = mainFunctions
 }

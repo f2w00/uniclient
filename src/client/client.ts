@@ -1,29 +1,26 @@
 import { GlobalExtensionManager } from './extend/extend.js'
-import { initModel, Workbench } from '../workbench/workbench'
+import { Workbench } from '../workbench/workbench'
 import { Broker } from '../platform/base/broker/broker.js'
 import { app, BrowserWindow } from 'electron'
 import { ErrorHandler } from './error/error.js'
 import { ClientError, Log } from '../platform/base/log/log.js'
 import { parallel, series } from 'async'
-import { ClientStore, StartRecord } from './store/store.js'
+import { ClientStore } from './store/store.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
 import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
 import { GlobalWorkspaceManager } from './workspace/workspace'
 import { ProcessManager } from './process/process.js'
 import { globalShortcut } from 'electron'
-
-import path from 'path'
+import { mainIconPath, mainPreloadPath, mainViewPath } from './paths.js'
 
 export class Client {
     workbench!: Workbench
     broker!: Broker
     mainWindow!: BrowserWindow
     extension!: GlobalExtensionManager
-    dev: boolean | undefined
 
-    constructor(dev?: boolean) {
+    constructor() {
         try {
-            this.dev = dev
             this.requestSingleInstance()
             this.startup()
         } catch (e: any) {
@@ -96,16 +93,8 @@ export class Client {
     }
 
     private createWorkbench() {
-        let initOptions: initModel = ClientStore.get('config', 'workbenchConfig')
-        this.workbench = new Workbench(
-            path.join(__dirname, '../workbench/preload.js'),
-            path.join(__dirname, '../workbench/index.html'),
-            path.join(__dirname, '../workbench/assets/icon/icon.ico')
-        )
+        this.workbench = new Workbench(mainPreloadPath, mainViewPath, mainIconPath)
         this.mainWindow = this.workbench.getMainWindow()
-        // this.mainWindow.webContents.once('dom-ready', () => {
-        //     ipcClient.emitToRender('client:init', initOptions)
-        // })
         this.mainWindow.webContents.once('did-finish-load', async () => {
             await this.mainWindow.show()
             ipcClient.registerToEmit('emitToRender', (event, ...args) => {
@@ -180,5 +169,3 @@ export class Client {
         })
     }
 }
-
-// const client = new Client(true)

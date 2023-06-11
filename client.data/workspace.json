@@ -1,20 +1,5 @@
 {
-    "recentManagers": [
-        {
-            "workspace": {
-                "workspaceName": "space",
-                "storagePath": "F:\\idea_projects\\uaclient\\src\\space"
-            },
-            "projects": []
-        },
-        {
-            "workspace": {
-                "workspaceName": "space2",
-                "storagePath": "F:\\idea_projects\\uaclient\\src\\space"
-            },
-            "projects": []
-        }
-    ],
+    "recentManagers": [],
     "currentManager": {
         "workspace": {
             "workspaceName": "test",
