@@ -104,14 +104,21 @@
                         <div class="line"></div>
                         <div class="subview-content subviewLeft-content">
                             <el-tabs :value="leftTabActivate" tab-position="left" @tab-click="handleTableft">
-                                <el-tab-pane v-for="(item, index) in subviewLeftTabs" label="" :name="item.name">
+                                <el-tab-pane
+                                    v-for="(item, index) in subviewLeftTabs"
+                                    label=""
+                                    :id="item.name"
+                                    :name="item.name"
+                                    :disabled="item.disabled"
+                                >
                                     <span slot="label">
                                         <img class="icon" :src="item.iconSrc" />
                                     </span>
                                     <div class="grid-box">
                                         <!-- TODO titleBox高度会被顶的变小 -->
                                         <div class="titleBox">{{item.content}}</div>
-                                        <div
+                                        <iframe :src="item.viewPath"></iframe>
+                                        <!-- <div
                                             v-for="itemlist in item.itemList"
                                             :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'"
                                         >
@@ -153,7 +160,7 @@
                                                     @node-click="handleNodeClick"
                                                 ></el-tree>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </el-tab-pane>
                             </el-tabs>
@@ -165,7 +172,7 @@
                     </div>
                     <main class="main content-box">
                         <div id="decisonBox" class="mainviewTop">
-                            <el-tabs v-model="mainTabsValue" type="border-card" closable>
+                            <el-tabs v-model="mainTabsValue" type="border-card" closable id="mainTabHead">
                                 <el-tab-pane
                                     v-for="(item, index) in mainTabs"
                                     :key="item.name"
@@ -587,21 +594,25 @@
                 },
                 //TODO 修改了
                 handleTableft(tab, event) {
-                    let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
-                    let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                    if (this.leftTabActivate != tab._props.name) {
-                        this.leftTabActivate = tab._props.name
-                        tabsContent.style.display = 'block'
-                        resizeItem.style.display = 'block'
+                    if (tab._props.name === '0') {
+                        console.log('yes')
                     } else {
                         let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
                         let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                        if (tabsContent.style.display == 'none') {
+                        if (this.leftTabActivate != tab._props.name) {
+                            this.leftTabActivate = tab._props.name
                             tabsContent.style.display = 'block'
                             resizeItem.style.display = 'block'
                         } else {
-                            tabsContent.style.display = 'none'
-                            resizeItem.style.display = 'none'
+                            let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
+                            let resizeItem = document.querySelector('.subviewLeft .resizeShow')
+                            if (tabsContent.style.display == 'none') {
+                                tabsContent.style.display = 'block'
+                                resizeItem.style.display = 'block'
+                            } else {
+                                tabsContent.style.display = 'none'
+                                resizeItem.style.display = 'none'
+                            }
                         }
                     }
                 },
@@ -769,9 +780,33 @@
                     // let resizeItem = document.querySelector('.subviewRight .resizeShow')
                     let configs = await window.uniclient.store('get', 'workbenchConfig')
                 },
+                handelMainMenu() {
+                    let mainMenu = document.getElementById('tab-0')
+                    console.log(mainMenu)
+                    mainMenu.onclick = () => {
+                        console.log('nice')
+                    }
+                },
+                tutorialInit() {
+                    // let c=document.getElementById('mainTabHead')
+                    // let container = document.getElementById('tutorialIframe')
+                    // container.src = './components/tutorial/uniclient.html'
+                    // let iframes = ['./uniclient.html', '../../../client/2.html']
+                    // iframes.forEach((src) => {
+                    //     let iframe = document.createElement('iframe')
+                    //     iframe.src = src
+                    //     iframe.scrolling = 'no'
+                    //     //display是none的元素没有onload事件触发
+                    //     iframe.style = 'display:block'
+                    //     iframe.onload = function () {
+                    //         iframe.height = iframe.contentWindow.document.body.scrollHeight
+                    //     }
+                    //     container.appendChild(iframe)
+                    // })
+                },
 
                 //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
-                getSub() {
+                getTutorialTitle() {
                     setTimeout(() => {
                         let tutorial = document.querySelector('.tutorialIframe')
                         let elements = tutorial.contentWindow.document.querySelectorAll('h1,h2,h3,h4,h5,h6')
@@ -788,11 +823,12 @@
                 },
                 onNoticeFromMain() {
                     window.uniclient.mainNotice((message) => {
-                        let d = document.createElement('div')
-                        m.innerHTML = message
-                        m.style.cssText =
-                            'font-size: .32rem;z-index:999;color: rgb(255, 255, 255);background-color: rgba(0, 0, 0, 0.6);padding: 10px 15px;margin: 0 0 0 -60px;border-radius: 4px;position: fixed;    top: 50%;left: 50%;width: 130px;text-align: center;'
-                        document.getElementById('app').appendChild(d)
+                        const h = this.$createElement
+                        this.$notify({
+                            title: message.title,
+                            message: h('i', { style: 'color: teal' }, message.message),
+                            duration: 2500,
+                        })
                     })
                 },
             },
@@ -811,6 +847,8 @@
                 this.handleInit()
                 this.getSub()
                 this.onNoticeFromMain()
+                this.tutorialInit()
+                this.handelMainMenu()
                 // subscript()
             },
             created() {

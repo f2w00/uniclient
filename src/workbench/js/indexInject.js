@@ -9,10 +9,11 @@ let mainTabsData = [
         title: 'tutorial',
         name: 'tutorial',
         content: 'Tab 2 content',
-        src: './components/tutorial/uniclient.html',
+        src: './components/tutorial/tutorial.html',
     },
 ]
 let subviewLeftTabsData = [
+    { title: 'mainMenu', name: '0', content: '资源管理器', iconSrc: './assets/icon/icon.svg', disabled: true },
     {
         title: 'resourceManagement',
         name: '1',
@@ -32,6 +33,7 @@ let subviewLeftTabsData = [
                 items: [],
             },
         ],
+        viewPath: '',
     },
     {
         title: 'Tab 2',
@@ -74,24 +76,19 @@ let subviewLeftTabsData = [
         ],
     },
     {
-        title: 'Tab 4',
-        name: '4',
-        content: '使用手册',
-        iconSrc: './assets/icon/tutorial.svg',
-        itemList: [
-            {
-                title: 'uniclient',
-                name: '1',
-                content: 'uniclient',
-                items: [],
+        name: 'uaclient',
+        render: {
+            left: {
+                iconSrc: './assets/icon/tutorial.svg',
+                viewSrc: 'iframe src',
+                clickCreateTab: true,
+                clickSendToWindow: null,
+                clickSendToMain: 'render:leftSide.click-uaclient',
             },
-            {
-                title: 'uaclient',
-                name: '2',
-                content: 'uaclient',
-                items: [],
-            },
-        ],
+            main: { iconSrc: './assets/icon/tutorial.svg', viewSrc: 'iframe src' },
+            right: null,
+            bottom: null,
+        },
     },
 ]
 let subviewRightTabsData = [

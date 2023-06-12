@@ -115,12 +115,12 @@ export class Client {
         globalShortcut.register('CommandOrControl+PageUp', () => {
             let current = this.mainWindow.webContents.getZoomLevel()
             this.mainWindow.webContents.setZoomLevel(current + 0.1)
-            ipcClient.emitToRender('notice', `${(current + 0.1) * 100}%`)
+            ipcClient.emitToRender('notice', { title: '全局缩放', message: `${(current + 0.1) * 100}%` })
         })
         globalShortcut.register('CommandOrControl+PageDown', () => {
             let current = this.mainWindow.webContents.getZoomLevel()
             this.mainWindow.webContents.setZoomLevel(current - 0.1)
-            ipcClient.emitToRender('notice', `${(current - 0.1) * 100}%`)
+            ipcClient.emitToRender('notice', { title: '全局缩放', message: `${(current - 0.1) * 100}%` })
         })
     }
 
