@@ -28,7 +28,10 @@
 									"clickSendToWindow": null,
 									"clickSendToMain": "render:leftSide.click-uaclient"
 								},
-								"main": { "iconSrc": "./assets/icon/tutorial.svg", "viewSrc": "iframe src" },
+								"main": {
+									"iconSrc": "./assets/icon/tutorial.svg",
+									"viewSrc": "iframe src"
+								},
 								"right": null,
 								"bottom": null
 							}

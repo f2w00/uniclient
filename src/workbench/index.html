@@ -118,49 +118,6 @@
                                         <!-- TODO titleBox高度会被顶的变小 -->
                                         <div class="titleBox">{{item.content}}</div>
                                         <iframe :src="item.viewPath"></iframe>
-                                        <!-- <div
-                                            v-for="itemlist in item.itemList"
-                                            :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'"
-                                        >
-                                            <div class="subviewItembtn">{{itemlist.title}}</div>
-                                            <div class="subviewItemoptions">
-                                                <el-tree
-                                                    v-if="itemlist.title === 'Project'"
-                                                    :data="itemlist.items"
-                                                    :props="subviewItemProjectProps"
-                                                    @node-click="handleNodeClick"
-                                                ></el-tree>
-                                                <el-tree
-                                                    v-else-if="itemlist.title === 'Address'"
-                                                    :data="addressTreeData"
-                                                    :indent="15"
-                                                    node-key="nodeId"
-                                                    :props="subviewItemAddressProps"
-                                                    @node-click="handleAddressNodeClick"
-                                                    :load="loadAddressNode"
-                                                    lazy
-                                                    @node-drag-start="handleDragStart"
-                                                    @node-drag-end="handleDragEnd"
-                                                    draggable
-                                                    :allow-drop="allowDrop"
-                                                    :allow-drag="allowDrag"
-                                                >
-                                                    <span class="custom-tree-node" slot-scope="{node,data}">
-                                                        <span>
-                                                            <img class="iconTree"
-                                                            :src=`./assets/icon/${data.nodeClass}.svg` />{{
-                                                            data.displayName.text }}
-                                                        </span>
-                                                    </span>
-                                                </el-tree>
-                                                <el-tree
-                                                    v-else
-                                                    :data="itemlist.items"
-                                                    :props="subviewItemoptionProps"
-                                                    @node-click="handleNodeClick"
-                                                ></el-tree>
-                                            </div>
-                                        </div> -->
                                     </div>
                                 </el-tab-pane>
                             </el-tabs>
@@ -172,13 +129,14 @@
                     </div>
                     <main class="main content-box">
                         <div id="decisonBox" class="mainviewTop">
-                            <el-tabs v-model="mainTabsValue" type="border-card" closable id="mainTabHead">
+                            <el-tabs v-model="mainTabsValue" type="border-card" closable @tab-remove="removeTab">
                                 <el-tab-pane
                                     v-for="(item, index) in mainTabs"
                                     :key="item.name"
                                     :label="item.title"
                                     :name="item.name"
                                     :class="item.name+'Tabpane'"
+                                    :id="item.name"
                                 >
                                     <iframe :class="item.name+'Iframe'" :src="item.src"></iframe>
                                 </el-tab-pane>
@@ -191,7 +149,7 @@
                                 <i class="el-icon-close close-btn" @click="handleClose"></i>
                             </div>
                         </div>
-                        <footer class="main-bottom">
+                        <footer class="main-bottom" id="main-bottom">
                             <div class="resize mian-vertical"></div>
                             <div class="line"></div>
                             <div class="logview">
@@ -260,6 +218,9 @@
                                     </span>
                                     <div class="grid-box">
                                         <div class="titleBox">{{item.content}}</div>
+                                    </div>
+                                    <iframe :src="item.viewPath" :class="item.name+Right" frameborder="none"></iframe>
+                                    <!-- 
                                         <div
                                             v-for="itemlist in item.itemList"
                                             :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'"
@@ -297,7 +258,7 @@
                                                 </el-table>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </el-tab-pane>
                             </el-tabs>
                         </div>
@@ -594,7 +555,21 @@
                 },
                 //TODO 修改了
                 handleTableft(tab, event) {
-                    if (tab._props.name === '0') {
+                    switch (tab._props.name) {
+                        case '0':
+                            {
+                                console.log('main-menu')
+                            }
+                            break
+                        case 'tutorial':
+                            {
+                                this.tutorialInit()
+                            }
+                            break
+                        default:
+                            break
+                    }
+                    if (tab._props.name === 'tab-0') {
                         console.log('yes')
                     } else {
                         let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
@@ -776,33 +751,61 @@
                     console.log(getStyle(el, 'width'))
                 },
                 //TODO 我加的
-                async handleInit() {
-                    // let resizeItem = document.querySelector('.subviewRight .resizeShow')
-                    let configs = await window.uniclient.store('get', 'workbenchConfig')
+                async benchInit() {
+                    document.addEventListener('DOMContentLoaded', async () => {
+                        let mainMenu = document.getElementById('tab-mainMenu')
+                        mainMenu.onclick = () => {
+                            console.log('nice')
+                        }
+                        let configs = await window.uniclient.store('get', 'workbenchConfig')
+                        let bottom = document.getElementById('main-bottom')
+                        let tabsLeft = document.querySelector('.subviewLeft-content .el-tabs__content')
+                        let resizeItemLeft = document.querySelector('.subviewLeft .resizeShow')
+                        let tabsRight = document.querySelector('.subviewRight-content .el-tabs__content')
+                        let resizeItemRight = document.querySelector('.subviewRight .resizeShow')
+                        tabsRight.style.display = configs.rightSide.display ? 'block' : 'none'
+                        resizeItemRight.style.display = configs.rightSide.display ? 'block' : 'none'
+                        tabsLeft.style.display = configs.leftSide.display ? 'block' : 'none'
+                        resizeItemLeft.style.display = configs.leftSide.display ? 'block' : 'none'
+                        bottom.style.display = configs.downSide.display ? 'block' : 'none'
+                    })
                 },
-                handelMainMenu() {
-                    let mainMenu = document.getElementById('tab-0')
-                    console.log(mainMenu)
-                    mainMenu.onclick = () => {
-                        console.log('nice')
-                    }
+                tabInit() {
+                    window.exsistTabs = new Map()
+                    this.mainTabs.forEach((value) => {
+                        window.exsistTabs.set(value.name, value)
+                    })
+                    window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
+                        if (!window.exsistTabs.has(attribute.name)) {
+                            this.mainTabs.push(attribute)
+                            window.exsistTabs.set(attribute.name, attribute)
+                            this.mainTabsValue = attribute.name
+                        }
+                    })
+                    window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
+                        window.exsistTabs.delete(targetName)
+                        this.mainTabs = Array.from(window.exsistTabs.values())
+                        this.mainTabsValue = this.mainTabs[this.mainTabs.length - 1].name
+                    })
+                },
+                removeTab(targetName) {
+                    window.uniclient.windowEvent.emit('mainTab:remove', targetName)
                 },
                 tutorialInit() {
-                    // let c=document.getElementById('mainTabHead')
-                    // let container = document.getElementById('tutorialIframe')
-                    // container.src = './components/tutorial/uniclient.html'
-                    // let iframes = ['./uniclient.html', '../../../client/2.html']
-                    // iframes.forEach((src) => {
-                    //     let iframe = document.createElement('iframe')
-                    //     iframe.src = src
-                    //     iframe.scrolling = 'no'
-                    //     //display是none的元素没有onload事件触发
-                    //     iframe.style = 'display:block'
-                    //     iframe.onload = function () {
-                    //         iframe.height = iframe.contentWindow.document.body.scrollHeight
+                    let notInserted = true
+                    // this.mainTabs.forEach((variable) => {
+                    //     if (variable.name === 'tutorial') {
+                    //         notInserted = false
                     //     }
-                    //     container.appendChild(iframe)
                     // })
+                    if (notInserted) {
+                        window.uniclient.windowEvent.emit('mainTab:create', {
+                            title: 'tutorial',
+                            name: 'tutorial',
+                            content: 'Tab 1 content',
+                            src: './components/tutorial/uniclient.html',
+                        })
+                    }
                 },
 
                 //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
@@ -844,10 +847,11 @@
                 this.logErrorListener()
                 this.subscriptListener()
                 //TODO 我加的
-                this.handleInit()
+                this.benchInit()
+                this.tabInit()
                 this.getSub()
                 this.onNoticeFromMain()
-                this.tutorialInit()
+                // this.tutorialInit()
                 this.handelMainMenu()
                 // subscript()
             },

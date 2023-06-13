@@ -48,6 +48,7 @@ class Workbench extends events_1.EventEmitter {
                 devTools: true,
                 nodeIntegration: true,
                 contextIsolation: false,
+                webSecurity: false,
             },
         });
         await this.mainWindow.loadFile(options.indexHtmlPath);
@@ -105,7 +106,6 @@ class Workbench extends events_1.EventEmitter {
         return this.mainWindow;
     }
     beforeClose() {
-        this.mainWindow.hide();
     }
 }
 exports.Workbench = Workbench;

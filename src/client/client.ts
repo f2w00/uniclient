@@ -18,6 +18,7 @@ export class Client {
     broker!: Broker
     mainWindow!: BrowserWindow
     extension!: GlobalExtensionManager
+    beforeCloseRender: Function[] = []
 
     constructor() {
         try {
@@ -86,6 +87,9 @@ export class Client {
         ipcClient.on(rendererEvents.benchEvents.close, () => {
             this.quit()
         })
+        ipcClient.on('render:beforeClose', (_, callback) => {
+            this.beforeCloseRender.push(callback)
+        })
     }
 
     private createBaseService() {
@@ -150,6 +154,7 @@ export class Client {
 
     private quit() {
         this.mainWindow.hide()
+        this.beforeCloseRender.forEach((func) => func())
         series([
             //终结broker转发者服务
             async () => {

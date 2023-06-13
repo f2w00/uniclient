@@ -95,11 +95,12 @@ export class ClientStore {
                 case 'get':
                     result = ClientStore.renderStore.get(key)
                     break
-                case 'del': {
-                    ClientStore.renderStore.delete(key)
-                    result = true
-                }
-                break
+                case 'del':
+                    {
+                        ClientStore.renderStore.delete(key)
+                        result = true
+                    }
+                    break
                 default:
                     break
             }
@@ -109,13 +110,13 @@ export class ClientStore {
 }
 
 export class StartRecord {
-    static moduleNum=5
-    static startedServices:string[]=[]
+    static moduleNum = 5
+    static startedServices: string[] = []
 
-    static completeLoading(module:string){
+    static completeLoading(module: string) {
         StartRecord.startedServices.push(module)
-        if (module=='extension') ipcClient.emitLocal('extension:loaded')
-        if (StartRecord.startedServices.length>=StartRecord.moduleNum){
+        if (module == 'extension') ipcClient.emitLocal('extension:loaded')
+        if (StartRecord.startedServices.length >= StartRecord.moduleNum) {
             ipcClient.emitLocal('client:start.complete')
         }
     }

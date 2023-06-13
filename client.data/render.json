@@ -17,15 +17,18 @@
             }
         ],
         "leftSide": {
+            "display": true,
             "selectDisplay": 0,
             "width": 255,
             "subDisplay": [0, 1]
         },
         "rightSide": {
+            "display": true,
             "selectDisplay": 0,
             "width": 255
         },
         "downSide": {
+            "display": false,
             "selectDisplay": 0,
             "height": 100
         },

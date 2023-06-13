@@ -19,6 +19,7 @@
         #container {
             position: relative;
             width: 100%;
+            height: 100%;
         }
     </style>
     <body>
@@ -32,9 +33,13 @@
             iframe.src = src
             iframe.scrolling = 'no'
             //display是none的元素没有onload事件触发
-            iframe.style = 'display:block'
+            iframe.style = 'display:block;height:auto;'
             iframe.onload = function () {
-                iframe.height = iframe.contentWindow.document.body.scrollHeight
+                setTimeout(() => {
+                    iframe.style.height = iframe.contentWindow.document.documentElement.clientHeight + 'px'
+                }, 50)
+
+                console.log(iframe.contentWindow.document.body.attributes)
             }
             container.appendChild(iframe)
         })

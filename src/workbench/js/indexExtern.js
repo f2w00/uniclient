@@ -9,6 +9,7 @@ function mainMax() {
     ipcRenderer.send('render:bench.max')
 }
 function mainClose() {
+    //todo 处理beforeClose状态存储问题
     ipcRenderer.send('render:bench.close')
 }
 function getLogError(callback) {
@@ -27,7 +28,7 @@ function getLogWarn(callback) {
     })
 }
 function subscript(callback) {
-    ipcRenderer.on("pipe:uaclient.pushed", (event, value) => {
+    ipcRenderer.on('pipe:uaclient.pushed', (event, value) => {
         // console.log(value)
         callback(value)
     })

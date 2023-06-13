@@ -1,0 +1,48 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div v-for="itemlist in item.itemList" :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+            <div class="subviewItembtn">{{itemlist.title}}</div>
+            <div class="subviewItemoptions">
+                <el-tree
+                    v-if="itemlist.title === 'Project'"
+                    :data="itemlist.items"
+                    :props="subviewItemProjectProps"
+                    @node-click="handleNodeClick"
+                ></el-tree>
+                <el-tree
+                    v-else-if="itemlist.title === 'Address'"
+                    :data="addressTreeData"
+                    :indent="15"
+                    node-key="nodeId"
+                    :props="subviewItemAddressProps"
+                    @node-click="handleAddressNodeClick"
+                    :load="loadAddressNode"
+                    lazy
+                    @node-drag-start="handleDragStart"
+                    @node-drag-end="handleDragEnd"
+                    draggable
+                    :allow-drop="allowDrop"
+                    :allow-drag="allowDrag"
+                >
+                    <span class="custom-tree-node" slot-scope="{node,data}">
+                        <span>
+                            <img class="iconTree" :src=`./assets/icon/${data.nodeClass}.svg` />{{
+                            data.displayName.text}}
+                        </span>
+                    </span>
+                </el-tree>
+                <el-tree
+                    v-else
+                    :data="itemlist.items"
+                    :props="subviewItemoptionProps"
+                    @node-click="handleNodeClick"
+                ></el-tree>
+            </div>
+        </div>
+    </body>
+</html>

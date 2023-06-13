@@ -3,17 +3,11 @@ let mainTabsData = [
         title: 'dataView',
         name: 'opcua',
         content: 'Tab 1 content',
-        src: './components/opcua/dataView.html',
-    },
-    {
-        title: 'tutorial',
-        name: 'tutorial',
-        content: 'Tab 2 content',
-        src: './components/tutorial/tutorial.html',
+        src: '../../src/plugins/ua.client/ua.render/dataView.html',
     },
 ]
 let subviewLeftTabsData = [
-    { title: 'mainMenu', name: '0', content: '资源管理器', iconSrc: './assets/icon/icon.svg', disabled: true },
+    { title: 'mainMenu', name: 'mainMenu', iconSrc: './assets/icon/icon.svg', disabled: true },
     {
         title: 'resourceManagement',
         name: '1',
@@ -33,7 +27,7 @@ let subviewLeftTabsData = [
                 items: [],
             },
         ],
-        viewPath: '',
+        viewPath: '../../src/plugins/ua.client/ua.render/address.html',
     },
     {
         title: 'Tab 2',
@@ -76,6 +70,26 @@ let subviewLeftTabsData = [
         ],
     },
     {
+        title: 'Tab 3',
+        name: 'tutorial',
+        content: '用户手册',
+        iconSrc: './assets/icon/tutorial.svg',
+        itemList: [
+            {
+                title: 'Project-3',
+                name: '1',
+                content: 'Project-3',
+                items: [],
+            },
+            {
+                title: 'Address-3',
+                name: '2',
+                content: 'Address-3',
+                items: [],
+            },
+        ],
+    },
+    {
         name: 'uaclient',
         render: {
             left: {
@@ -97,6 +111,7 @@ let subviewRightTabsData = [
         name: '1',
         content: '简略信息',
         iconSrc: './assets/icon/attribute-management.svg',
+        viewPath: '../../src/plugins/ua.client/ua.render/attributes.html',
         itemList: [
             {
                 title: 'Attributes',
