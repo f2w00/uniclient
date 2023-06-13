@@ -1,4 +1,4 @@
-const { app, Menu } = require('electron')
+const { app, Menu, protocol } = require('electron')
 const product = require('./client/product.json')
 const { config } = require('dotenv')
 config()
@@ -10,6 +10,18 @@ if (process[1] == '--squirrel-firstrun') {
 app.setPath('appData', generateUserDataPath())
 Menu.setApplicationMenu(null)
 app.whenReady().then(() => {
+    protocol.interceptFileProtocol(
+        'file',
+        (req, callback) => {
+            const url = req.url.substr(8)
+            callback(decodeURI(url))
+        },
+        (error) => {
+            if (error) {
+                console.error('Failed to register protocol')
+            }
+        }
+    )
     startUp()
 })
 
@@ -91,4 +103,4 @@ function detectPlugins() {
     })
     return { plugins: { list: plugins, onStart: onStart }, infos: { projectExtend: extend.values() } }
 }
-//todo 手动输入命令实现,electron-squirrel-startup处理安装问题,主进程中实现html页面的加载
+//todo electron-squirrel-startup处理安装问题

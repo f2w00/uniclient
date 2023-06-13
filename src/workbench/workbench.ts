@@ -79,6 +79,7 @@ export class Workbench extends EventEmitter {
                 devTools: true,
                 nodeIntegration: true,
                 contextIsolation: false,
+                webSecurity: false,
             },
         })
         await this.mainWindow.loadFile(options.indexHtmlPath)
@@ -150,7 +151,7 @@ export class Workbench extends EventEmitter {
     }
 
     beforeClose() {
-        this.mainWindow.hide()
+        // this.mainWindow.hide()
         // this.emit('close')
     }
 
@@ -161,8 +162,3 @@ export class Workbench extends EventEmitter {
     //     })
     // }
 }
-
-// export const workbench = new Workbench()
-// export const mainWindow = workbench.getMainWindow()
-//todo 命令inline名称获取
-//todo 调试ua.servant

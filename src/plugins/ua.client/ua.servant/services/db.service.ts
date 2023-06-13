@@ -91,7 +91,7 @@ export module DbService {
                     throw new ClientError(UaSources.dbService, UaErrors.errorTableMode)
             }
             await DbService.createTable()
-            //todo 注意这里需要创建一个pipe然后再进行注册
+            // 注意这里需要创建一个pipe然后再进行注册
             CommunicateUtil.emitToClient('Broker.create', [{ name: Config.defaultPipeName }])
             CommunicateUtil.emitToClient('pipe:' + Config.defaultPipeName + '.registerIpc', [{ module: 'uaclient' }])
             CommunicateUtil.events.on('pipe:' + Config.defaultPipeName + '.full', (data: UaMessage[]) => {
