@@ -91,18 +91,9 @@ let subviewLeftTabsData = [
     },
     {
         name: 'uaclient',
-        render: {
-            left: {
-                iconSrc: './assets/icon/tutorial.svg',
-                viewSrc: 'iframe src',
-                clickCreateTab: true,
-                clickSendToWindow: null,
-                clickSendToMain: 'render:leftSide.click-uaclient',
-            },
-            main: { iconSrc: './assets/icon/tutorial.svg', viewSrc: 'iframe src' },
-            right: null,
-            bottom: null,
-        },
+        content: 'opcua',
+        iconSrc: './assets/icon/space.svg',
+        viewPath: '../../src/plugins/ua.client/ua.render/address.html',
     },
 ]
 let subviewRightTabsData = [

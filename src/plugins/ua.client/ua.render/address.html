@@ -1,11 +1,12 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" />
-        <title>Document</title>
+        <link rel="stylesheet" href="../../../workbench/element-ui/css/index.css" />
+        <link rel="stylesheet" href="./css/indexSubview.css" />
     </head>
     <body>
-        <div v-for="itemlist in item.itemList" :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+        <!-- :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'" -->
+        <div v-for="itemlist in addressList" class="subviewItem" id="app">
             <div class="subviewItembtn">{{itemlist.title}}</div>
             <div class="subviewItemoptions">
                 <el-tree
@@ -31,8 +32,8 @@
                 >
                     <span class="custom-tree-node" slot-scope="{node,data}">
                         <span>
-                            <img class="iconTree" :src=`./assets/icon/${data.nodeClass}.svg` />{{
-                            data.displayName.text}}
+                            <img class="iconTree" :src=`../../../workbench/assets/icon/${data.nodeClass}.svg`
+                            />{{data.displayName.text}}
                         </span>
                     </span>
                 </el-tree>
@@ -44,5 +45,259 @@
                 ></el-tree>
             </div>
         </div>
+        <!-- <el-dialog
+            class="addServerDialog"
+            title="Add Server"
+            :close-on-click-modal="false"
+            :visible.sync="addserverVisible"
+            top="15px"
+        >
+            <div class="configName">
+                Configuration Name
+                <input
+                    class="configInput"
+                    type="text"
+                    v-model="configurationName"
+                    :placeholder="configurationName"
+                    style="color: #606266"
+                />
+            </div>
+            <iframe name="addServerIframe" id="addServerIframe" src="./components/addServerView.html"></iframe>
+            <div slot="footer" class="dialog-footer">
+                <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
+                <el-button @click="addserverVisible = false">Cancle</el-button>
+                <el-button type="primary" @click="handleConnectServer">OK</el-button>
+            </div>
+        </el-dialog> -->
     </body>
+    <script src="../../../workbench/vue/vue.js"></script>
+    <script src="../../../workbench/element-ui/index.js"></script>
+    <script type="module">
+        import clientApi from './api/clientApi.js'
+        import sessionApi from './api/sessionApi.js'
+        import subscriptApi from './api/subscriptApi.js'
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    addressList: [
+                        {
+                            title: 'Project',
+                            name: '1',
+                            content: 'Project',
+                            items: [],
+                        },
+                        {
+                            title: 'Address',
+                            name: '2',
+                            content: 'Address',
+                            items: [],
+                        },
+                    ],
+                    addressTreeData: [],
+                    subviewItemoptionProps: {
+                        children: 'children',
+                        label: 'label',
+                    },
+                    subviewItemProjectProps: {
+                        children: 'children',
+                        label: 'label',
+                    },
+                }
+            },
+            computed: {},
+            methods: {
+                /* 接口类函数 */
+                async clientInit() {
+                    const param = {
+                        applicationName: 'NodeOPCUA-Client',
+                        connectionStrategy: {
+                            initialDelay: 1000,
+                            maxRetry: 1,
+                        },
+                        securityMode: 1,
+                        keepSessionAlive: true,
+                        securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+                        endpointMustExist: false,
+                    }
+                    return await clientApi.clientInit(param)
+                },
+                async sessionBrowseroot() {
+                    const param = {}
+                    return await sessionApi.sessionBrowseroot(param)
+                },
+                async sessionRead(node) {
+                    const param = { nodeId: null }
+                    param.nodeId = node
+                    return await sessionApi.sessionRead(param)
+                },
+                async sessionBrowse(node) {
+                    const param = { node: null, browseNext: false }
+                    param.node = node
+                    return await sessionApi.sessionBrowse(param)
+                },
+                async getSessionGroup(node, count) {
+                    let cnt = count++
+                    if (cnt < 3) {
+                        const param = { node: null, browseNext: false }
+                        param.node = node
+                        let res = await sessionApi.sessionBrowse(param)
+                        let result = []
+                        for (let i = 0; i < res.data.references.length; i++) {
+                            // console.log(res.data.references[i].nodeClass)
+                            if (res.data.references[i].nodeClass === 'Variable') {
+                                result.push(
+                                    JSON.stringify({
+                                        nodeId: res.data.references[i].nodeId,
+                                        displayName: res.data.references[i].displayName.text,
+                                    })
+                                )
+                            } else {
+                                let resBack = await this.getSessionGroup(res.data.references[i].nodeId, cnt)
+                                if (resBack !== '') {
+                                    result.push(resBack)
+                                }
+                            }
+                        }
+                        return result.join('|')
+                    } else {
+                        return ''
+                    }
+                },
+                async subscriptInit() {
+                    const param = {
+                        requestedLifetimeCount: 60,
+                        requestedPublishingInterval: 100,
+                        requestedMaxKeepAliveCount: 10,
+                        publishingEnabled: true,
+                        maxNotificationsPerPublish: 100,
+                        priority: 1,
+                    }
+                    return await subscriptApi.subscriptInit(param)
+                },
+                async subscriptGroup(list) {
+                    const param = {
+                        itemsToMonitor: [],
+                        displayNames: [],
+                    }
+                    list.forEach((item) => {
+                        item = JSON.parse(item)
+                        param.itemsToMonitor.push({ nodeId: item.nodeId })
+                        param.displayNames.push(item.displayName)
+                    })
+                    // console.log(param)
+                    return await subscriptApi.subscriptGroup(param)
+                },
+                async subscriptSingle(nodeId, displayName) {
+                    const param = {
+                        itemToMonitor: { nodeId: null },
+                        displayName: null,
+                    }
+                    param.itemToMonitor.nodeId = nodeId
+                    param.displayName = displayName
+                    return await subscriptApi.subscriptSingle(param)
+                },
+                async handleAddressNodeClick(data) {
+                    //TODO MyObject收到两个相同的结果
+                    this.attributeTableData = []
+                    let _id = 1
+                    for (let key in data) {
+                        let item = {
+                            id: '',
+                            attribute: '',
+                            value: '',
+                        }
+                        item.id = _id++
+                        item.attribute = key
+                        item.value = data[key]
+                        if (data[key].constructor === Object) {
+                            item.value = getObjValue(data[key])
+                        }
+                        if (item.attribute !== 'isForward') {
+                            this.attributeTableData.push(item)
+                        }
+                    }
+                    let res = await this.sessionRead(data.nodeId)
+                    if (res.data.value.value !== undefined) {
+                        let arr = []
+                        let value = { id: '0', attribute: 'value', value: '', children: [] }
+                        for (let key in res.data) {
+                            if (key === 'value') {
+                                for (let key1 in res.data.value) {
+                                    arr.push({ id: _id++, attribute: key1, value: res.data.value[key1] })
+                                }
+                            } else {
+                                arr.push({ id: _id++, attribute: key, value: res.data[key] })
+                            }
+                        }
+                        arr.forEach((item) => {
+                            if (item.attribute === 'dataType' || item.attribute === 'arrayType') {
+                                this.attributeTableData.push(item)
+                            } else {
+                                value.children.push(item)
+                            }
+                        })
+                        this.attributeTableData.push(value)
+                    }
+                },
+                async loadAddressNode(node, resolve) {
+                    if (node.level === 0) {
+                        return resolve(this.addressTreeData)
+                    } else if (node.level === 1) {
+                        let res = await this.sessionBrowseroot()
+                        return resolve(res.data)
+                    } else {
+                        let res = await this.sessionBrowse(node.data.nodeId)
+                        if (res.data.references.length === 0) {
+                            return resolve([])
+                        } else {
+                            return resolve(res.data.references)
+                        }
+                    }
+                },
+                connectServerListener() {
+                    window.addEventListener('message', (e) => {
+                        if (e.data === 200) {
+                            this.addressTreeData.push({
+                                nodeId: 'i=84[RootFolder]',
+                                browseName: {
+                                    namespaceIndex: 0,
+                                    name: 'Root',
+                                },
+                                displayName: {
+                                    text: 'Root',
+                                },
+                                nodeClass: 'Object',
+                            })
+                        }
+                    })
+                },
+                handleDragStart(node, ev) {
+                    let iframeList = document.querySelectorAll('iframe')
+                    for (let i = 0; i < iframeList.length; i++) {
+                        iframeList[i].style['pointer-events'] = 'none'
+                    }
+                    let nodeData = JSON.stringify(node.data)
+                    ev.dataTransfer.setData('node', nodeData)
+                },
+                handleDragEnd(draggingNode, dropNode, dropType, ev) {
+                    let iframeList = document.querySelectorAll('iframe')
+                    for (let i = 0; i < iframeList.length; i++) {
+                        iframeList[i].style['pointer-events'] = 'auto'
+                    }
+                },
+                allowDrop(draggingNode, dropNode, type) {
+                    return false
+                },
+                allowDrag(draggingNode) {
+                    return true
+                },
+                handleNodeClick(data) {
+                    console.log(data)
+                },
+            },
+            mounted() {},
+            created() {},
+        })
+    </script>
 </html>

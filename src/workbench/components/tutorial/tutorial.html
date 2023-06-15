@@ -60,6 +60,7 @@
         }
         button {
             text-align: left;
+            width: 100%;
             padding-left: 0;
         }
         .title-container {
@@ -99,11 +100,6 @@
     <script>
         window.displayed = new Map()
         window.data = []
-        // window.parent.uniclient.windowEvent.on('tutorial.scrollTo', (id) => {
-        //     let tutorialIframe = window.parent.document.querySelector('.tutorialIframe')
-        //     let element = tutorialIframe.contentWindow.document.getElementById(id)
-        //     element.scrollIntoView()
-        // })
         let loading = document.createElement('div')
         loading.className = 'loading'
         loading.style.display = 'none'
@@ -146,7 +142,6 @@
                                 li.id = content
                                 li.style = `margin-left:${15 * (value.level - 1)}px;`
                                 li.onclick = () => {
-                                    // window.parent.uniclient.windowEvent.emit('tutorial.scrollTo', li.id)
                                     let tutorialIframe = window.parent.document.querySelector('.tutorialIframe')
                                     let element = tutorialIframe.contentWindow.document.getElementById(li.id)
                                     element.scrollIntoView()
