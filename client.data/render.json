@@ -31,18 +31,18 @@
             "display": false,
             "selectDisplay": 0,
             "height": 100
+        }
+    },
+    "tutorials": [
+        {
+            "name": "uniclient",
+            "type": "local",
+            "url": "./tutorial.html"
         },
-        "tutorial": [
-            {
-                "name": "uniclient",
-                "type": "local",
-                "url": "./tutorial.html"
-            },
-            {
-                "name": "uaclient",
-                "type": "local",
-                "url": "./tutorial.html"
-            }
-        ]
-    }
+        {
+            "name": "uaclient",
+            "type": "local",
+            "url": "./tutorial.html"
+        }
+    ]
 }

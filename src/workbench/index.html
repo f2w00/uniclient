@@ -117,7 +117,7 @@
                                     <div class="grid-box">
                                         <!-- TODO titleBox高度会被顶的变小 -->
                                         <div class="titleBox">{{item.content}}</div>
-                                        <iframe :src="item.viewPath"></iframe>
+                                        <iframe :src="item.viewPath" class="left-iframe"></iframe>
                                     </div>
                                 </el-tab-pane>
                             </el-tabs>
@@ -138,11 +138,13 @@
                                     :class="item.name+'Tabpane'"
                                     :id="item.name"
                                 >
-                                    <iframe :class="item.name+'Iframe'" :src="item.src"></iframe>
+                                    <iframe
+                                        :class="item.name+'Iframe'"
+                                        :src="item.src"
+                                        :id="'iframe:'+item.name"
+                                    ></iframe>
                                 </el-tab-pane>
                             </el-tabs>
-
-                            <!-- todo 这里 -->
                             <div class="operationBox">
                                 <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
                                 <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
@@ -555,19 +557,16 @@
                 },
                 //TODO 修改了
                 handleTableft(tab, event) {
-                    switch (tab._props.name) {
-                        case '0':
-                            {
-                                console.log('main-menu')
-                            }
-                            break
-                        case 'tutorial':
-                            {
-                                this.tutorialInit()
-                            }
-                            break
-                        default:
-                            break
+                    let info = window.exsistLeftTabs.get(tab._props.name)
+                    if (info) {
+                        if (info.clickSendToWindow) {
+                            info.clickSendToWindow.forEach((value) => {
+                                window.uniclient.windowEvent.emit(value.event, ...value.params)
+                            })
+                        }
+                        if (info.clickCreateTab) {
+                            window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
+                        }
                     }
                     if (tab._props.name === 'tab-0') {
                         console.log('yes')
@@ -757,29 +756,51 @@
                         mainMenu.onclick = () => {
                             console.log('nice')
                         }
-                        let configs = await window.uniclient.store('get', 'workbenchConfig')
+                        window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
                         let bottom = document.getElementById('main-bottom')
                         let tabsLeft = document.querySelector('.subviewLeft-content .el-tabs__content')
                         let resizeItemLeft = document.querySelector('.subviewLeft .resizeShow')
                         let tabsRight = document.querySelector('.subviewRight-content .el-tabs__content')
                         let resizeItemRight = document.querySelector('.subviewRight .resizeShow')
-                        tabsRight.style.display = configs.rightSide.display ? 'block' : 'none'
-                        resizeItemRight.style.display = configs.rightSide.display ? 'block' : 'none'
-                        tabsLeft.style.display = configs.leftSide.display ? 'block' : 'none'
-                        resizeItemLeft.style.display = configs.leftSide.display ? 'block' : 'none'
-                        bottom.style.display = configs.downSide.display ? 'block' : 'none'
+                        tabsRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
+                        resizeItemRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
+                        tabsLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
+                        resizeItemLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
+                        bottom.style.display = window.benchConfigs.downSide.display ? 'block' : 'none'
+                        window.uniclient.windowEvent.emit('domLoaded')
+
+                        window.uniclient.windowEvent.on('bench:config', () => {
+                            window.uniclient.windowEvent.emit('bench:config.return', window.benchConfigs)
+                        })
                     })
                 },
                 tabInit() {
+                    const getTab = (attribute) => {
+                        let tab = document.getElementById('iframe:' + attribute.name)
+                        if (!tab) {
+                            console.log(tab)
+                            setTimeout(() => getTab(attribute), 1000)
+                        } else {
+                            window.uniclient.windowEvent.emit(`mainTab:created.${attribute.name}`, tab)
+                            console.log(tab)
+                        }
+                    }
                     window.exsistTabs = new Map()
+                    window.exsistLeftTabs = new Map()
                     this.mainTabs.forEach((value) => {
                         window.exsistTabs.set(value.name, value)
                     })
+                    this.subviewLeftTabs.forEach((value) => {
+                        window.exsistLeftTabs.set(value.name, value)
+                    })
+
                     window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
                         if (!window.exsistTabs.has(attribute.name)) {
+                            console.log(attribute.name)
                             this.mainTabs.push(attribute)
                             window.exsistTabs.set(attribute.name, attribute)
                             this.mainTabsValue = attribute.name
+                            getTab(attribute)
                         }
                     })
                     window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
@@ -826,6 +847,7 @@
                 },
                 onNoticeFromMain() {
                     window.uniclient.mainNotice((message) => {
+                        console.log(message)
                         const h = this.$createElement
                         this.$notify({
                             title: message.title,
@@ -849,7 +871,6 @@
                 //TODO 我加的
                 this.benchInit()
                 this.tabInit()
-                this.getSub()
                 this.onNoticeFromMain()
                 // this.tutorialInit()
                 this.handelMainMenu()

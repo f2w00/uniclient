@@ -9,39 +9,165 @@
         body {
             width: 100%;
             height: 100%;
-            margin: 0 0 0 0;
-            overflow-x: hidden;
-        }
-        iframe {
-            width: 100%;
+            padding: 0;
+            margin: 0;
             border: none;
         }
-        #container {
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 20px;
+            opacity: 0.8;
+        }
+        ::-webkit-scrollbar-thumb {
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+            background-color: #ccc;
+        }
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 1);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(144, 147, 153, 0.3);
+        }
+        .loading {
             position: relative;
-            width: 100%;
-            height: 100%;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #000;
+            border-top-color: rgba(0, 0, 0, 0.2);
+            border-right-color: rgba(0, 0, 0, 0.2);
+            border-bottom-color: rgba(0, 0, 0, 0.2);
+            border-radius: 100%;
+            animation: circle infinite 0.75s linear;
+        }
+        ul {
+            margin-left: 0;
+            margin-bottom: 10px;
+            padding-left: 30px;
+            font-size: 14px;
+        }
+        ul li {
+            cursor: pointer;
+            line-height: 2;
+        }
+        ul li::marker {
+            color: #ca532b;
+        }
+        ul li:hover {
+            background: rgba(0, 0, 0, 10%);
+        }
+        button {
+            text-align: left;
+            padding-left: 0;
+        }
+        .title-container {
+            border: none;
+            display: block;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0);
+            padding-bottom: 2px;
+            padding-top: 2px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .title-container:hover {
+            background: rgba(0, 0, 0, 20%);
+        }
+        .normal {
+            background: rgba(0, 0, 0, 0);
+            overflow: auto;
+        }
+        .normal ::-webkit-scrollbar {
+            width: 5px;
+            height: 20px;
+            opacity: 0.8;
+        }
+        @keyframes circle {
+            0% {
+                transform: rotate(0);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
     <body>
-        <div id="container"></div>
+        <div id="container" class="normal"></div>
     </body>
     <script>
-        let container = document.getElementById('container')
-        let iframes = ['./uniclient.html', '../../../client/2.html']
-        iframes.forEach((src) => {
-            let iframe = document.createElement('iframe')
-            iframe.src = src
-            iframe.scrolling = 'no'
-            //display是none的元素没有onload事件触发
-            iframe.style = 'display:block;height:auto;'
-            iframe.onload = function () {
-                setTimeout(() => {
-                    iframe.style.height = iframe.contentWindow.document.documentElement.clientHeight + 'px'
-                }, 50)
+        window.displayed = new Map()
+        window.data = []
+        // window.parent.uniclient.windowEvent.on('tutorial.scrollTo', (id) => {
+        //     let tutorialIframe = window.parent.document.querySelector('.tutorialIframe')
+        //     let element = tutorialIframe.contentWindow.document.getElementById(id)
+        //     element.scrollIntoView()
+        // })
+        let loading = document.createElement('div')
+        loading.className = 'loading'
+        loading.style.display = 'none'
 
-                console.log(iframe.contentWindow.document.body.attributes)
+        function displayTitleList(tutorialInfos) {
+            let container = document.getElementById('container')
+            tutorialInfos.forEach((info) => {
+                let ul = document.createElement('ul')
+                let subContainer = document.createElement('div')
+                let button = document.createElement('button')
+                ul.id = info.name
+                button.innerHTML = info.name
+                button.className = 'title-container'
+                subContainer.appendChild(button)
+                button.onclick = () => {
+                    window.parent.uniclient.windowEvent.emit('mainTab:create', info)
+                    let status = window.displayed.get(info.name)
+                    if (status) {
+                        ul.style.display = ul.style.display == 'none' ? 'block' : 'none'
+                    } else {
+                        loading.style.display = 'block'
+                        button.appendChild(loading)
+                        window.parent.uniclient.windowEvent.on(`mainTab:created.${info.name}`, (iframe) => {
+                            loading.style.display = 'none'
+                            button.removeChild(loading)
+                            let elements = iframe.contentWindow.document.querySelectorAll('h1,h2,h3,h4,h5,h6')
+                            let headers = []
+                            elements.forEach((value) => {
+                                headers.push({
+                                    content: value.id,
+                                    level: parseInt(value.tagName.replace('H', '')),
+                                    element: value,
+                                })
+                            })
+                            info.titleList = headers
+                            info.titleList.forEach((value) => {
+                                let content = value.content
+                                let li = document.createElement('li')
+                                li.innerHTML = content
+                                li.id = content
+                                li.style = `margin-left:${15 * (value.level - 1)}px;`
+                                li.onclick = () => {
+                                    // window.parent.uniclient.windowEvent.emit('tutorial.scrollTo', li.id)
+                                    let tutorialIframe = window.parent.document.querySelector('.tutorialIframe')
+                                    let element = tutorialIframe.contentWindow.document.getElementById(li.id)
+                                    element.scrollIntoView()
+                                }
+                                ul.appendChild(li)
+                            })
+                            subContainer.style.display = 'block'
+                            window.displayed.set(info.name, subContainer)
+                        })
+                    }
+                }
+                container.appendChild(subContainer)
+                subContainer.appendChild(ul)
+            })
+        }
+
+        window.parent.uniclient.windowEvent.on('leftBar:click.tutorial', (...tutorialInfos) => {
+            if (window.data.length === 0) {
+                window.data = tutorialInfos
+                displayTitleList(tutorialInfos)
             }
-            container.appendChild(iframe)
         })
     </script>
 </html>

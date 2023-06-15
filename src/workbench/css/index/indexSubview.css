@@ -126,7 +126,9 @@
 
 /* subview 内部展开栏 */
 .subview .grid-box {
-    height: calc(100% - 35px);
+    /* height: calc(100% - 35px); */
+    height: 100%;
+    /* width: calc(100%-20px); */
     display: flex;
     flex-direction: column;
 }

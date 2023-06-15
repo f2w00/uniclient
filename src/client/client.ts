@@ -116,15 +116,21 @@ export class Client {
                     : this.mainWindow.webContents.openDevTools()
             }
         })
-        globalShortcut.register('CommandOrControl+PageUp', () => {
+        globalShortcut.register('CommandOrControl+=', () => {
             let current = this.mainWindow.webContents.getZoomLevel()
             this.mainWindow.webContents.setZoomLevel(current + 0.1)
-            ipcClient.emitToRender('notice', { title: '全局缩放', message: `${(current + 0.1) * 100}%` })
+            ipcClient.emitToRender('notice', {
+                title: '全局缩放',
+                message: `${Math.round((current + 0.1) * 100)}%`,
+            })
         })
-        globalShortcut.register('CommandOrControl+PageDown', () => {
+        globalShortcut.register('CommandOrControl+-', () => {
             let current = this.mainWindow.webContents.getZoomLevel()
             this.mainWindow.webContents.setZoomLevel(current - 0.1)
-            ipcClient.emitToRender('notice', { title: '全局缩放', message: `${(current - 0.1) * 100}%` })
+            ipcClient.emitToRender('notice', {
+                title: '全局缩放',
+                message: `${Math.round((current - 0.1) * 100)}%`,
+            })
         })
     }
 

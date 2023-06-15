@@ -74,18 +74,18 @@ let subviewLeftTabsData = [
         name: 'tutorial',
         content: '用户手册',
         iconSrc: './assets/icon/tutorial.svg',
-        itemList: [
+        viewPath: './components/tutorial/tutorial.html',
+        clickSendToWindow: [
             {
-                title: 'Project-3',
-                name: '1',
-                content: 'Project-3',
-                items: [],
-            },
-            {
-                title: 'Address-3',
-                name: '2',
-                content: 'Address-3',
-                items: [],
+                event: 'leftBar:click.tutorial',
+                params: [
+                    {
+                        title: 'tutorial',
+                        name: 'tutorial',
+                        content: 'Tab 1 content',
+                        src: './components/tutorial/uniclient.html',
+                    },
+                ],
             },
         ],
     },
