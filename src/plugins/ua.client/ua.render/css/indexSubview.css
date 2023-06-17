@@ -1,4 +1,9 @@
 /* 鼠标事件开启和关闭 */
+body{
+    margin: 0;
+}
+
+
 .subview-content {
     width: 100%;
     height: 100%;
@@ -156,7 +161,12 @@
     background-color: #fafafa;
 }
 
-.subviewItem > .subviewItemoptions {
+.subviewItembtn::before{
+    width: 10px;
+    background-color: #fafafa;
+}
+
+.subviewItemoptions {
     width: calc(100% - 2px);
     transition: all 0.2s;
 }
@@ -174,17 +184,17 @@
     /* background-color: #87a2af; */
     overflow: auto;
 }
-.subviewItem .el-tree .custom-tree-node {
+.el-tree .custom-tree-node {
     line-height: 26px;
     font-size: calc(var(--font-size-level2) - 1px);
     font-weight: 500;
     color: black;
 }
-.subviewItem .el-tree .custom-tree-node span {
+.el-tree .custom-tree-node span {
     height: 26px;
     line-height: 26px;
 }
-.subviewItem .el-tree .custom-tree-node img {
+.el-tree .custom-tree-node img {
     vertical-align: middle;
     padding: 0px 5px 3px 0px;
 }

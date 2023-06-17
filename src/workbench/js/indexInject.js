@@ -9,31 +9,10 @@ let mainTabsData = [
 let subviewLeftTabsData = [
     { title: 'mainMenu', name: 'mainMenu', iconSrc: './assets/icon/icon.svg', disabled: true },
     {
-        title: 'resourceManagement',
-        name: '1',
-        content: '资源管理器',
-        iconSrc: './assets/icon/space.svg',
-        itemList: [
-            {
-                title: 'Project',
-                name: '1',
-                content: 'Project',
-                items: [],
-            },
-            {
-                title: 'Address',
-                name: '2',
-                content: 'Address',
-                items: [],
-            },
-        ],
-        viewPath: '../../src/plugins/ua.client/ua.render/address.html',
-    },
-    {
         title: 'Tab 2',
         name: '2',
         content: '资源管理器',
-        iconSrc: './assets/icon/project.svg',
+        iconSrc: './assets/icon/space.svg',
         itemList: [
             {
                 title: 'Project-2',
@@ -85,6 +64,18 @@ let subviewLeftTabsData = [
                         content: 'Tab 1 content',
                         src: './components/tutorial/uniclient.html',
                     },
+                    {
+                        title: 'uaclient',
+                        name: 'uaclient',
+                        content: 'uaclient',
+                        src: './components/tutorial/uniclient.html',
+                    },
+                    {
+                        title: 'ok',
+                        name: 'ok',
+                        content: 'ok',
+                        src: './components/tutorial/uniclient.html',
+                    },
                 ],
             },
         ],
@@ -92,7 +83,7 @@ let subviewLeftTabsData = [
     {
         name: 'uaclient',
         content: 'opcua',
-        iconSrc: './assets/icon/space.svg',
+        iconSrc: './assets/icon/project.svg',
         viewPath: '../../src/plugins/ua.client/ua.render/address.html',
     },
 ]

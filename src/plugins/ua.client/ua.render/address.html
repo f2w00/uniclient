@@ -3,48 +3,51 @@
         <meta charset="UTF-8" />
         <link rel="stylesheet" href="../../../workbench/element-ui/css/index.css" />
         <link rel="stylesheet" href="./css/indexSubview.css" />
+        <title>address</title>
     </head>
     <body>
-        <!-- :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'" -->
-        <div v-for="itemlist in addressList" class="subviewItem" id="app">
-            <div class="subviewItembtn">{{itemlist.title}}</div>
-            <div class="subviewItemoptions">
-                <el-tree
-                    v-if="itemlist.title === 'Project'"
-                    :data="itemlist.items"
-                    :props="subviewItemProjectProps"
-                    @node-click="handleNodeClick"
-                ></el-tree>
-                <el-tree
-                    v-else-if="itemlist.title === 'Address'"
-                    :data="addressTreeData"
-                    :indent="15"
-                    node-key="nodeId"
-                    :props="subviewItemAddressProps"
-                    @node-click="handleAddressNodeClick"
-                    :load="loadAddressNode"
-                    lazy
-                    @node-drag-start="handleDragStart"
-                    @node-drag-end="handleDragEnd"
-                    draggable
-                    :allow-drop="allowDrop"
-                    :allow-drag="allowDrag"
-                >
-                    <span class="custom-tree-node" slot-scope="{node,data}">
-                        <span>
-                            <img class="iconTree" :src=`../../../workbench/assets/icon/${data.nodeClass}.svg`
-                            />{{data.displayName.text}}
+        <div id="app">
+            <div v-for="itemlist in addressList" :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                <div class="subviewItembtn">{{itemlist.title}}</div>
+                <div class="subviewItemoptions">
+                    <el-tree
+                        v-if="itemlist.title === 'Project'"
+                        :data="itemlist.items"
+                        :props="subviewItemProjectProps"
+                        @node-click="handleNodeClick"
+                    ></el-tree>
+                    <el-tree
+                        v-else-if="itemlist.title === 'Address'"
+                        :data="addressTreeData"
+                        :indent="15"
+                        node-key="nodeId"
+                        :props="subviewItemAddressProps"
+                        @node-click="handleAddressNodeClick"
+                        :load="loadAddressNode"
+                        lazy
+                        @node-drag-start="handleDragStart"
+                        @node-drag-end="handleDragEnd"
+                        draggable
+                        :allow-drop="allowDrop"
+                        :allow-drag="allowDrag"
+                    >
+                        <span class="custom-tree-node" slot-scope="{node,data}">
+                            <span>
+                                <img class="iconTree" :src="'../../../workbench/assets/icon/'+data.nodeClass+'.svg'" />
+                                {{data.displayName.text}}
+                            </span>
                         </span>
-                    </span>
-                </el-tree>
-                <el-tree
-                    v-else
-                    :data="itemlist.items"
-                    :props="subviewItemoptionProps"
-                    @node-click="handleNodeClick"
-                ></el-tree>
+                    </el-tree>
+                    <el-tree
+                        v-else
+                        :data="itemlist.items"
+                        :props="subviewItemoptionProps"
+                        @node-click="handleNodeClick"
+                    ></el-tree>
+                </div>
             </div>
         </div>
+
         <!-- <el-dialog
             class="addServerDialog"
             title="Add Server"
@@ -72,6 +75,7 @@
     </body>
     <script src="../../../workbench/vue/vue.js"></script>
     <script src="../../../workbench/element-ui/index.js"></script>
+    <script src="./js/indexInside.js"></script>
     <script type="module">
         import clientApi from './api/clientApi.js'
         import sessionApi from './api/sessionApi.js'
@@ -82,15 +86,15 @@
                 return {
                     addressList: [
                         {
-                            title: 'Project',
-                            name: '1',
-                            content: 'Project',
-                            items: [],
-                        },
-                        {
                             title: 'Address',
                             name: '2',
                             content: 'Address',
+                            items: [],
+                        },
+                        {
+                            title: 'Project',
+                            name: '1',
+                            content: 'Project',
                             items: [],
                         },
                     ],
@@ -102,6 +106,14 @@
                     subviewItemProjectProps: {
                         children: 'children',
                         label: 'label',
+                    },
+                    subviewItemAddressProps: {
+                        label: function (data, node) {
+                            // console.log(data, node);
+                            return data.displayName.text
+                        },
+                        children: 'zones',
+                        isLeaf: 'leaf',
                     },
                 }
             },
@@ -296,7 +308,10 @@
                     console.log(data)
                 },
             },
-            mounted() {},
+            mounted() {
+                subviewItemInit(window, document)
+                targetView(window, '#decisonBox .el-tab-pane')
+            },
             created() {},
         })
     </script>

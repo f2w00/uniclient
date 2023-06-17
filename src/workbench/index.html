@@ -14,87 +14,6 @@
     <body>
         <div id="app">
             <div class="container">
-                <!-- <header class="top-container">
-                    <div class="topLeft">
-                        <div class="logoBox">
-                            <img class="logo" src="./assets/icon/icon.svg" />
-                        </div>
-                        <div class="menuBox">
-                            <el-menu
-                                :default-active="activeIndex"
-                                class="el-menu-demo"
-                                mode="horizontal"
-                                background-color="#eaeaeb"
-                                text-color="#4F4F50"
-                                active-text-color="#535457"
-                                menu-trigger="click"
-                            >
-                                <el-submenu index="1">
-                                    <template slot="title">File</template>
-                                    <el-menu-item index="1-1">New</el-menu-item>
-                                    <el-menu-item index="1-2">Open</el-menu-item>
-                                    <el-menu-item index="1-3">Save</el-menu-item>
-                                    <el-menu-item index="1-4">Save As</el-menu-item>
-                                    <el-menu-item index="1-5">Recent Projects</el-menu-item>
-                                    <el-menu-item index="1-6">Quit</el-menu-item>
-                                </el-submenu>
-                                <el-submenu index="2">
-                                    <template slot="title">View</template>
-                                    <el-menu-item index="2-1">Project</el-menu-item>
-                                    <el-menu-item index="2-2">Address Space</el-menu-item>
-                                    <el-menu-item index="2-3">Log</el-menu-item>
-                                    <el-menu-item index="2-4">Attributes</el-menu-item>
-                                    <el-menu-item index="2-5">References</el-menu-item>
-                                    <el-menu-item index="2-6">File Toolbar</el-menu-item>
-                                    <el-menu-item index="2-7">Server Toolbar</el-menu-item>
-                                    <el-menu-item index="2-8">Document Toolbar</el-menu-item>
-                                </el-submenu>
-                                <el-submenu index="3">
-                                    <template slot="title">Server</template>
-                                    <el-menu-item index="3-1" @click="handleAddserver">Add</el-menu-item>
-                                    <el-menu-item index="3-2">Remove</el-menu-item>
-                                    <el-menu-item index="3-3">Connect</el-menu-item>
-                                    <el-menu-item index="3-4">Disconnect</el-menu-item>
-                                    <el-menu-item index="3-5">PRoperties</el-menu-item>
-                                    <el-menu-item index="3-6">Change user</el-menu-item>
-                                </el-submenu>
-                                <el-submenu index="4">
-                                    <template slot="title">Document</template>
-                                    <el-menu-item index="4-1" @click="">Add</el-menu-item>
-                                    <el-menu-item index="4-2">Remove</el-menu-item>
-                                    <el-menu-item index="4-3">Hide / unhide all dock widgets</el-menu-item>
-                                </el-submenu>
-                                <el-submenu index="5">
-                                    <template slot="title">Settings</template>
-                                    <el-menu-item index="5-1" @click="">Plugins</el-menu-item>
-                                    <el-menu-item index="5-2" @click="">Configure UaExpert</el-menu-item>
-                                    <el-menu-item index="5-3">Manage Certificates</el-menu-item>
-                                </el-submenu>
-                                <el-submenu index="6">
-                                    <template slot="title">Help</template>
-                                    <el-menu-item index="6-1">UaExpert Manual</el-menu-item>
-                                    <el-menu-item index="6-2">What's This?</el-menu-item>
-                                    <el-menu-item index="6-3">Report a bug</el-menu-item>
-                                    <el-menu-item index="6-4">License Status</el-menu-item>
-                                    <el-menu-item index="6-5">Check for Updates</el-menu-item>
-                                    <el-menu-item index="6-6">About UaExpert</el-menu-item>
-                                </el-submenu>
-                            </el-menu>
-                        </div>
-                    </div>
-                    <el-input
-                        class="searchBox"
-                        v-model="search"
-                        @keyup.enter.native="searchHandler"
-                        placeholder="uniclient"
-                    >
-                    </el-input>
-                    <div class="operationBox">
-                        <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
-                        <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
-                        <i class="el-icon-close close-btn" @click="handleClose"></i>
-                    </div>
-                </header> -->
                 <div class="main-container">
                     <div class="subview subviewLeft">
                         <div class="resizeShow">
@@ -110,7 +29,7 @@
                                     :name="item.name"
                                     :disabled="item.disabled"
                                 >
-                                    <span slot="label" class="icon" @click="handleTableft">
+                                    <span slot="label">
                                         <img class="icon" :src="item.iconSrc" />
                                     </span>
                                     <div class="grid-box">
@@ -125,7 +44,7 @@
                             <img class="icon" src="./assets/icon/log-management.svg" @click="handleTabbottom" />
                         </div>
                     </div>
-                    <main class="main content-box">
+                    <main class="main content-box" id="main-content-box">
                         <div id="decisonBox" class="mainviewTop">
                             <el-tabs v-model="mainTabsValue" type="border-card" closable @tab-remove="removeTab">
                                 <el-tab-pane
@@ -190,13 +109,13 @@
                                             <el-table-column prop="error" label="Error"> </el-table-column>
                                         </el-table>
                                     </el-tab-pane>
-                                    <el-tab-pane label="输出">
+                                    <!-- <el-tab-pane label="输出">
                                         <button class="btn" @click="clientInit">点击注册</button>
                                         <button class="btn" @click="addserverVisible = true">点击打开 Dialog</button>
                                         <button class="btn" @click="handleSingle">点击订阅 single</button>
                                         <button class="btn" @click="handleGroup">点击订阅 group</button>
                                         <button class="btn" @click="handleChild">点击发送</button>
-                                    </el-tab-pane>
+                                    </el-tab-pane> -->
                                 </el-tabs>
                             </div>
                             <div class="operationBox">
@@ -566,25 +485,19 @@
                             window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
                         }
                     }
-                    if (tab._props.name === 'tab-0') {
-                        console.log('yes')
+                    let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
+                    let resizeItem = document.querySelector('.subviewLeft .resizeShow')
+                    if (this.leftTabActivate != tab._props.name) {
+                        this.leftTabActivate = tab._props.name
+                        tabsContent.style.display = 'block'
+                        resizeItem.style.display = 'block'
                     } else {
-                        let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
-                        let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                        if (this.leftTabActivate != tab._props.name) {
-                            this.leftTabActivate = tab._props.name
+                        if (tabsContent.style.display == 'none') {
                             tabsContent.style.display = 'block'
                             resizeItem.style.display = 'block'
                         } else {
-                            let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
-                            let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                            if (tabsContent.style.display == 'none') {
-                                tabsContent.style.display = 'block'
-                                resizeItem.style.display = 'block'
-                            } else {
-                                tabsContent.style.display = 'none'
-                                resizeItem.style.display = 'none'
-                            }
+                            tabsContent.style.display = 'none'
+                            resizeItem.style.display = 'none'
                         }
                     }
                 },
@@ -752,6 +665,7 @@
                     document.addEventListener('DOMContentLoaded', async () => {
                         let mainMenu = document.getElementById('tab-mainMenu')
                         mainMenu.onclick = () => {
+                            //TODO 定义mainMenu
                             console.log('nice')
                         }
                         window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
@@ -773,14 +687,18 @@
                     })
                 },
                 tabInit() {
+                    let tryTabCount=0
                     const getTab = (attribute) => {
                         let tab = document.getElementById('iframe:' + attribute.name)
                         if (!tab) {
-                            console.log(tab)
+                            if (tryTabCount++ >5) {
+                                tryTabCount=0
+                                return undefined
+                            }
                             setTimeout(() => getTab(attribute), 1000)
                         } else {
+                            tryTabCount=0
                             window.uniclient.windowEvent.emit(`mainTab:created.${attribute.name}`, tab)
-                            console.log(tab)
                         }
                     }
                     window.exsistTabs = new Map()
@@ -791,10 +709,27 @@
                     this.subviewLeftTabs.forEach((value) => {
                         window.exsistLeftTabs.set(value.name, value)
                     })
+                    if (this.mainTabs.length==0) {
+                        let img=document.createElement('img')
+                        img.src='./assets/icon/welcome.svg'
+                        img.className='welcome'
+                        let container=document.getElementById('main-content-box')
+                        container.appendChild(img)
+                        window.uniclient.windowEvent.once('removeWelcome',()=>{
+                            container.removeChild(img)
+                        })
+                        window.uniclient.windowEvent.on('showWelcome',()=>{
+                            container.appendChild(img)
+                        })
+                    }
+                    
 
                     window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
                         if (!window.exsistTabs.has(attribute.name)) {
                             console.log(attribute.name)
+                            if (this.mainTabs.length==0) {
+                                window.uniclient.windowEvent.emit('removeWelcome')
+                            }
                             this.mainTabs.push(attribute)
                             window.exsistTabs.set(attribute.name, attribute)
                             this.mainTabsValue = attribute.name
@@ -804,27 +739,19 @@
                     window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
                         window.exsistTabs.delete(targetName)
                         this.mainTabs = Array.from(window.exsistTabs.values())
-                        this.mainTabsValue = this.mainTabs[this.mainTabs.length - 1].name
+                        if (this.mainTabs.length==0) {
+                                window.uniclient.windowEvent.emit('showWelcome')
+                        }else{
+                            this.mainTabsValue = this.mainTabs[this.mainTabs.length - 1].name
+                        }
+                        
+                    })
+                    window.uniclient.windowEvent.on('mainTab:change',(tabName)=>{
+                        this.mainTabsValue=tabName
                     })
                 },
                 removeTab(targetName) {
                     window.uniclient.windowEvent.emit('mainTab:remove', targetName)
-                },
-                tutorialInit() {
-                    let notInserted = true
-                    // this.mainTabs.forEach((variable) => {
-                    //     if (variable.name === 'tutorial') {
-                    //         notInserted = false
-                    //     }
-                    // })
-                    if (notInserted) {
-                        window.uniclient.windowEvent.emit('mainTab:create', {
-                            title: 'tutorial',
-                            name: 'tutorial',
-                            content: 'Tab 1 content',
-                            src: './components/tutorial/uniclient.html',
-                        })
-                    }
                 },
 
                 //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
@@ -856,26 +783,25 @@
                 },
             },
             mounted() {
-                subviewItemInit(window, document)
-                targetView(window, '#decisonBox .el-tab-pane')
-                this.attributeObserver()
-                this.triggerSubscript()
-                this.pollingClientInit()
-                this.connectServerListener()
-                this.logInfoListener()
-                this.logWarnListener()
-                this.logErrorListener()
-                this.subscriptListener()
+                // subviewItemInit(window, document)
+                // targetView(window, '#decisonBox .el-tab-pane')
+                // this.attributeObserver()
+                // this.triggerSubscript()
+                // this.pollingClientInit()
+                // this.connectServerListener()
+                // this.logInfoListener()
+                // this.logWarnListener()
+                // this.logErrorListener()
+                // this.subscriptListener()
                 //TODO 我加的
                 this.benchInit()
                 this.tabInit()
                 this.onNoticeFromMain()
-                // this.tutorialInit()
-                this.handelMainMenu()
+                // this.handelMainMenu()
                 // subscript()
             },
             created() {
-                this.mainTabs = mainTabsF()
+                // this.mainTabs = mainTabsF()
                 this.subviewLeftTabs = subviewLeftTabsF()
                 this.subviewRightTabs = subviewRightTabsF()
                 this.problemTableData = problemTableF()
