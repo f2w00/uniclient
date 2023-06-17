@@ -77,7 +77,7 @@ function generateConfigs(filePath) {
     })
     ClientStore.set('workspace', 'recentManagers', [])
     ClientStore.set('workspace', 'currentManager', {})
-    ClientStore.set('workspace', 'projectExtend', pluginsInfo.infos.projectExtend)
+    ClientStore.set('workspace', 'projectExtend', [...pluginsInfo.infos.projectExtend])
 }
 
 function detectPlugins() {

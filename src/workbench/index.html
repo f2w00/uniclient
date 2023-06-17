@@ -709,31 +709,17 @@
                     this.subviewLeftTabs.forEach((value) => {
                         window.exsistLeftTabs.set(value.name, value)
                     })
-                    if (this.mainTabs.length==0) {
-                        let img=document.createElement('img')
-                        img.src='./assets/icon/welcome.svg'
-                        img.className='welcome'
-                        let container=document.getElementById('main-content-box')
-                        container.appendChild(img)
-                        window.uniclient.windowEvent.once('removeWelcome',()=>{
-                            container.removeChild(img)
-                        })
-                        window.uniclient.windowEvent.on('showWelcome',()=>{
-                            container.appendChild(img)
-                        })
-                    }
                     
 
                     window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
                         if (!window.exsistTabs.has(attribute.name)) {
-                            console.log(attribute.name)
-                            if (this.mainTabs.length==0) {
-                                window.uniclient.windowEvent.emit('removeWelcome')
-                            }
                             this.mainTabs.push(attribute)
                             window.exsistTabs.set(attribute.name, attribute)
                             this.mainTabsValue = attribute.name
                             getTab(attribute)
+                            if (attribute.name!='welcome') {
+                                window.uniclient.windowEvent.emit('mainTab:remove','welcome')
+                            }
                         }
                     })
                     window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
@@ -749,6 +735,12 @@
                     window.uniclient.windowEvent.on('mainTab:change',(tabName)=>{
                         this.mainTabsValue=tabName
                     })
+                    if (this.mainTabs.length==0) {
+                        window.uniclient.windowEvent.emit('mainTab:create',{title:'welcome',name:'welcome',src:'./components/welcome.html'})
+                        window.uniclient.windowEvent.on('showWelcome',()=>{
+                            window.uniclient.windowEvent.emit('mainTab:create',{title:'welcome',name:'welcome',src:'./components/welcome.html'})
+                        })
+                    }
                 },
                 removeTab(targetName) {
                     window.uniclient.windowEvent.emit('mainTab:remove', targetName)

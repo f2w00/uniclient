@@ -1,12 +1,5 @@
 {
-    "recentManagers": [],
-    "currentManager": {
-        "workspace": {
-            "workspaceName": "test",
-            "storagePath": "D:\\works\\idea_projects\\uniclient\\test"
-        },
-        "projects": ["1.opcua"],
-        "onStart": ["1.opcua"]
-    },
-    "projectExtend": ["opcua"]
+	"recentManagers": [],
+	"currentManager": {},
+	"projectExtend": {}
 }

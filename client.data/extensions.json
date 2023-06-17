@@ -14,27 +14,8 @@
 							"iconPath": "",
 							"mainViewPath": "render",
 							"sideViewPath": "side",
-							"clickSendToWindow": null,
-							"clickSendToMain": "render:leftSide.click-uaclient"
-						},
-						{
-							"name": "uaclient",
-							"render": {
-								"left": {
-									"title": "项目浏览",
-									"iconSrc": "./assets/icon/tutorial.svg",
-									"viewSrc": "iframe src",
-									"clickCreateTab": true,
-									"clickSendToWindow": null,
-									"clickSendToMain": "render:leftSide.click-uaclient"
-								},
-								"main": {
-									"iconSrc": "./assets/icon/tutorial.svg",
-									"viewSrc": "iframe src"
-								},
-								"right": null,
-								"bottom": null
-							}
+							"clickToSendInWindow": null,
+							"clickToSendInMain": "render:leftSide.click-uaclient"
 						}
 					]
 				},
