@@ -1,19 +1,19 @@
-import {ipcMain, IpcMainEvent, IpcMainInvokeEvent} from 'electron'
+import { ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron'
 import EventEmitter from 'events'
 
 export class ipcClient {
     static localEvents: EventEmitter = new EventEmitter()
     static clientEvents: EventEmitter = new EventEmitter()
 
-    static on(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
+    static onRender(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.on(event, eventHandler)
     }
 
-    static once(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
+    static onceRender(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.once(event, eventHandler)
     }
 
-    static handle(event: string, eventHandler: (event: IpcMainInvokeEvent, ...args: any[]) => void) {
+    static handleRender(event: string, eventHandler: (event: IpcMainInvokeEvent, ...args: any[]) => void) {
         ipcMain.handle(event, eventHandler)
     }
 
@@ -28,9 +28,9 @@ export class ipcClient {
         ipcClient.localEvents.emit('emitToRender', event, ...args)
     }
 
-    static registerToEmit(event: string, eventHandler: (subEvent: string, ...args: any[]) => void) {
-        ipcClient.localEvents.on(event, eventHandler)
-    }
+    // static registerToEmitLocal(event: string, eventHandler: (subEvent: string, ...args: any[]) => void) {
+    //     ipcClient.localEvents.on(event, eventHandler)
+    // }
 
     static emitLocal(event: string, ...args: any[]) {
         ipcClient.localEvents.emit(event, ...args)
@@ -53,6 +53,6 @@ export class ipcClient {
     }
 
     static emitToChild(event: string, module: string, arg: any) {
-        ipcClient.clientEvents.emit('sendToIpc', 'extensionProcess:' + module, {event: event, message: arg})
+        ipcClient.clientEvents.emit('sendToIpc', 'extensionProcess:' + module, { event: event, message: arg })
     }
 }

@@ -1,5 +1,8 @@
 {
 	"globalExtensionManager": {
+		"onStart": [
+			"uaclient"
+		],
 		"enabledExtensions": [
 			{
 				"version": "1",
@@ -33,9 +36,6 @@
 				],
 				"defaultStart": true
 			}
-		],
-		"onStart": [
-			"uaclient"
 		]
 	}
 }

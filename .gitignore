@@ -87,11 +87,6 @@ typings/
 # Electron-Forge
 out/
 /.history/
-/client.data/*
-!/client.data/config.json
-!/client.data/extensions.json
-!/client.data/workspace.json
-!/client.data/render.json
 /.VSCodeCounter/
 /.vscode/
 /.idea/
@@ -107,3 +102,5 @@ src/plugins/ua.client/**/*.js
 *.idea
 *.vscode
 backup/
+default/
+client.data/

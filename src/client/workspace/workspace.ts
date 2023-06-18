@@ -2,6 +2,7 @@ import { IProject, ProjectManagerFactory } from '../../platform/base/project/pro
 import { ClientStore, StartRecord } from '../store/store.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { FileUtils } from '../../platform/base/utils/utils.js'
+import { LocalEvents, renderEvents } from '../../platform/ipc/events/ipc.events'
 
 enum storeNames {
     workspaceManager = 'recentManagers',
@@ -49,16 +50,19 @@ export class WorkspaceManager implements IWorkspaceManager {
     }
 
     initBind() {
-        ipcClient.handle('render:project.load', (event, projectName, fileName: string) => {
+        ipcClient.handleRender(renderEvents.workspaceEvents.projectLoad, (event, projectName, fileName: string) => {
             console.log(fileName)
             if (this.loadedProjects.has(projectName)) {
                 return this.loadedProjects.get(projectName)
             }
             return this.loadProject(fileName)
         })
-        ipcClient.handle('render:project.create', (event, projectName: string, projectType: string) => {
-            return this.createProject(projectName, projectType)
-        })
+        ipcClient.handleRender(
+            renderEvents.workspaceEvents.projectCreate,
+            (event, projectName: string, projectType: string) => {
+                return this.createProject(projectName, projectType)
+            }
+        )
         ipcClient.onClient('Workspace.getProjectFileName', (module: string) => {
             ipcClient.emitToChild(
                 'Workspace.getProjectFileName',
@@ -66,7 +70,7 @@ export class WorkspaceManager implements IWorkspaceManager {
                 ProjectManagerFactory.currentProject.storagePath
             )
         })
-        ipcClient.handle('client:info', (_, ...args) => {
+        ipcClient.handleRender(renderEvents.benchEvents.clientInfo, (_, ...args) => {
             return {
                 currentProject: ProjectManagerFactory.currentProject,
                 currentWorkspace: this.workspace,
@@ -77,7 +81,7 @@ export class WorkspaceManager implements IWorkspaceManager {
 
     toStart() {
         if (this.onStart && this.onStart.length > 0 && !this.loadedProjects.has(this.onStart)) {
-            ipcClient.emitLocal('project:load', this.workspace.storagePath + '/' + this.onStart)
+            ipcClient.emitLocal(LocalEvents.innerEvents.loadProject, this.workspace.storagePath + '/' + this.onStart)
             this.loadProject(this.workspace.storagePath + '/' + this.onStart)
         }
         StartRecord.completeLoading('workspace')
@@ -127,14 +131,14 @@ export class GlobalWorkspaceManager {
     }
 
     initBind() {
-        ipcClient.handle('render:folder.open', (_, fileName: string) => {
+        ipcClient.handleRender(renderEvents.workspaceEvents.openFolder, (_, fileName: string) => {
             let files = FileUtils.openFolder(fileName)
             if (files.includes('.project')) {
                 ipcClient.emitLocal('project:load', fileName, files)
             }
             return FileUtils.deleteFile(files, fileName)
         })
-        ipcClient.handle('render:workspace.load', (_, workspace: workspaceAttribute) => {
+        ipcClient.handleRender(renderEvents.workspaceEvents.load, (_, workspace: workspaceAttribute) => {
             GlobalWorkspaceManager.loadWorkspace(workspace)
             let recent: workspaceAttribute[] = []
             GlobalWorkspaceManager.recent.forEach((value) => {

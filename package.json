@@ -28,6 +28,7 @@
     "dependencies": {
         "async": "^3.2.4",
         "axios": "^1.4.0",
+        "bytenode": "^1.4.1",
         "dotenv": "^16.1.3",
         "electron-squirrel-startup": "^1.0.0",
         "electron-store": "^8.1.0",
@@ -53,11 +54,7 @@
         "nodemon": "^2.0.22",
         "ts-node": "^10.9.1",
         "ttypescript": "^1.5.15",
-        "typescript": "^4.9.5"
-    },
-    "build": {
-        "win": {
-            "icon": "D:\\works\\idea_projects\\uniclient\\src\\workbench\\assets\\icon\\icon.ico"
-        }
+        "typescript": "^4.9.5",
+        "webpack": "^5.87.0"
     }
 }

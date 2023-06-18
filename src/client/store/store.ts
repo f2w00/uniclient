@@ -1,6 +1,7 @@
 import Store from 'electron-store'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
 import { appDataPath } from '../paths'
+import { LocalEvents, renderEvents } from '../../platform/ipc/events/ipc.events'
 
 export type storeOptions = {
     name: string
@@ -83,7 +84,7 @@ export class ClientStore {
     }
 
     private initBind() {
-        ipcClient.handle('render:store', (event, purpose: string, key: string, value?: any) => {
+        ipcClient.handleRender(renderEvents.storeEvents.store, (event, purpose: string, key: string, value?: any) => {
             let result = undefined
             switch (purpose) {
                 case 'set':
@@ -115,9 +116,9 @@ export class StartRecord {
 
     static completeLoading(module: string) {
         StartRecord.startedServices.push(module)
-        if (module == 'extension') ipcClient.emitLocal('extension:loaded')
+        if (module == 'extension') ipcClient.emitLocal(LocalEvents.innerEvents.loadedExtension)
         if (StartRecord.startedServices.length >= StartRecord.moduleNum) {
-            ipcClient.emitLocal('client:start.complete')
+            ipcClient.emitLocal(LocalEvents.innerEvents.completeLoading)
         }
     }
 }

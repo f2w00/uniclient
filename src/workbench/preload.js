@@ -38,7 +38,7 @@ function exposeInMain() {
             return ipcRenderer.invoke(event, ...args)
         },
         mainNotice: async (callback) => {
-            ipcRenderer.on('notice', (_, message) => {
+            ipcRenderer.on('main:notice', (_, message) => {
                 callback(message)
             })
         },

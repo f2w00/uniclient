@@ -3,7 +3,7 @@ import EventEmitter from 'events'
 import { ClientStore, StartRecord } from '../store/store.js'
 import { ExtensionActivator } from './activator.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
-import { rendererEvents } from '../../platform/ipc/events/ipc.events.js'
+import { renderEvents } from '../../platform/ipc/events/ipc.events.js'
 const { plugins, platform } = require('../paths.js')
 
 type extensionStorage = string
@@ -63,7 +63,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     }
 
     initBind() {
-        ipcClient.handle('extension:infos.get', (_) => {
+        ipcClient.handleRender(renderEvents.extensionEvents.getInfo, (_) => {
             return { enabledExtensions: this.enabledExtensions, onStart: this.onStart }
         })
     }
@@ -182,11 +182,11 @@ export class GlobalExtensionManager {
      */
     bindEventsToMain() {
         //绑定插件安装
-        ipcClient.on(rendererEvents.extensionEvents.install, (event, extension: IExtension) => {
+        ipcClient.onRender(renderEvents.extensionEvents.install, (event, extension: IExtension) => {
             this.currentManager.installExtension(extension)
         })
         //绑定插件卸载方法
-        ipcClient.on(rendererEvents.extensionEvents.uninstall, (event, extension: IExtension) => {
+        ipcClient.onRender(renderEvents.extensionEvents.uninstall, (event, extension: IExtension) => {
             this.currentManager.uninstallExtension(extension)
         })
     }

@@ -1,7 +1,7 @@
 import { IProject } from './../platform/base/project/project'
 import { BrowserView, BrowserWindow, Rectangle, screen } from 'electron'
 import { EventEmitter } from 'events'
-import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
+import { renderEvents } from '../platform/ipc/events/ipc.events.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
 import windowStateKeeper from 'electron-window-state'
 import { ClientStore } from '../client/store/store.js'
@@ -88,13 +88,13 @@ export class Workbench extends EventEmitter {
     }
 
     initBind(mainWindow: BrowserWindow) {
-        ipcClient.on(rendererEvents.benchEvents.minimize, () => {
+        ipcClient.onRender(renderEvents.benchEvents.minimize, () => {
             mainWindow.minimize()
         })
-        ipcClient.on(rendererEvents.benchEvents.maximize, () => {
+        ipcClient.onRender(renderEvents.benchEvents.maximize, () => {
             mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize()
         })
-        ipcClient.on('render:config.update', (event, configName, configData) => {
+        ipcClient.onRender('render:config.update', (event, configName, configData) => {
             let config: initModel = configData
             ClientStore.set('config', configName, config)
         })

@@ -1,5 +1,5 @@
 import { configure, getLogger, Configuration, Logger } from 'log4js'
-import { LocalEvents } from '../../ipc/events/ipc.events.js'
+import { MainEmitEvents } from '../../ipc/events/ipc.events.js'
 import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
 import { ClientStore, StartRecord } from '../../../client/store/store.js'
 import { appDataPath } from '../../../client/paths.js'
@@ -62,13 +62,13 @@ export class Log {
 
     constructor(loggerName: loggerName = 'client', config?: Configuration) {
         ipcClient.onClient('Log:info', (info: any) => {
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.info, info)
         })
         ipcClient.onClient('Log:error', (info: any) => {
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.error, info)
         })
         ipcClient.onClient('Log:warn', (info: any) => {
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.warn, info)
         })
         this.configureLog(config)
         Log.clientLogger = getLogger(loggerName)
@@ -81,7 +81,7 @@ export class Log {
                 source: info.source,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.info, info)
         } catch (e: any) {
             throw e
         }
@@ -95,7 +95,7 @@ export class Log {
                 stack: info.trace,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.error, info)
         } catch (e: any) {
             throw e
         }
@@ -108,7 +108,7 @@ export class Log {
                 warn: info.warn,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.warn, info)
         } catch (e: any) {
             throw e
         }

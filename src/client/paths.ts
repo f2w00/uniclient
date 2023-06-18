@@ -1,5 +1,4 @@
 const { join } = require('path')
-const { appData } = require('./product.json')
 
 export const client = join(__dirname, '../client')
 export const plugins = join(__dirname, '../plugins')
@@ -10,4 +9,6 @@ export const extensionHost = join(__dirname, '../client/extend/host.js')
 export const mainPreloadPath = join(__dirname, '../workbench/preload.js')
 export const mainViewPath = join(__dirname, '../workbench/index.html')
 export const mainIconPath = join(__dirname, '../workbench/assets/icon/icon.ico')
-export const appDataPath = appData
+export const appDataPath = process.env['UNICLIENT_APPDATA']
+    ? process.env['UNICLIENT_APPDATA']
+    : join(__dirname, '../../client.data')

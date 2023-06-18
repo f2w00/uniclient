@@ -56,13 +56,13 @@ class Workbench extends events_1.EventEmitter {
         this.winState.manage(this.mainWindow);
     }
     initBind(mainWindow) {
-        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.benchEvents.minimize, () => {
+        ipc_handler_js_1.ipcClient.onRender(ipc_events_js_1.renderEvents.benchEvents.minimize, () => {
             mainWindow.minimize();
         });
-        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.benchEvents.maximize, () => {
+        ipc_handler_js_1.ipcClient.onRender(ipc_events_js_1.renderEvents.benchEvents.maximize, () => {
             mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
         });
-        ipc_handler_js_1.ipcClient.on('render:config.update', (event, configName, configData) => {
+        ipc_handler_js_1.ipcClient.onRender('render:config.update', (event, configName, configData) => {
             let config = configData;
             store_js_1.ClientStore.set('config', configName, config);
         });

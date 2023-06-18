@@ -1,5 +1,5 @@
 import { ipcClient } from './../../ipc/handlers/ipc.handler.js'
-import {StartRecord} from '../../../client/store/store'
+import { StartRecord } from '../../../client/store/store'
 
 type pipeId = string
 

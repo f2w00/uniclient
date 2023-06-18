@@ -37,10 +37,13 @@ process.on('message', (param: { event: string; message?: IExtension }) => {
         case 'extension:activate':
             if (param.message) WorkerActivator.activate(param.message)
             break
-        case 'extension:close': {
-            WorkerActivator.beforeClose()
-            process.exit(0)
+        case 'extension:close':
+            {
+                WorkerActivator.beforeClose()
+                process.exit(0)
+            }
             break
-        }
+        default:
+            break
     }
 })

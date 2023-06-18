@@ -1,20 +1,16 @@
 const { app, Menu, protocol } = require('electron')
-const product = require('./client/product.json')
 const { config } = require('dotenv')
 config()
 require('v8-compile-cache')
 
-if (process[1] == '--squirrel-firstrun') {
-}
-
 app.setPath('appData', generateUserDataPath())
 Menu.setApplicationMenu(null)
+app.commandLine.appendArgument('--no-sandbox') //electron bug with gpu_error
 app.whenReady().then(() => {
     protocol.interceptFileProtocol(
         'file',
         (req, callback) => {
-            const url = req.url.substr(8)
-            callback(decodeURI(url))
+            callback(decodeURI(req.url.slice(8)))
         },
         (error) => {
             if (error) {
@@ -35,31 +31,69 @@ async function startUp() {
  * @returns
  */
 function generateUserDataPath() {
-    const { existsSync, writeFile, mkdirSync, appendFile } = require('fs')
-    let dataPath = product['appData']
-    if (!dataPath) {
-        const { join } = require('path')
-        dataPath = join(__dirname, '../client.data')
-        product['appData'] = dataPath
-        writeFile('./src/client/product.json', JSON.stringify(product), (err) => {
-            console.log(err)
-        })
-        if (!existsSync(dataPath)) {
-            mkdir(dataPath)
+    const { existsSync } = require('fs')
+    let dataPath = process.env['UNICLIENT_APPDATA']
+    let cacheDir = process.env['V8_COMPILE_CACHE_CACHE_DIR']
+    if (existsSync(dataPath) && existsSync(cacheDir)) {
+        return dataPath
+    } else {
+        const { writeFileSync, readFile, mkdirSync } = require('fs')
+        if (!cacheDir || !dataPath || !existsSync(cacheDir) || !existsSync(dataPath)) {
+            const { join } = require('path')
+            dataPath = join(__dirname, '../client.data')
+            let envPath = join(__dirname, '../.env')
+            console.log(existsSync('../.env'))
+            if (!existsSync(envPath)) {
+                let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
+                writeFileSync(envPath, String(data))
+            } else {
+                readFile(envPath, 'utf-8', (err, data) => {
+                    if (data) {
+                        data.replace(
+                            /^V8_COMPILE_CACHE_CACHE_DIR=.*$/g,
+                            `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}/cache'`
+                        )
+                        data.replace(/^UNICLIENT_APPDATA=.*$/g, `UNICLIENT_APPDATA='${dataPath}'`)
+                    } else {
+                        let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}/cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
+                    }
+                    writeFileSync(envPath, String(data))
+                })
+            }
+            if (!existsSync(dataPath)) {
+                mkdirSync(dataPath)
+            }
+            generateConfigs(dataPath, join, existsSync, mkdirSync)
         }
-        generateConfigs(dataPath)
+        return dataPath
     }
-    if (!process.env['V8_COMPILE_CACHE_CACHE_DIR']) {
-        appendFile(String.raw('../.env'), `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}'`, (err) => {
-            console.log(err)
-        })
-    }
-    return dataPath
 }
 
-function generateConfigs(filePath) {
+function generateConfigs(dataPath, join, existsSync, mkdirSync) {
     const { ClientStore } = require('./client/store/store')
-    new ClientStore(filePath)
+    new ClientStore(dataPath)
+    const detectPlugins = () => {
+        const { readdirSync } = require('fs')
+        let pluginPath = join(__dirname, './plugins')
+        let paths = readdirSync(pluginPath)
+        let plugins = []
+        let onStart = []
+        let extend = new Map()
+        paths.forEach((value, index) => {
+            let acualPath = pluginPath + '/' + value + '/package.json'
+            if (existsSync(acualPath)) {
+                let { uniPlugin } = require(acualPath)
+                uniPlugin ? plugins.push(uniPlugin) : null
+                if ('projectExtend' in uniPlugin) {
+                    uniPlugin.projectExtend.forEach((value) => {
+                        extend.set(value, value)
+                    })
+                    if (uniPlugin.defaultStart) onStart.push(uniPlugin.identifier.id)
+                }
+            }
+        })
+        return { plugins: { list: plugins, onStart: onStart }, infos: { projectExtend: Array.from(extend.values()) } }
+    }
     let pluginsInfo = detectPlugins()
     ClientStore.create({
         name: 'extensions',
@@ -76,31 +110,28 @@ function generateConfigs(filePath) {
         clearInvalidConfig: false,
     })
     ClientStore.set('workspace', 'recentManagers', [])
-    ClientStore.set('workspace', 'currentManager', {})
-    ClientStore.set('workspace', 'projectExtend', [...pluginsInfo.infos.projectExtend])
+    ClientStore.set('workspace', 'projectExtend', pluginsInfo.infos.projectExtend)
+    let defaultPath = join(__dirname, '../default')
+    if (!existsSync(defaultPath)) {
+        mkdirSync(defaultPath)
+    }
+    ClientStore.set('workspace', 'currentManager', {
+        workspace: {
+            workspaceName: 'default',
+            storagePath: defaultPath,
+        },
+        projects: [],
+        onStart: [],
+    })
 }
 
-function detectPlugins() {
-    const { join } = require('path')
-    const { existsSync, readdirSync } = require('fs')
-    let pluginPath = join(__dirname, './plugins')
-    let paths = readdirSync(pluginPath)
-    let plugins = []
-    let onStart = []
-    let extend = new Map()
-    paths.forEach((value, index) => {
-        let acualPath = pluginPath + '/' + value + '/package.json'
-        if (existsSync(acualPath)) {
-            let { uniPlugin } = require(acualPath)
-            uniPlugin ? plugins.push(uniPlugin) : null
-            if ('projectExtend' in uniPlugin) {
-                uniPlugin.projectExtend.forEach((value) => {
-                    extend.set(value, value)
-                })
-                if (uniPlugin.defaultStart) onStart.push(uniPlugin.identifier.id)
-            }
-        }
-    })
-    return { plugins: { list: plugins, onStart: onStart }, infos: { projectExtend: extend.values() } }
-}
-//todo electron-squirrel-startup处理安装问题
+//todo 加密文件编码
+// function encryptFile() {
+//     const { compileFile } = require('bytenode')
+//     const { writeFileSync } = require('fs')
+//     compileFile({
+//         filename: __dirname + './client/client.js',
+//         output: __dirname + './client-out/client.jsc',
+//     })
+//     writeFileSync(__dirname + './client/client.js', "require('bytenode');\nrequire('./client.jsc);")
+// }
