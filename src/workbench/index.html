@@ -1,146 +1,120 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" href="element-ui/css/index.css" />
-        <link rel="stylesheet" href="css/index/index.css" />
-        <link rel="stylesheet" href="css/index/indexTopbar.css" />
-        <link rel="stylesheet" href="css/index/indexSubview.css" />
-        <link rel="stylesheet" href="css/index/indexMainview.css" />
-        <link rel="stylesheet" href="css/index/indexLogview.css" />
-        <link rel="stylesheet" href="css/dialog/dialog.css" />
-    </head>
 
-    <body>
-        <div id="app">
-            <div class="container">
-                <div class="main-container">
-                    <div class="subview subviewLeft">
-                        <div class="resizeShow">
-                            <!-- 可能会影响拖动 -->
-                            <div class="resize horizontal"></div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="subview-content subviewLeft-content">
-                            <el-tabs :value="leftTabActivate" tab-position="left" @tab-click="handleTableft">
-                                <el-tab-pane
-                                    v-for="(item, index) in subviewLeftTabs"
-                                    :id="item.name"
-                                    :name="item.name"
-                                    :disabled="item.disabled"
-                                >
-                                    <span slot="label">
-                                        <img class="icon" :src="item.iconSrc" />
-                                    </span>
-                                    <div class="grid-box">
-                                        <!-- TODO titleBox高度会被顶的变小 -->
-                                        <div class="titleBox">{{item.content}}</div>
-                                        <iframe :src="item.viewPath" class="left-iframe"></iframe>
-                                    </div>
-                                </el-tab-pane>
-                            </el-tabs>
-                        </div>
-                        <div class="subviewLeft-bottom">
-                            <img class="icon" src="./assets/icon/log-management.svg" @click="handleTabbottom" />
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="element-ui/css/index.css" />
+    <link rel="stylesheet" href="css/index/index.css" />
+    <link rel="stylesheet" href="css/index/indexTopbar.css" />
+    <link rel="stylesheet" href="css/index/indexSubview.css" />
+    <link rel="stylesheet" href="css/index/indexMainview.css" />
+    <link rel="stylesheet" href="css/index/indexLogview.css" />
+    <link rel="stylesheet" href="css/dialog/dialog.css" />
+    <link rel="stylesheet" href="css/dialog/menuWrapper.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="main-container">
+                <div class="subview subviewLeft">
+                    <div class="resizeShow">
+                        <!-- 可能会影响拖动 -->
+                        <div class="resize horizontal"></div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewLeft-content">
+                        <el-tabs :value="leftTabActivate" tab-position="left" @tab-click="handleTableft">
+                            <el-tab-pane v-for="(item, index) in subviewLeftTabs" :id="item.name" :name="item.name"
+                                :disabled="item.disabled">
+                                <span slot="label">
+                                    <img class="icon" :src="item.iconSrc" />
+                                </span>
+                                <div class="grid-box">
+                                    <!-- TODO titleBox高度会被顶的变小 -->
+                                    <div class="titleBox">{{item.content}}</div>
+                                    <iframe :src="item.viewPath" class="left-iframe"></iframe>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                    <div class="subviewLeft-bottom">
+                        <img class="icon" src="./assets/icon/log-management.svg" @click="handleTabbottom" />
+                    </div>
+                </div>
+                <main class="main content-box" id="main-content-box">
+                    <div id="decisonBox" class="mainviewTop">
+                        <el-tabs v-model="mainTabsValue" type="border-card" closable @tab-remove="removeTab">
+                            <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
+                                :name="item.name" :class="item.name+'Tabpane'" :id="item.name">
+                                <iframe :class="item.name+'Iframe'" :src="item.src" :id="'iframe:'+item.name"></iframe>
+                            </el-tab-pane>
+                        </el-tabs>
+                        <div class="operationBox">
+                            <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
+                            <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
+                            <i class="el-icon-close close-btn" @click="handleClose"></i>
                         </div>
                     </div>
-                    <main class="main content-box" id="main-content-box">
-                        <div id="decisonBox" class="mainviewTop">
-                            <el-tabs v-model="mainTabsValue" type="border-card" closable @tab-remove="removeTab">
-                                <el-tab-pane
-                                    v-for="(item, index) in mainTabs"
-                                    :key="item.name"
-                                    :label="item.title"
-                                    :name="item.name"
-                                    :class="item.name+'Tabpane'"
-                                    :id="item.name"
-                                >
-                                    <iframe
-                                        :class="item.name+'Iframe'"
-                                        :src="item.src"
-                                        :id="'iframe:'+item.name"
-                                    ></iframe>
+                    <footer class="main-bottom" id="main-bottom">
+                        <div class="resize mian-vertical"></div>
+                        <div class="line"></div>
+                        <div class="logview">
+                            <el-tabs>
+                                <el-tab-pane label="日志">
+                                    <el-table class="logTable" :data="logTableData" :row-class-name="tableRowClassName"
+                                        height="100%" stripe style="width: 100%" border>
+                                        <el-table-column prop="timeStamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information"> </el-table-column>
+                                        <el-table-column prop="error" label="Error"> </el-table-column>
+                                        <el-table-column prop="warn" label="Warn"> </el-table-column>
+                                    </el-table>
                                 </el-tab-pane>
-                            </el-tabs>
-                            <div class="operationBox">
-                                <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
-                                <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
-                                <i class="el-icon-close close-btn" @click="handleClose"></i>
-                            </div>
-                        </div>
-                        <footer class="main-bottom" id="main-bottom">
-                            <div class="resize mian-vertical"></div>
-                            <div class="line"></div>
-                            <div class="logview">
-                                <el-tabs>
-                                    <el-tab-pane label="日志">
-                                        <el-table
-                                            class="logTable"
-                                            :data="logTableData"
-                                            :row-class-name="tableRowClassName"
-                                            height="100%"
-                                            stripe
-                                            style="width: 100%"
-                                            border
-                                        >
-                                            <el-table-column prop="timeStamp" label="Timestamp" width="150">
-                                            </el-table-column>
-                                            <el-table-column prop="source" label="Source" width="100">
-                                            </el-table-column>
-                                            <el-table-column prop="information" label="Information"> </el-table-column>
-                                            <el-table-column prop="error" label="Error"> </el-table-column>
-                                            <el-table-column prop="warn" label="Warn"> </el-table-column>
-                                        </el-table>
-                                    </el-tab-pane>
-                                    <el-tab-pane label="问题">
-                                        <el-table
-                                            class="logTable"
-                                            :data="problemTableData"
-                                            height="100%"
-                                            stripe
-                                            border
-                                            style="width: 100%"
-                                        >
-                                            <el-table-column prop="timestamp" label="Timestamp" width="150">
-                                            </el-table-column>
-                                            <el-table-column prop="source" label="Source" width="100">
-                                            </el-table-column>
-                                            <el-table-column prop="information" label="Information"> </el-table-column>
-                                            <el-table-column prop="error" label="Error"> </el-table-column>
-                                        </el-table>
-                                    </el-tab-pane>
-                                    <!-- <el-tab-pane label="输出">
+                                <el-tab-pane label="问题">
+                                    <el-table class="logTable" :data="problemTableData" height="100%" stripe border
+                                        style="width: 100%">
+                                        <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information"> </el-table-column>
+                                        <el-table-column prop="error" label="Error"> </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <!-- <el-tab-pane label="输出">
                                         <button class="btn" @click="clientInit">点击注册</button>
                                         <button class="btn" @click="addserverVisible = true">点击打开 Dialog</button>
                                         <button class="btn" @click="handleSingle">点击订阅 single</button>
                                         <button class="btn" @click="handleGroup">点击订阅 group</button>
                                         <button class="btn" @click="handleChild">点击发送</button>
                                     </el-tab-pane> -->
-                                </el-tabs>
-                            </div>
-                            <div class="operationBox">
-                                <i class="el-icon-minus minimize-btn" @click="handleTabbottom"></i>
-                            </div>
-                        </footer>
-                    </main>
-                    <div class="subview subviewRight">
-                        <div class="resizeShow">
-                            <div class="resize horizontal"></div>
+                            </el-tabs>
                         </div>
-                        <div class="line"></div>
+                        <div class="operationBox">
+                            <i class="el-icon-minus minimize-btn" @click="handleTabbottom"></i>
+                        </div>
+                    </footer>
+                </main>
+                <div class="subview subviewRight">
+                    <div class="resizeShow">
+                        <div class="resize horizontal"></div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewRight-content">
+                        <el-tabs :value="rightTabActivate" tab-position="right" @tab-click="handleTabright">
+                            <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
+                                <span slot="label">
+                                    <img class="icon" :src="item.iconSrc" />
+                                </span>
+                                <div class="grid-box">
+                                    <div class="titleBox">{{item.content}}</div>
+                                    <iframe :src="item.viewPath" :class="item.name+'Right'" frameborder="none"></iframe>
+                                </div>
 
-                        <div class="subview-content subviewRight-content">
-                            <el-tabs :value="rightTabActivate" tab-position="right" @tab-click="handleTabright">
-                                <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
-                                    <span slot="label">
-                                        <img class="icon" :src="item.iconSrc" />
-                                    </span>
-                                    <div class="grid-box">
-                                        <div class="titleBox">{{item.content}}</div>
-                                    </div>
-                                    <iframe :src="item.viewPath" :class="item.name+Right" frameborder="none"></iframe>
-                                    
-                                        <!-- <div
+                                <!-- <div
                                             v-for="itemlist in item.itemList"
                                             :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'"
                                         >
@@ -177,14 +151,13 @@
                                                 </el-table>
                                             </div>
                                         </div> -->
-                                    </div>
-                                </el-tab-pane>
-                            </el-tabs>
-                        </div>
                     </div>
+                    </el-tab-pane>
+                    </el-tabs>
                 </div>
             </div>
-            <!-- <el-dialog
+        </div>
+        <!-- <el-dialog
                 class="addServerDialog"
                 title="Add Server"
                 :close-on-click-modal="false"
@@ -208,596 +181,670 @@
                     <el-button type="primary" @click="handleConnectServer">OK</el-button>
                 </div>
             </el-dialog> -->
+        <div class="menu_dialog" v-if="showMenu">
+            <div class="__menu__wrapper" ref="MenuWrapper">
+                <template v-for="(item, index) in menuList">
+                    <div class="__menu__item" v-if="!item.hidden && !item.line" :key="index"
+                        :class="{ disabled: item.disabled }" @mousedown.stop="handleMenuItemClick(item)"
+                        @mouseenter="handleMenuMouseEnter($event, item)">
+                        <span class="__menu__item-icon" v-if="hasIcon">
+                            <i v-if="IconType === 'font-icon'" v-show="item.icon" :class="item.icon"></i>
+                        </span>
+                        <span class="__menu__item-label">{{ item.label }}</span>
+                        <span class="__menu__item-tips">{{ item.tips || '' }}</span>
+                        <span class="__menu__item-arrow" v-if="hasSubMenu"
+                            :class="{ show: hasSubMenu && item.children }"
+                            :style="{ width: menuItemCss['arrowSize'], height: menuItemCss['arrowSize'] }">
+                            <span class="__menu__item-arrow-after" v-show="hasSubMenu && item.children"></span>
+                        </span>
+                        <div class="__menu__sub__wrapper" :style="{ top: `${subTop}px`, left: `${subLeft}px` }"
+                            v-show=" hoverFlag" v-if="item.children && item.children.length > 0">
+                            <template v-for="(subItem, subIndex) in item.children">
+                                <div class="__menu__sub__item" :key="subIndex" v-if="!subItem.hidden && !subItem.line"
+                                    :class="{ disabled: subItem.disabled }"
+                                    @mousedown.stop="handleSubMenuItemClick(subItem)">
+                                    <span class="__menu__sub__item-label">{{ subItem.label }}</span>
+                                    <span class="__menu__sub__item-tips">{{ subItem.tips || '' }}</span>
+                                </div>
+                                <div class="__menu__line" v-if="subItem.line" :key="subIndex"></div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="__menu__line" v-if="item.line" :key="index"></div>
+                </template>
+            </div>
         </div>
-    </body>
-    <script src="vue/vue.js"></script>
-    <script src="element-ui/index.js"></script>
-    <script src="js/indexInject.js"></script>
-    <script src="js/indexInside.js"></script>
-    <script src="js/indexExtern.js"></script>
-    <script type="module">
-        import clientApi from './api/clientApi.js'
-        import sessionApi from './api/sessionApi.js'
-        import subscriptApi from './api/subscriptApi.js'
-        new Vue({
-            el: '#app',
-            data: function () {
-                return {
-                    leftTabActivate: '1',
-                    rightTabActivate: '1',
-                    bottomTabActivate: '1',
-                    addserverVisible: true,
-                    configurationName: '',
-                    isAutoConnect: false,
-                    activeIndex: '1',
-                    search: '', //当前输入框的值
-                    mainTabsValue: 'opcua',
-                    mainTabs: [],
-                    subviewLeftTabs: [],
-                    subviewRightTabs: [],
-                    addressTreeData: [],
-                    logTableData: [],
-                    problemTableData: [],
-                    attributeTableData: [],
-                    subviewItemoptionProps: {
-                        children: 'children',
-                        label: 'label',
+    </div>
+</body>
+<script src="vue/vue.js"></script>
+<script src="element-ui/index.js"></script>
+<script src="js/indexInject.js"></script>
+<script src="js/indexInside.js"></script>
+<script src="js/indexExtern.js"></script>
+<script type="module">
+    import clientApi from './api/clientApi.js'
+    import sessionApi from './api/sessionApi.js'
+    import subscriptApi from './api/subscriptApi.js'
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                leftTabActivate: '1',
+                rightTabActivate: '1',
+                bottomTabActivate: '1',
+                addserverVisible: true,
+                configurationName: '',
+                isAutoConnect: false,
+                activeIndex: '1',
+                search: '', //当前输入框的值
+                mainTabsValue: 'opcua',
+                mainTabs: [],
+                subviewLeftTabs: [],
+                subviewRightTabs: [],
+                addressTreeData: [],
+                logTableData: [],
+                problemTableData: [],
+                attributeTableData: [],
+                subviewItemoptionProps: {
+                    children: 'children',
+                    label: 'label',
+                },
+                subviewItemProjectProps: {
+                    children: 'children',
+                    label: 'label',
+                },
+                subviewItemAddressProps: {
+                    label: function (data, node) {
+                        return data.displayName.text
                     },
-                    subviewItemProjectProps: {
-                        children: 'children',
-                        label: 'label',
-                    },
-                    subviewItemAddressProps: {
-                        label: function (data, node) {
-                            // console.log(data, node);
-                            return data.displayName.text
-                        },
-                        children: 'zones',
-                        isLeaf: 'leaf',
-                    },
-                }
-            },
-            computed: {},
-            methods: {
-                // /* 接口类函数 */
-                // async clientInit() {
-                //     const param = {
-                //         applicationName: 'NodeOPCUA-Client',
-                //         connectionStrategy: {
-                //             initialDelay: 1000,
-                //             maxRetry: 1,
-                //         },
-                //         securityMode: 1,
-                //         keepSessionAlive: true,
-                //         securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
-                //         endpointMustExist: false,
-                //     }
-                //     return await clientApi.clientInit(param)
-                // },
-                // async sessionBrowseroot() {
-                //     const param = {}
-                //     return await sessionApi.sessionBrowseroot(param)
-                // },
-                // async sessionRead(node) {
-                //     const param = { nodeId: null }
-                //     param.nodeId = node
-                //     return await sessionApi.sessionRead(param)
-                // },
-                // async sessionBrowse(node) {
-                //     const param = { node: null, browseNext: false }
-                //     param.node = node
-                //     return await sessionApi.sessionBrowse(param)
-                // },
-                // async getSessionGroup(node, count) {
-                //     let cnt = count++
-                //     if (cnt < 3) {
-                //         const param = { node: null, browseNext: false }
-                //         param.node = node
-                //         let res = await sessionApi.sessionBrowse(param)
-                //         let result = []
-                //         for (let i = 0; i < res.data.references.length; i++) {
-                //             // console.log(res.data.references[i].nodeClass)
-                //             if (res.data.references[i].nodeClass === 'Variable') {
-                //                 result.push(
-                //                     JSON.stringify({
-                //                         nodeId: res.data.references[i].nodeId,
-                //                         displayName: res.data.references[i].displayName.text,
-                //                     })
-                //                 )
-                //             } else {
-                //                 let resBack = await this.getSessionGroup(res.data.references[i].nodeId, cnt)
-                //                 if (resBack !== '') {
-                //                     result.push(resBack)
-                //                 }
-                //             }
-                //         }
-                //         return result.join('|')
-                //     } else {
-                //         return ''
-                //     }
-                // },
-                // async subscriptInit() {
-                //     const param = {
-                //         requestedLifetimeCount: 60,
-                //         requestedPublishingInterval: 100,
-                //         requestedMaxKeepAliveCount: 10,
-                //         publishingEnabled: true,
-                //         maxNotificationsPerPublish: 100,
-                //         priority: 1,
-                //     }
-                //     return await subscriptApi.subscriptInit(param)
-                // },
-                // async subscriptGroup(list) {
-                //     const param = {
-                //         itemsToMonitor: [],
-                //         displayNames: [],
-                //     }
-                //     list.forEach((item) => {
-                //         item = JSON.parse(item)
-                //         param.itemsToMonitor.push({ nodeId: item.nodeId })
-                //         param.displayNames.push(item.displayName)
-                //     })
-                //     // console.log(param)
-                //     return await subscriptApi.subscriptGroup(param)
-                // },
-                // async subscriptSingle(nodeId, displayName) {
-                //     const param = {
-                //         itemToMonitor: { nodeId: null },
-                //         displayName: null,
-                //     }
-                //     param.itemToMonitor.nodeId = nodeId
-                //     param.displayName = displayName
-                //     return await subscriptApi.subscriptSingle(param)
-                // },
+                    children: 'zones',
+                    isLeaf: 'leaf',
+                },
 
-                /* 元素调用类函数 */
-                searchHandler() {
-                    console.log('+++: searchHandler')
+                subLeft: 0,
+                subTop: 0,
+                hoverFlag: false,
+                clickDomEl: null,
+                showMenu: false,
+                menuWidth: 200,
+                menuList: [],
+                hasIcon: false,
+                IconType: 'font-icon',
+                menuItemCss: {
+                    arrowSize: '10px',
                 },
-                handleConnectServer() {
-                    var iframeDom = document.getElementById('addServerIframe')
-                    iframeDom.contentWindow.connectServer(this.isAutoConnect)
-                    this.addserverVisible = false
-                },
-                // handleNodeClick(data) {
-                //     console.log(data)
-                // },
-                // async handleAddressNodeClick(data) {
-                //     //TODO MyObject收到两个相同的结果
-                //     this.attributeTableData = []
-                //     let _id = 1
-                //     for (let key in data) {
-                //         let item = {
-                //             id: '',
-                //             attribute: '',
-                //             value: '',
-                //         }
-                //         item.id = _id++
-                //         item.attribute = key
-                //         item.value = data[key]
-                //         if (data[key].constructor === Object) {
-                //             item.value = getObjValue(data[key])
-                //         }
-                //         if (item.attribute !== 'isForward') {
-                //             this.attributeTableData.push(item)
-                //         }
-                //     }
-                //     let res = await this.sessionRead(data.nodeId)
-                //     if (res.data.value.value !== undefined) {
-                //         let arr = []
-                //         let value = { id: '0', attribute: 'value', value: '', children: [] }
-                //         for (let key in res.data) {
-                //             if (key === 'value') {
-                //                 for (let key1 in res.data.value) {
-                //                     arr.push({ id: _id++, attribute: key1, value: res.data.value[key1] })
-                //                 }
-                //             } else {
-                //                 arr.push({ id: _id++, attribute: key, value: res.data[key] })
-                //             }
-                //         }
-                //         arr.forEach((item) => {
-                //             if (item.attribute === 'dataType' || item.attribute === 'arrayType') {
-                //                 this.attributeTableData.push(item)
-                //             } else {
-                //                 value.children.push(item)
-                //             }
-                //         })
-                //         this.attributeTableData.push(value)
-                //     }
-                // },
-                // async handleAddressNodeClick(data) {
-                //     //TODO MyObject收到两个相同的结果
-                //     this.attributeTableData = []
-                //     let _id = 1
-                //     for (let key in data) {
-                //         let item = {
-                //             id: '',
-                //             attribute: '',
-                //             value: '',
-                //         }
-                //         item.id = _id++
-                //         item.attribute = key
-                //         item.value = data[key]
-                //         if (data[key].constructor === Object) {
-                //             item.value = getObjValue(data[key])
-                //         }
-                //         if (item.attribute !== 'isForward') {
-                //             this.attributeTableData.push(item)
-                //         }
-                //     }
-                //     let res = await this.sessionRead(data.nodeId)
-                //     if (res.data.value.value !== undefined) {
-                //         let arr = []
-                //         let value = { id: '0', attribute: 'value', value: '', children: [] }
-                //         for (let key in res.data) {
-                //             if (key === 'value') {
-                //                 for (let key1 in res.data.value) {
-                //                     arr.push({ id: _id++, attribute: key1, value: res.data.value[key1] })
-                //                 }
-                //             } else {
-                //                 arr.push({ id: _id++, attribute: key, value: res.data[key] })
-                //             }
-                //         }
-                //         arr.forEach((item) => {
-                //             if (item.attribute === 'dataType' || item.attribute === 'arrayType') {
-                //                 this.attributeTableData.push(item)
-                //             } else {
-                //                 value.children.push(item)
-                //             }
-                //         })
-                //         this.attributeTableData.push(value)
-                //     }
-                // },
-                // async loadAddressNode(node, resolve) {
-                //     if (node.level === 0) {
-                //         return resolve(this.addressTreeData)
-                //     } else if (node.level === 1) {
-                //         let res = await this.sessionBrowseroot()
-                //         return resolve(res.data)
-                //     } else {
-                //         let res = await this.sessionBrowse(node.data.nodeId)
-                //         if (res.data.references.length === 0) {
-                //             return resolve([])
-                //         } else {
-                //             return resolve(res.data.references)
-                //         }
-                //     }
-                // },
-                handleMin() {
-                    mainMini()
-                },
-                handleMax() {
-                    mainMax()
-                },
-                handleClose() {
-                    mainClose()
-                },
-                //TODO 修改了
-                handleTableft(tab, event) {
-                    let info = window.exsistLeftTabs.get(tab._props.name)
-                    if (info) {
-                        if (info.clickSendToWindow) {
-                            info.clickSendToWindow.forEach((value) => {
-                                window.uniclient.windowEvent.emit(value.event, ...value.params)
-                            })
-                        }
-                        if (info.clickCreateTab) {
-                            window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
-                        }
+                activeEl: {}
+            }
+        },
+        computed: {
+            //菜单调用
+            hasSubMenu() {
+                let flag = false
+                for (let i = 0; i < this.menuList.length; i++) {
+                    if (this.menuList[i].children && this.menuList[i].children.length > 0) {
+                        flag = true
+                        break
                     }
-                    let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
-                    let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                    if (this.leftTabActivate != tab._props.name) {
-                        this.leftTabActivate = tab._props.name
-                        tabsContent.style.display = 'block'
-                        resizeItem.style.display = 'block'
-                    } else {
-                        if (tabsContent.style.display == 'none') {
-                            tabsContent.style.display = 'block'
-                            resizeItem.style.display = 'block'
-                        } else {
-                            tabsContent.style.display = 'none'
-                            resizeItem.style.display = 'none'
-                        }
+                }
+                return flag
+            }
+        },
+        methods: {
+            // /* 接口类函数 */
+            // async clientInit() {
+            //     const param = {
+            //         applicationName: 'NodeOPCUA-Client',
+            //         connectionStrategy: {
+            //             initialDelay: 1000,
+            //             maxRetry: 1,
+            //         },
+            //         securityMode: 1,
+            //         keepSessionAlive: true,
+            //         securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+            //         endpointMustExist: false,
+            //     }
+            //     return await clientApi.clientInit(param)
+            // },
+            // async sessionBrowseroot() {
+            //     const param = {}
+            //     return await sessionApi.sessionBrowseroot(param)
+            // },
+            // async sessionRead(node) {
+            //     const param = { nodeId: null }
+            //     param.nodeId = node
+            //     return await sessionApi.sessionRead(param)
+            // },
+            // async sessionBrowse(node) {
+            //     const param = { node: null, browseNext: false }
+            //     param.node = node
+            //     return await sessionApi.sessionBrowse(param)
+            // },
+            // async getSessionGroup(node, count) {
+            //     let cnt = count++
+            //     if (cnt < 3) {
+            //         const param = { node: null, browseNext: false }
+            //         param.node = node
+            //         let res = await sessionApi.sessionBrowse(param)
+            //         let result = []
+            //         for (let i = 0; i < res.data.references.length; i++) {
+            //             // console.log(res.data.references[i].nodeClass)
+            //             if (res.data.references[i].nodeClass === 'Variable') {
+            //                 result.push(
+            //                     JSON.stringify({
+            //                         nodeId: res.data.references[i].nodeId,
+            //                         displayName: res.data.references[i].displayName.text,
+            //                     })
+            //                 )
+            //             } else {
+            //                 let resBack = await this.getSessionGroup(res.data.references[i].nodeId, cnt)
+            //                 if (resBack !== '') {
+            //                     result.push(resBack)
+            //                 }
+            //             }
+            //         }
+            //         return result.join('|')
+            //     } else {
+            //         return ''
+            //     }
+            // },
+            // async subscriptInit() {
+            //     const param = {
+            //         requestedLifetimeCount: 60,
+            //         requestedPublishingInterval: 100,
+            //         requestedMaxKeepAliveCount: 10,
+            //         publishingEnabled: true,
+            //         maxNotificationsPerPublish: 100,
+            //         priority: 1,
+            //     }
+            //     return await subscriptApi.subscriptInit(param)
+            // },
+            // async subscriptGroup(list) {
+            //     const param = {
+            //         itemsToMonitor: [],
+            //         displayNames: [],
+            //     }
+            //     list.forEach((item) => {
+            //         item = JSON.parse(item)
+            //         param.itemsToMonitor.push({ nodeId: item.nodeId })
+            //         param.displayNames.push(item.displayName)
+            //     })
+            //     // console.log(param)
+            //     return await subscriptApi.subscriptGroup(param)
+            // },
+            // async subscriptSingle(nodeId, displayName) {
+            //     const param = {
+            //         itemToMonitor: { nodeId: null },
+            //         displayName: null,
+            //     }
+            //     param.itemToMonitor.nodeId = nodeId
+            //     param.displayName = displayName
+            //     return await subscriptApi.subscriptSingle(param)
+            // },
+
+            /* 元素调用类函数 */
+            handleConnectServer() {
+                var iframeDom = document.getElementById('addServerIframe')
+                iframeDom.contentWindow.connectServer(this.isAutoConnect)
+                this.addserverVisible = false
+            },
+            // handleNodeClick(data) {
+            //     console.log(data)
+            // },
+            // async handleAddressNodeClick(data) {
+            //     //TODO MyObject收到两个相同的结果
+            //     this.attributeTableData = []
+            //     let _id = 1
+            //     for (let key in data) {
+            //         let item = {
+            //             id: '',
+            //             attribute: '',
+            //             value: '',
+            //         }
+            //         item.id = _id++
+            //         item.attribute = key
+            //         item.value = data[key]
+            //         if (data[key].constructor === Object) {
+            //             item.value = getObjValue(data[key])
+            //         }
+            //         if (item.attribute !== 'isForward') {
+            //             this.attributeTableData.push(item)
+            //         }
+            //     }
+            //     let res = await this.sessionRead(data.nodeId)
+            //     if (res.data.value.value !== undefined) {
+            //         let arr = []
+            //         let value = { id: '0', attribute: 'value', value: '', children: [] }
+            //         for (let key in res.data) {
+            //             if (key === 'value') {
+            //                 for (let key1 in res.data.value) {
+            //                     arr.push({ id: _id++, attribute: key1, value: res.data.value[key1] })
+            //                 }
+            //             } else {
+            //                 arr.push({ id: _id++, attribute: key, value: res.data[key] })
+            //             }
+            //         }
+            //         arr.forEach((item) => {
+            //             if (item.attribute === 'dataType' || item.attribute === 'arrayType') {
+            //                 this.attributeTableData.push(item)
+            //             } else {
+            //                 value.children.push(item)
+            //             }
+            //         })
+            //         this.attributeTableData.push(value)
+            //     }
+            // },
+            // async loadAddressNode(node, resolve) {
+            //     if (node.level === 0) {
+            //         return resolve(this.addressTreeData)
+            //     } else if (node.level === 1) {
+            //         let res = await this.sessionBrowseroot()
+            //         return resolve(res.data)
+            //     } else {
+            //         let res = await this.sessionBrowse(node.data.nodeId)
+            //         if (res.data.references.length === 0) {
+            //             return resolve([])
+            //         } else {
+            //             return resolve(res.data.references)
+            //         }
+            //     }
+            // },
+
+            handleMin() {
+                mainMini()
+            },
+            handleMax() {
+                mainMax()
+            },
+            handleClose() {
+                mainClose()
+            },
+            //TODO 修改了
+            handleTableft(tab, event) {
+                let info = window.exsistLeftTabs.get(tab._props.name)
+                if (info) {
+                    if (info.clickSendToWindow) {
+                        info.clickSendToWindow.forEach((value) => {
+                            window.uniclient.windowEvent.emit(value.event, ...value.params)
+                        })
                     }
-                },
-                handleTabright(tab, event) {
-                    let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
-                    let resizeItem = document.querySelector('.subviewRight .resizeShow')
-                    if (this.rightTabActivate !== tab._props.name) {
-                        this.rightTabActivate = tab._props.name
-                        tabsContent.style.display = 'block'
-                        resizeItem.style.display = 'block'
-                    } else {
-                        if (tabsContent.style.display == 'none') {
-                            tabsContent.style.display = 'block'
-                            resizeItem.style.display = 'block'
-                        } else {
-                            tabsContent.style.display = 'none'
-                            resizeItem.style.display = 'none'
-                        }
+                    if (info.clickCreateTab) {
+                        window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
                     }
-                },
-                handleTabbottom() {
-                    // let tabsContent = document.querySelector(".main-bottom .el-tabs__content")
-                    // let resizeItem = document.querySelector(".main-bottom .resize")
-                    let tabsContent = document.querySelector('.main-bottom')
+                }
+                let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
+                let resizeItem = document.querySelector('.subviewLeft .resizeShow')
+                if (this.leftTabActivate != tab._props.name) {
+                    this.leftTabActivate = tab._props.name
+                    tabsContent.style.display = 'block'
+                    resizeItem.style.display = 'block'
+                } else {
                     if (tabsContent.style.display == 'none') {
                         tabsContent.style.display = 'block'
-                        // resizeItem.style.display = "block"
+                        resizeItem.style.display = 'block'
                     } else {
                         tabsContent.style.display = 'none'
-                        // resizeItem.style.display = "none"
+                        resizeItem.style.display = 'none'
                     }
-                },
-                handleAddserver() {
-                    this.addserverVisible = true
-                },
-                tableRowClassName({ row, rowIndex }) {
-                    if ('warn' in row) {
-                        return 'warning-row'
-                    } else if ('error' in row) {
-                        return 'success-row'
+                }
+            },
+            handleTabright(tab, event) {
+                let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
+                let resizeItem = document.querySelector('.subviewRight .resizeShow')
+                if (this.rightTabActivate !== tab._props.name) {
+                    this.rightTabActivate = tab._props.name
+                    tabsContent.style.display = 'block'
+                    resizeItem.style.display = 'block'
+                } else {
+                    if (tabsContent.style.display == 'none') {
+                        tabsContent.style.display = 'block'
+                        resizeItem.style.display = 'block'
+                    } else {
+                        tabsContent.style.display = 'none'
+                        resizeItem.style.display = 'none'
                     }
-                    return ''
-                },
-                // el-tree 拖动函数
-                // handleDragStart(node, ev) {
-                //     let iframeList = document.querySelectorAll('iframe')
-                //     for (let i = 0; i < iframeList.length; i++) {
-                //         iframeList[i].style['pointer-events'] = 'none'
-                //     }
-                //     let nodeData = JSON.stringify(node.data)
-                //     ev.dataTransfer.setData('node', nodeData)
-                // },
-                // handleDragEnd(draggingNode, dropNode, dropType, ev) {
-                //     let iframeList = document.querySelectorAll('iframe')
-                //     for (let i = 0; i < iframeList.length; i++) {
-                //         iframeList[i].style['pointer-events'] = 'auto'
-                //     }
-                // },
-                // allowDrop(draggingNode, dropNode, type) {
-                //     return false
-                // },
-                // allowDrag(draggingNode) {
-                //     return true
-                // },
+                }
+            },
+            handleTabbottom() {
+                // let tabsContent = document.querySelector(".main-bottom .el-tabs__content")
+                // let resizeItem = document.querySelector(".main-bottom .resize")
+                let tabsContent = document.querySelector('.main-bottom')
+                if (tabsContent.style.display == 'none') {
+                    tabsContent.style.display = 'block'
+                    // resizeItem.style.display = "block"
+                } else {
+                    tabsContent.style.display = 'none'
+                    // resizeItem.style.display = "none"
+                }
+            },
+            handleAddserver() {
+                this.addserverVisible = true
+            },
+            tableRowClassName({ row, rowIndex }) {
+                if ('warn' in row) {
+                    return 'warning-row'
+                } else if ('error' in row) {
+                    return 'success-row'
+                }
+                return ''
+            },
+            // el-tree 拖动函数
+            // handleDragStart(node, ev) {
+            //     let iframeList = document.querySelectorAll('iframe')
+            //     for (let i = 0; i < iframeList.length; i++) {
+            //         iframeList[i].style['pointer-events'] = 'none'
+            //     }
+            //     let nodeData = JSON.stringify(node.data)
+            //     ev.dataTransfer.setData('node', nodeData)
+            // },
+            // handleDragEnd(draggingNode, dropNode, dropType, ev) {
+            //     let iframeList = document.querySelectorAll('iframe')
+            //     for (let i = 0; i < iframeList.length; i++) {
+            //         iframeList[i].style['pointer-events'] = 'auto'
+            //     }
+            // },
+            // allowDrop(draggingNode, dropNode, type) {
+            //     return false
+            // },
+            // allowDrag(draggingNode) {
+            //     return true
+            // },
 
-                /* 初始化类函数 */
-                attributeObserver() {
-                    var resizeDom = document.querySelectorAll('.container .resize')
-                    resizeDom.forEach((item) => {
-                        resizeObserve.observe(item, {
-                            attributes: true,
-                        })
+            /* 初始化类函数 */
+            attributeObserver() {
+                var resizeDom = document.querySelectorAll('.container .resize')
+                resizeDom.forEach((item) => {
+                    resizeObserve.observe(item, {
+                        attributes: true,
                     })
-                },
-                async pollingClientInit() {
-                    let flag = true
-                    do {
-                        let res = await this.clientInit()
-                        if (res.code === 200) {
-                            flag = false
-                        }
-                    } while (flag)
-                },
-
-                /* 监听类函数 */
-                async logErrorListener() {
-                    getLogError((result) => {
-                        this.logTableData.push(result)
-                    })
-                },
-                async logWarnListener() {
-                    getLogWarn((result) => {
-                        this.logTableData.push(result)
-                    })
-                },
-                async logInfoListener() {
-                    getLogInfo((result) => {
-                        this.logTableData.push(result)
-                    })
-                },
-                async subscriptListener() {
-                    let iframe = document.querySelector('.opcuaIframe')
-                    subscript((result) => {
-                        // console.log(result)
-                        iframe.contentWindow.postMessage(result)
-                    })
-                },
-                triggerSubscript() {
-                    var target = document.querySelectorAll('#decisonBox .el-tab-pane')
-                    for (let i = 0; i < target.length; i++) {
-                        target[i].addEventListener('main:dragBack', async (e) => {
-                            let data = e.detail.data
-                            // console.log(data)
-                            let res = await this.subscriptInit()
-                            if (data.nodeClass === 'Variable') {
-                                let res1 = await this.subscriptSingle(data.nodeId, data.displayName)
-                            } else {
-                                let reslist = await this.getSessionGroup(data.nodeId, 0)
-                                let nodeGroup = reslist.split('|')
-                                // console.log(nodeGroup)
-                                let res2 = await this.subscriptGroup(nodeGroup)
-                            }
-                        })
+                })
+            },
+            async pollingClientInit() {
+                let flag = true
+                do {
+                    let res = await this.clientInit()
+                    if (res.code === 200) {
+                        flag = false
                     }
-                },
-                connectServerListener() {
-                    window.addEventListener('message', (e) => {
-                        if (e.data === 200) {
-                            this.addressTreeData.push({
-                                nodeId: 'i=84[RootFolder]',
-                                browseName: {
-                                    namespaceIndex: 0,
-                                    name: 'Root',
-                                },
-                                displayName: {
-                                    text: 'Root',
-                                },
-                                nodeClass: 'Object',
-                            })
-                        }
-                    })
-                },
+                } while (flag)
+            },
 
-                /* 测试类函数 */
-                handleSingle() {
-                    console.log('hangleSingle+:', this.subscriptInit())
-                    let res = this.subscriptSingle()
-                    console.log(res)
-                },
-                handleGroup() {
-                    console.log('handleGroup+:', this.subscriptInit())
-                    let res = this.subscriptGroup()
-                    console.log(res)
-                },
-                handleChild() {
-                    let iframe = document.querySelector('.opcuaIframe')
-                    iframe.contentWindow.postMessage('父页面发送的消息')
-                },
-                handleGetstyle() {
-                    const el = document.querySelector('.el-table')
-                    console.log(getStyle(el, 'width'))
-                },
-                //TODO 我加的
-                async benchInit() {
-                    document.addEventListener('DOMContentLoaded', async () => {
-                        let mainMenu = document.getElementById('tab-mainMenu')
-                        mainMenu.onclick = () => {
-                            //TODO 定义mainMenu
-                            console.log('nice')
-                        }
-                        window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
-                        let bottom = document.getElementById('main-bottom')
-                        let tabsLeft = document.querySelector('.subviewLeft-content .el-tabs__content')
-                        let resizeItemLeft = document.querySelector('.subviewLeft .resizeShow')
-                        let tabsRight = document.querySelector('.subviewRight-content .el-tabs__content')
-                        let resizeItemRight = document.querySelector('.subviewRight .resizeShow')
-                        tabsRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
-                        resizeItemRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
-                        tabsLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
-                        resizeItemLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
-                        bottom.style.display = window.benchConfigs.downSide.display ? 'block' : 'none'
-                        window.uniclient.windowEvent.emit('domLoaded')
-
-                        window.uniclient.windowEvent.on('bench:config', () => {
-                            window.uniclient.windowEvent.emit('bench:config.return', window.benchConfigs)
-                        })
-                    })
-                },
-                tabInit() {
-                    let tryTabCount=0
-                    const getTab = (attribute) => {
-                        let tab = document.getElementById('iframe:' + attribute.name)
-                        if (!tab) {
-                            if (tryTabCount++ >5) {
-                                tryTabCount=0
-                                return undefined
-                            }
-                            setTimeout(() => getTab(attribute), 1000)
+            /* 监听类函数 */
+            async logErrorListener() {
+                getLogError((result) => {
+                    this.logTableData.push(result)
+                })
+            },
+            async logWarnListener() {
+                getLogWarn((result) => {
+                    this.logTableData.push(result)
+                })
+            },
+            async logInfoListener() {
+                getLogInfo((result) => {
+                    this.logTableData.push(result)
+                })
+            },
+            async subscriptListener() {
+                let iframe = document.querySelector('.opcuaIframe')
+                subscript((result) => {
+                    // console.log(result)
+                    iframe.contentWindow.postMessage(result)
+                })
+            },
+            triggerSubscript() {
+                var target = document.querySelectorAll('#decisonBox .el-tab-pane')
+                for (let i = 0; i < target.length; i++) {
+                    target[i].addEventListener('main:dragBack', async (e) => {
+                        let data = e.detail.data
+                        // console.log(data)
+                        let res = await this.subscriptInit()
+                        if (data.nodeClass === 'Variable') {
+                            let res1 = await this.subscriptSingle(data.nodeId, data.displayName)
                         } else {
-                            tryTabCount=0
-                            window.uniclient.windowEvent.emit(`mainTab:created.${attribute.name}`, tab)
-                        }
-                    }
-                    window.exsistTabs = new Map()
-                    window.exsistLeftTabs = new Map()
-                    this.mainTabs.forEach((value) => {
-                        window.exsistTabs.set(value.name, value)
-                    })
-                    this.subviewLeftTabs.forEach((value) => {
-                        window.exsistLeftTabs.set(value.name, value)
-                    })
-                    
-
-                    window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
-                        if (!window.exsistTabs.has(attribute.name)) {
-                            this.mainTabs.push(attribute)
-                            window.exsistTabs.set(attribute.name, attribute)
-                            this.mainTabsValue = attribute.name
-                            getTab(attribute)
-                            if (attribute.name!='welcome') {
-                                window.uniclient.windowEvent.emit('mainTab:remove','welcome')
-                            }
+                            let reslist = await this.getSessionGroup(data.nodeId, 0)
+                            let nodeGroup = reslist.split('|')
+                            // console.log(nodeGroup)
+                            let res2 = await this.subscriptGroup(nodeGroup)
                         }
                     })
-                    window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
-                        window.exsistTabs.delete(targetName)
-                        this.mainTabs = Array.from(window.exsistTabs.values())
-                        if (this.mainTabs.length==0) {
-                                window.uniclient.windowEvent.emit('showWelcome')
-                        }else{
-                            this.mainTabsValue = this.mainTabs[this.mainTabs.length - 1].name
-                        }
-                        
-                    })
-                    window.uniclient.windowEvent.on('mainTab:change',(tabName)=>{
-                        this.mainTabsValue=tabName
-                    })
-                    if (this.mainTabs.length==0) {
-                        window.uniclient.windowEvent.emit('mainTab:create',{title:'welcome',name:'welcome',src:'./components/welcome.html'})
-                        window.uniclient.windowEvent.on('showWelcome',()=>{
-                            window.uniclient.windowEvent.emit('mainTab:create',{title:'welcome',name:'welcome',src:'./components/welcome.html'})
+                }
+            },
+            connectServerListener() {
+                window.addEventListener('message', (e) => {
+                    if (e.data === 200) {
+                        this.addressTreeData.push({
+                            nodeId: 'i=84[RootFolder]',
+                            browseName: {
+                                namespaceIndex: 0,
+                                name: 'Root',
+                            },
+                            displayName: {
+                                text: 'Root',
+                            },
+                            nodeClass: 'Object',
                         })
                     }
-                },
-                removeTab(targetName) {
-                    window.uniclient.windowEvent.emit('mainTab:remove', targetName)
-                },
+                })
+            },
 
-                //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
-                getTutorialTitle() {
-                    setTimeout(() => {
-                        let tutorial = document.querySelector('.tutorialIframe')
-                        let elements = tutorial.contentWindow.document.querySelectorAll('h1,h2,h3,h4,h5,h6')
-                        let headers = []
-                        elements.forEach((value) => {
-                            headers.push({
-                                tag: value.tagName,
-                                id: value.id,
-                                level: parseInt(value.tagName.replace('H', '')),
-                                element: value,
-                            })
+            /* 菜单函数 */
+            handleShowMenu() {
+                this.showMenu = !this.showMenu
+                if (this.showMenu) {
+                    this.menuList = menuListF();
+                    this.$nextTick(() => {
+                        let el = this.$refs.MenuWrapper
+                        Object.keys(this.menuItemCss).map(item => {
+                            el.style.setProperty(`--menu-item-${item}`, this.menuItemCss[item])
                         })
-                    }, 10000)
-                },
-                onNoticeFromMain() {
-                    window.uniclient.mainNotice((message) => {
-                        console.log(message)
-                        const h = this.$createElement
-                        this.$notify({
-                            title: message.title,
-                            message: h('i', { style: 'color: teal' }, message.message),
-                            duration: 2500,
+                        let arrowSize = this.menuItemCss.arrowSize.match(/\d+/)
+                        if (arrowSize) arrowSize = ~~arrowSize[0] || 10
+                        el.style.setProperty(`--menu-item-arrowRealSize`, arrowSize / 2 + 'px')
+                    })
+                }
+            },
+            handleMenuItemClick(item) {
+                menuItemClick(this, item)
+                // if (item.fn && typeof item.fn === 'function' && !item.disabled) {
+                //     item.fn()
+                //     this.showMenu = !this.showMenu
+                // }
+            },
+            handleSubMenuItemClick(subItem) {
+                if (subItem.fn && typeof subItem.fn === 'function' && !subItem.disabled) {
+                    subItem.fn(this.clickDomEl, this.activeEl)
+                    this.hoverFlag = false
+                    this.showMenu = !this.showMenu
+                }
+            },
+            handleMenuMouseEnter($event, item) {
+                if (item.children && !item.disabled) {
+                    this.hoverFlag = true
+                    const el = $event.currentTarget
+                    const subEl = el.querySelector('.__menu__sub__wrapper')
+                    const {
+                        offsetWidth
+                    } = el
+                    console.log(offsetWidth)
+                    const {
+                        offsetWidth: subOffsetWidth,
+                        offsetHeight: subOffsetHeight
+                    } = subEl
+                    const {
+                        innerWidth: windowWidth,
+                        innerHeight: windowHeight
+                    } = window
+                    const {
+                        top,
+                        left
+                    } = el.getBoundingClientRect()
+                    if (left + offsetWidth + subOffsetWidth > windowWidth - 5) {
+                        this.subLeft = left - subOffsetWidth + 5
+                    } else {
+                        this.subLeft = left + offsetWidth
+                    }
+                    if (top + subOffsetHeight > windowHeight - 5) {
+                        this.subTop = windowHeight - subOffsetHeight
+                    } else {
+                        this.subTop = top + 5
+                    }
+                }
+            },
+
+            /* 测试类函数 */
+            handleSingle() {
+                console.log('hangleSingle+:', this.subscriptInit())
+                let res = this.subscriptSingle()
+                console.log(res)
+            },
+            handleGroup() {
+                console.log('handleGroup+:', this.subscriptInit())
+                let res = this.subscriptGroup()
+                console.log(res)
+            },
+            handleChild() {
+                let iframe = document.querySelector('.opcuaIframe')
+                iframe.contentWindow.postMessage('父页面发送的消息')
+            },
+            //TODO 我加的
+            async benchInit() {
+                document.addEventListener('DOMContentLoaded', async () => {
+                    let mainMenu = document.getElementById('tab-mainMenu')
+                    mainMenu.onclick = () => {
+                        //TODO 定义mainMenu
+                        this.handleShowMenu()
+                    }
+                    window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
+                    let bottom = document.getElementById('main-bottom')
+                    let tabsLeft = document.querySelector('.subviewLeft-content .el-tabs__content')
+                    let resizeItemLeft = document.querySelector('.subviewLeft .resizeShow')
+                    let tabsRight = document.querySelector('.subviewRight-content .el-tabs__content')
+                    let resizeItemRight = document.querySelector('.subviewRight .resizeShow')
+                    tabsRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
+                    resizeItemRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
+                    tabsLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
+                    resizeItemLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
+                    bottom.style.display = window.benchConfigs.downSide.display ? 'block' : 'none'
+                    window.uniclient.windowEvent.emit('domLoaded')
+
+                    window.uniclient.windowEvent.on('bench:config', () => {
+                        window.uniclient.windowEvent.emit('bench:config.return', window.benchConfigs)
+                    })
+                })
+            },
+            tabInit() {
+                let tryTabCount = 0
+                const getTab = (attribute) => {
+                    let tab = document.getElementById('iframe:' + attribute.name)
+                    if (!tab) {
+                        if (tryTabCount++ > 5) {
+                            tryTabCount = 0
+                            return undefined
+                        }
+                        setTimeout(() => getTab(attribute), 1000)
+                    } else {
+                        tryTabCount = 0
+                        window.uniclient.windowEvent.emit(`mainTab:created.${attribute.name}`, tab)
+                    }
+                }
+                window.exsistTabs = new Map()
+                window.exsistLeftTabs = new Map()
+                this.mainTabs.forEach((value) => {
+                    window.exsistTabs.set(value.name, value)
+                })
+                this.subviewLeftTabs.forEach((value) => {
+                    window.exsistLeftTabs.set(value.name, value)
+                })
+
+
+                window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
+                    if (!window.exsistTabs.has(attribute.name)) {
+                        this.mainTabs.push(attribute)
+                        window.exsistTabs.set(attribute.name, attribute)
+                        this.mainTabsValue = attribute.name
+                        getTab(attribute)
+                        if (attribute.name != 'welcome') {
+                            window.uniclient.windowEvent.emit('mainTab:remove', 'welcome')
+                        }
+                    }
+                })
+                window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
+                    window.exsistTabs.delete(targetName)
+                    this.mainTabs = Array.from(window.exsistTabs.values())
+                    if (this.mainTabs.length == 0) {
+                        window.uniclient.windowEvent.emit('showWelcome')
+                    } else {
+                        this.mainTabsValue = this.mainTabs[this.mainTabs.length - 1].name
+                    }
+
+                })
+                window.uniclient.windowEvent.on('mainTab:change', (tabName) => {
+                    this.mainTabsValue = tabName
+                })
+                if (this.mainTabs.length == 0) {
+                    window.uniclient.windowEvent.emit('mainTab:create', { title: 'welcome', name: 'welcome', src: './components/welcome.html' })
+                    window.uniclient.windowEvent.on('showWelcome', () => {
+                        window.uniclient.windowEvent.emit('mainTab:create', { title: 'welcome', name: 'welcome', src: './components/welcome.html' })
+                    })
+                }
+            },
+            removeTab(targetName) {
+                window.uniclient.windowEvent.emit('mainTab:remove', targetName)
+            },
+
+            //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
+            getTutorialTitle() {
+                setTimeout(() => {
+                    let tutorial = document.querySelector('.tutorialIframe')
+                    let elements = tutorial.contentWindow.document.querySelectorAll('h1,h2,h3,h4,h5,h6')
+                    let headers = []
+                    elements.forEach((value) => {
+                        headers.push({
+                            tag: value.tagName,
+                            id: value.id,
+                            level: parseInt(value.tagName.replace('H', '')),
+                            element: value,
                         })
                     })
-                },
+                }, 10000)
             },
-            mounted() {
-                // subviewItemInit(window, document)
-                // targetView(window, '#decisonBox .el-tab-pane')
-                // this.attributeObserver()
-                // this.triggerSubscript()
-                // this.pollingClientInit()
-                // this.connectServerListener()
-                // this.logInfoListener()
-                // this.logWarnListener()
-                // this.logErrorListener()
-                // this.subscriptListener()
-                //TODO 我加的
-                this.benchInit()
-                this.tabInit()
-                this.onNoticeFromMain()
-                // this.handelMainMenu()
-                // subscript()
+            onNoticeFromMain() {
+                window.uniclient.mainNotice((message) => {
+                    console.log(message)
+                    const h = this.$createElement
+                    this.$notify({
+                        title: message.title,
+                        message: h('i', { style: 'color: teal' }, message.message),
+                        duration: 2500,
+                    })
+                })
             },
-            created() {
-                // this.mainTabs = mainTabsF()
-                this.subviewLeftTabs = subviewLeftTabsF()
-                this.subviewRightTabs = subviewRightTabsF()
-                this.problemTableData = problemTableF()
-            },
-        })
-    </script>
+        },
+        mounted() {
+            // subviewItemInit(window, document)
+            // targetView(window, '#decisonBox .el-tab-pane')
+            // this.attributeObserver()
+            // this.triggerSubscript()
+            // this.pollingClientInit()
+            // this.connectServerListener()
+            // this.logInfoListener()
+            // this.logWarnListener()
+            // this.logErrorListener()
+            // this.subscriptListener()
+            //TODO 我加的
+            this.benchInit()
+            this.tabInit()
+            this.onNoticeFromMain()
+            // this.handelMainMenu()
+            // subscript()
+        },
+        created() {
+            // this.mainTabs = mainTabsF()
+            this.subviewLeftTabs = subviewLeftTabsF()
+            this.subviewRightTabs = subviewRightTabsF()
+            this.problemTableData = problemTableF()
+        },
+    })
+</script>
+
 </html>

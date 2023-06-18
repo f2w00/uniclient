@@ -1,0 +1,187 @@
+.__menu__wrapper {
+    --menu-background: #f0f0f0;
+    --menu-boxShadow: 0 1px 5px #888;
+    --menu-padding: 5px 0;
+    --menu-borderRadius: 0;
+    --menu-item-height: 30px;
+    --menu-item-padding: 0 10px;
+    --menu-item-iconSize: 20px;
+    --menu-item-iconFontSize: 14px;
+    --menu-item-iconColor: #484852;
+    --menu-item-labelColor: #484852;
+    --menu-item-labelFontSize: 14px;
+    --menu-item-tipsColor: #889;
+    --menu-item-tipsFontSize: 12px;
+    --menu-item-arrowColor: #484852;
+    --menu-item-disabledColor: #bcc;
+    --menu-item-hoverBackground: rgba(255, 255, 255, 0.8);
+    --menu-item-hoverIconColor: inherit;
+    --menu-item-hoverLabelColor: inherit;
+    --menu-item-hoverTipsColor: inherit;
+    --menu-item-hoverArrowColor: inherit;
+    --menu-lineColor: #ccc;
+    --menu-lineMargin: 5px 0;
+}
+.menu_dialog {
+    position: absolute;
+    top: 36px;
+    left: 40px;
+    z-index: 999;
+}
+
+.__menu__wrapper {
+    position: fixed;
+    width: 200px;
+    background: var(--menu-background);
+    box-shadow: var(--menu-boxShadow);
+    padding: var(--menu-padding);
+    border-radius: var(--menu-borderRadius);
+    /* visibility: hidden; */
+    z-index: 999;
+}
+
+.__menu__line,
+.__menu__sub__line {
+    border-top: 1px solid var(--menu-lineColor);
+    margin: var(--menu-lineMargin);
+}
+
+.__menu__item,
+.__menu__sub__item {
+    display: flex;
+    height: var(--menu-item-height);
+    line-height: var(--menu-item-height);
+    align-items: center;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.__menu__item .__menu__item-icon,
+.__menu__sub__item .__menu__item-icon {
+    color: var(--menu-item-iconColor);
+    width: var(--menu-item-iconSize);
+    height: var(--menu-item-iconSize);
+    line-height: var(--menu-item-iconSize);
+}
+
+.__menu__item .__menu__item-icon i,
+.__menu__sub__item .__menu__item-icon i {
+    font-size: var(--menu-item-iconFontSize);
+}
+
+.__menu__item .__menu__item-label,
+.__menu__item .__menu__sub__item-label,
+.__menu__sub__item .__menu__item-label,
+.__menu__sub__item .__menu__sub__item-label {
+    width: 100%;
+    max-height: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    font-size: var(--menu-item-labelFontSize);
+    color: var(--menu-item-labelColor);
+    margin-right: 5px;
+    overflow: hidden;
+}
+
+.__menu__item .__menu__item-tips,
+.__menu__item .__menu__sub__item-tips,
+.__menu__sub__item .__menu__item-tips,
+.__menu__sub__item .__menu__sub__item-tips {
+    font-size: var(--menu-item-tipsFontSize);
+    color: var(--menu-item-tipsColor);
+}
+
+.__menu__item .__menu__item-arrow,
+.__menu__sub__item .__menu__item-arrow {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    position: relative;
+}
+
+.__menu__item.disabled,
+.__menu__sub__item.disabled {
+    cursor: not-allowed;
+}
+
+.__menu__item.disabled .__menu__item-icon,
+.__menu__item.disabled .__menu__item-label,
+.__menu__item.disabled .__menu__sub__item-label,
+.__menu__item.disabled .__menu__item-tips,
+.__menu__item.disabled .__menu__sub__item-tips,
+.__menu__sub__item.disabled .__menu__item-icon,
+.__menu__sub__item.disabled .__menu__item-label,
+.__menu__sub__item.disabled .__menu__sub__item-label,
+.__menu__sub__item.disabled .__menu__item-tips,
+.__menu__sub__item.disabled .__menu__sub__item-tips {
+    color: var(--menu-item-disabledColor);
+}
+
+.__menu__item.disabled .__menu__item-arrow .__menu__item-arrow-after,
+.__menu__sub__item.disabled .__menu__item-arrow .__menu__item-arrow-after {
+    border-left: var(--menu-item-arrowRealSize) solid var(--menu-item-disabledColor);
+}
+
+.__menu__item:not(.disabled):hover {
+    background: var(--menu-item-hoverBackground);
+}
+
+.__menu__item:not(.disabled):hover .__menu__item-icon {
+    color: var(--menu-item-hoverIconColor);
+}
+
+.__menu__item:not(.disabled):hover .__menu__item-label {
+    color: var(--menu-item-hoverLabelColor);
+}
+
+.__menu__item:not(.disabled):hover .__menu__item-tips {
+    color: var(--menu-item-hoverTipsColor);
+}
+
+.__menu__item:not(.disabled):hover .__menu__item-arrow {
+    color: var(--menu-item-hoverArrowColor);
+}
+
+.__menu__sub__item:not(.disabled):hover {
+    background: var(--menu-item-hoverBackground);
+}
+
+.__menu__sub__item:not(.disabled):hover .__menu__sub__item-label {
+    color: var(--menu-item-hoverLabelColor);
+}
+
+.__menu__sub__item:not(.disabled):hover .__menu__sub__item-tips {
+    color: var(--menu-item-hoverTipsColor);
+}
+
+.__menu__item-icon {
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 4px;
+}
+
+.__menu__item-arrow.show .__menu__item-arrow-after {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 8px;
+    border-left: var(--menu-item-arrowRealSize) solid var(--menu-item-arrowColor);
+    border-top: var(--menu-item-arrowRealSize) solid transparent;
+    border-bottom: var(--menu-item-arrowRealSize) solid transparent;
+}
+
+.__menu__sub__wrapper {
+    position: fixed;
+    width: 200px;
+    background: var(--menu-background);
+    box-shadow: var(--menu-boxShadow);
+    padding: var(--menu-padding);
+    border-radius: var(--menu-borderRadius);
+}
+
+.__menu__item:hover .__menu__sub__wrapper {
+    visibility: visible;
+}

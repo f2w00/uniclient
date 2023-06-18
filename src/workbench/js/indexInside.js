@@ -141,3 +141,10 @@ function getStyle(element, attr) {
         return getComputedStyle(element, null).getPropertyValue(attr);
     }
 }
+
+function menuItemClick(that, item) {
+    if (item.fn && typeof item.fn === 'function' && !item.disabled) {
+        item.fn()
+        that.showMenu = !that.showMenu
+    }
+}

@@ -6,6 +6,66 @@ let mainTabsData = [
         src: '../../src/plugins/ua.client/ua.render/dataView.html',
     },
 ]
+let menuList = [
+    {
+        label: '刷新',
+        tips: 'Refresh',
+        fn: () => {
+            console.log("刷新")
+        }
+    },
+    {
+        label: '查看',
+        tips: 'Check',
+        fn: () => {
+            console.log("查看")
+        },
+        disabled: (currentEl, bindingEl) => true
+    },
+    {
+        line: true
+    },
+    {
+        label: '操作',
+        tips: 'Operation',
+        children: [
+            {
+                label: '打开',
+                tips: 'Open',
+                fn: () => {
+                    console.log("操作", "打开")
+                }
+            },
+            {
+                label: '编辑',
+                tips: 'Edit',
+                disabled: () => true,
+                fn: () => {
+                    console.log("操作", "编辑")
+                }
+            },
+            {
+                label: '删除',
+                tips: 'Delete',
+                fn: () => {
+                    console.log("操作", "删除")
+                }
+            },
+            {
+                label: '重命名',
+                tips: 'Rename',
+                fn: () => {
+                    console.log("操作", "重命名")
+                }
+            }
+        ]
+    },
+    {
+        label: '设置',
+        tips: 'Setting'
+    }
+]
+
 let subviewLeftTabsData = [
     { title: 'mainMenu', name: 'mainMenu', iconSrc: './assets/icon/icon.svg', disabled: true },
     {
@@ -152,6 +212,10 @@ function getsubviewLeftFiledata(fileData, tabSign, itemSign) {
 function mainTabsF() {
     var tabList = mainTabsData
     return tabList
+}
+function menuListF() {
+    var list = menuList
+    return list
 }
 function subviewLeftTabsF() {
     var tabList = subviewLeftTabsData
