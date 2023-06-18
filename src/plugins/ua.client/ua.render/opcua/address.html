@@ -1,0 +1,209 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../../../workbench/element-ui/css/index.css" />
+    <link rel="stylesheet" href="./opcua.css" />
+    <title>address</title>
+</head>
+
+<body>
+    <div id="app">
+        <div style=" width: 100%; height: 100%; ">
+            <button @click="handleCs">测试</button>
+            <div v-for=" itemlist in addressList"
+                :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                <div class="subviewItembtn">{{itemlist.title}}</div>
+                <div class="subviewItemoptions">
+                    <el-tree v-if="itemlist.title === 'Project'" :data="itemlist.items" :props="subviewItemProjectProps"
+                        @node-click="handleNodeClick"></el-tree>
+                    <el-tree v-else-if="itemlist.title === 'Address'" :data="addressTreeData" :indent="15"
+                        node-key="nodeId" :props="subviewItemAddressProps" @node-click="handleAddressNodeClick"
+                        :load="loadAddressNode" lazy @node-drag-start="handleDragStart" @node-drag-end="handleDragEnd"
+                        draggable :allow-drop="allowDrop" :allow-drag="allowDrag">
+                        <span class="custom-tree-node" slot-scope="{node,data}">
+                            <span>
+                                <img class="iconTree" :src="'../../../workbench/assets/icon/'+data.nodeClass+'.svg'" />
+                                {{data.displayName.text}}
+                            </span>
+                        </span>
+                    </el-tree>
+                    <el-tree v-else :data="itemlist.items" :props="subviewItemoptionProps"
+                        @node-click="handleNodeClick"></el-tree>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../../../../workbench/vue/vue.js"></script>
+<script src="../../../../workbench/element-ui/index.js"></script>
+<script src="./tool.js"></script>
+<script type="module">
+    import clientApi from '../../../../workbench/api/clientApi.js'
+    import sessionApi from '../../../../workbench/api/sessionApi.js'
+    import subscriptApi from '../../../../workbench/api/subscriptApi.js'
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                addressList: [
+                    {
+                        title: 'Address',
+                        name: '2',
+                        content: 'Address',
+                        items: [],
+                    },
+                    {
+                        title: 'Project',
+                        name: '1',
+                        content: 'Project',
+                        items: [],
+                    },
+                ],
+                addressTreeData: [],
+                subviewItemoptionProps: {
+                    children: 'children',
+                    label: 'label',
+                },
+                subviewItemProjectProps: {
+                    children: 'children',
+                    label: 'label',
+                },
+                subviewItemAddressProps: {
+                    label: function (data, node) {
+                        // console.log(data, node);
+                        return data.displayName.text
+                    },
+                    children: 'zones',
+                    isLeaf: 'leaf',
+                },
+            }
+        },
+        computed: {},
+        methods: {
+            handleCs() {
+                window.parent.uniclient.windowEvent.emit(`opcua:address.cs`, "hello world")
+            },
+            /* 接口类函数 */
+            async sessionBrowseroot() {
+                const param = {}
+                return await sessionApi.sessionBrowseroot(param)
+            },
+            async sessionRead(node) {
+                const param = { nodeId: null }
+                param.nodeId = node
+                return await sessionApi.sessionRead(param)
+            },
+            async sessionBrowse(node) {
+                const param = { node: null, browseNext: false }
+                param.node = node
+                return await sessionApi.sessionBrowse(param)
+            },
+            async handleAddressNodeClick(data) {
+                //TODO MyObject收到两个相同的结果
+                this.attributeTableData = []
+                let _id = 1
+                for (let key in data) {
+                    let item = {
+                        id: '',
+                        attribute: '',
+                        value: '',
+                    }
+                    item.id = _id++
+                    item.attribute = key
+                    item.value = data[key]
+                    if (data[key].constructor === Object) {
+                        item.value = getObjValue(data[key])
+                    }
+                    if (item.attribute !== 'isForward') {
+                        this.attributeTableData.push(item)
+                    }
+                }
+                let res = await this.sessionRead(data.nodeId)
+                if (res.data.value.value !== undefined) {
+                    let arr = []
+                    let value = { id: '0', attribute: 'value', value: '', children: [] }
+                    for (let key in res.data) {
+                        if (key === 'value') {
+                            for (let key1 in res.data.value) {
+                                arr.push({ id: _id++, attribute: key1, value: res.data.value[key1] })
+                            }
+                        } else {
+                            arr.push({ id: _id++, attribute: key, value: res.data[key] })
+                        }
+                    }
+                    arr.forEach((item) => {
+                        if (item.attribute === 'dataType' || item.attribute === 'arrayType') {
+                            this.attributeTableData.push(item)
+                        } else {
+                            value.children.push(item)
+                        }
+                    })
+                    this.attributeTableData.push(value)
+                }
+            },
+            async loadAddressNode(node, resolve) {
+                if (node.level === 0) {
+                    return resolve(this.addressTreeData)
+                } else if (node.level === 1) {
+                    let res = await this.sessionBrowseroot()
+                    return resolve(res.data)
+                } else {
+                    let res = await this.sessionBrowse(node.data.nodeId)
+                    if (res.data.references.length === 0) {
+                        return resolve([])
+                    } else {
+                        return resolve(res.data.references)
+                    }
+                }
+            },
+            connectServerListener() {
+                window.addEventListener('message', (e) => {
+                    if (e.data === 200) {
+                        this.addressTreeData.push({
+                            nodeId: 'i=84[RootFolder]',
+                            browseName: {
+                                namespaceIndex: 0,
+                                name: 'Root',
+                            },
+                            displayName: {
+                                text: 'Root',
+                            },
+                            nodeClass: 'Object',
+                        })
+                    }
+                })
+            },
+            handleDragStart(node, ev) {
+                let iframeList = document.querySelectorAll('iframe')
+                for (let i = 0; i < iframeList.length; i++) {
+                    iframeList[i].style['pointer-events'] = 'none'
+                }
+                let nodeData = JSON.stringify(node.data)
+                ev.dataTransfer.setData('node', nodeData)
+            },
+            handleDragEnd(draggingNode, dropNode, dropType, ev) {
+                let iframeList = document.querySelectorAll('iframe')
+                for (let i = 0; i < iframeList.length; i++) {
+                    iframeList[i].style['pointer-events'] = 'auto'
+                }
+            },
+            allowDrop(draggingNode, dropNode, type) {
+                return false
+            },
+            allowDrag(draggingNode) {
+                return true
+            },
+            handleNodeClick(data) {
+                console.log(data)
+            },
+        },
+        mounted() {
+            subviewItemInit(window, document)
+            this.connectServerListener()
+        },
+        created() { },
+    })
+</script>
+
+</html>

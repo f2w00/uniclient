@@ -1,68 +1,64 @@
-let mainTabsData = [
-    {
-        title: 'dataView',
-        name: 'opcua',
-        content: 'Tab 1 content',
-        src: '../../src/plugins/ua.client/ua.render/dataView.html',
-    },
-]
 let menuList = [
     {
-        label: '刷新',
-        tips: 'Refresh',
-        fn: () => {
-            console.log("刷新")
+        label: '日志',
+        tips: 'Log',
+        fn: (that) => {
+            console.log("Log")
         }
     },
     {
-        label: '查看',
-        tips: 'Check',
-        fn: () => {
-            console.log("查看")
+        label: '服务',
+        tips: 'Server',
+        fn: (that) => {
+            console.log("Server")
+            that.handleAddserver()
+        }
+    },
+    {
+        label: '文档',
+        tips: 'Document',
+        fn: (that) => {
+            console.log("Document")
+        }
+    },
+    {
+        label: '设置',
+        tips: 'Settings',
+        fn: (that) => {
+            console.log("Settings")
         },
-        disabled: (currentEl, bindingEl) => true
+        disabled: () => true
     },
     {
         line: true
     },
     {
-        label: '操作',
-        tips: 'Operation',
+        label: 'OPCUA',
+        tips: '',
         children: [
             {
                 label: '打开',
                 tips: 'Open',
-                fn: () => {
-                    console.log("操作", "打开")
+                fn: (that) => {
+                    console.log("OPCUA", "打开")
                 }
             },
             {
                 label: '编辑',
                 tips: 'Edit',
                 disabled: () => true,
-                fn: () => {
-                    console.log("操作", "编辑")
+                fn: (that) => {
+                    console.log("OPCUA", "编辑")
                 }
             },
             {
                 label: '删除',
                 tips: 'Delete',
-                fn: () => {
-                    console.log("操作", "删除")
-                }
-            },
-            {
-                label: '重命名',
-                tips: 'Rename',
-                fn: () => {
-                    console.log("操作", "重命名")
+                fn: (that) => {
+                    console.log("OPCUA", "删除")
                 }
             }
         ]
-    },
-    {
-        label: '设置',
-        tips: 'Setting'
     }
 ]
 
@@ -144,7 +140,7 @@ let subviewLeftTabsData = [
         name: 'uaclient',
         content: 'opcua',
         iconSrc: './assets/icon/project.svg',
-        viewPath: '../../src/plugins/ua.client/ua.render/address.html',
+        viewPath: '../../src/plugins/ua.client/ua.render/opcua/address.html',
     },
 ]
 let subviewRightTabsData = [

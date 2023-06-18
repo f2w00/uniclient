@@ -84,13 +84,6 @@
                                         <el-table-column prop="error" label="Error"> </el-table-column>
                                     </el-table>
                                 </el-tab-pane>
-                                <!-- <el-tab-pane label="输出">
-                                        <button class="btn" @click="clientInit">点击注册</button>
-                                        <button class="btn" @click="addserverVisible = true">点击打开 Dialog</button>
-                                        <button class="btn" @click="handleSingle">点击订阅 single</button>
-                                        <button class="btn" @click="handleGroup">点击订阅 group</button>
-                                        <button class="btn" @click="handleChild">点击发送</button>
-                                    </el-tab-pane> -->
                             </el-tabs>
                         </div>
                         <div class="operationBox">
@@ -157,30 +150,20 @@
                 </div>
             </div>
         </div>
-        <!-- <el-dialog
-                class="addServerDialog"
-                title="Add Server"
-                :close-on-click-modal="false"
-                :visible.sync="addserverVisible"
-                top="15px"
-            >
-                <div class="configName">
-                    Configuration Name
-                    <input
-                        class="configInput"
-                        type="text"
-                        v-model="configurationName"
-                        :placeholder="configurationName"
-                        style="color: #606266"
-                    />
-                </div>
-                <iframe name="addServerIframe" id="addServerIframe" src="./components/addServerView.html"></iframe>
-                <div slot="footer" class="dialog-footer">
-                    <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
-                    <el-button @click="addserverVisible = false">Cancle</el-button>
-                    <el-button type="primary" @click="handleConnectServer">OK</el-button>
-                </div>
-            </el-dialog> -->
+        <el-dialog class="addServerDialog" title="Add Server" :close-on-click-modal="false"
+            :visible.sync="addserverVisible" top="15px" @close='handleCancle'>
+            <div class="configName">
+                Configuration Name
+                <input class="configInput" type="text" v-model="configurationName" :placeholder="configurationName"
+                    style="color: #606266" />
+            </div>
+            <iframe name="addServerIframe" id="addServerIframe" src="./components/addServerView.html"></iframe>
+            <div slot="footer" class="dialog-footer">
+                <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
+                <el-button @click="addserverVisible = false">Cancle</el-button>
+                <el-button type="primary" @click="handleConnectServer">OK</el-button>
+            </div>
+        </el-dialog>
         <div class="menu_dialog" v-if="showMenu">
             <div class="__menu__wrapper" ref="MenuWrapper">
                 <template v-for="(item, index) in menuList">
@@ -232,12 +215,11 @@
                 leftTabActivate: '1',
                 rightTabActivate: '1',
                 bottomTabActivate: '1',
-                addserverVisible: true,
+                addserverVisible: false,
                 configurationName: '',
                 isAutoConnect: false,
                 activeIndex: '1',
-                search: '', //当前输入框的值
-                mainTabsValue: 'opcua',
+                mainTabsValue: 'welcome',
                 mainTabs: [],
                 subviewLeftTabs: [],
                 subviewRightTabs: [],
@@ -260,11 +242,10 @@
                     children: 'zones',
                     isLeaf: 'leaf',
                 },
-
+                //菜单
                 subLeft: 0,
                 subTop: 0,
                 hoverFlag: false,
-                clickDomEl: null,
                 showMenu: false,
                 menuWidth: 200,
                 menuList: [],
@@ -273,7 +254,6 @@
                 menuItemCss: {
                     arrowSize: '10px',
                 },
-                activeEl: {}
             }
         },
         computed: {
@@ -382,72 +362,14 @@
             // },
 
             /* 元素调用类函数 */
+            handleCancle() {
+                this.isAutoConnect = false
+            },
             handleConnectServer() {
                 var iframeDom = document.getElementById('addServerIframe')
                 iframeDom.contentWindow.connectServer(this.isAutoConnect)
                 this.addserverVisible = false
             },
-            // handleNodeClick(data) {
-            //     console.log(data)
-            // },
-            // async handleAddressNodeClick(data) {
-            //     //TODO MyObject收到两个相同的结果
-            //     this.attributeTableData = []
-            //     let _id = 1
-            //     for (let key in data) {
-            //         let item = {
-            //             id: '',
-            //             attribute: '',
-            //             value: '',
-            //         }
-            //         item.id = _id++
-            //         item.attribute = key
-            //         item.value = data[key]
-            //         if (data[key].constructor === Object) {
-            //             item.value = getObjValue(data[key])
-            //         }
-            //         if (item.attribute !== 'isForward') {
-            //             this.attributeTableData.push(item)
-            //         }
-            //     }
-            //     let res = await this.sessionRead(data.nodeId)
-            //     if (res.data.value.value !== undefined) {
-            //         let arr = []
-            //         let value = { id: '0', attribute: 'value', value: '', children: [] }
-            //         for (let key in res.data) {
-            //             if (key === 'value') {
-            //                 for (let key1 in res.data.value) {
-            //                     arr.push({ id: _id++, attribute: key1, value: res.data.value[key1] })
-            //                 }
-            //             } else {
-            //                 arr.push({ id: _id++, attribute: key, value: res.data[key] })
-            //             }
-            //         }
-            //         arr.forEach((item) => {
-            //             if (item.attribute === 'dataType' || item.attribute === 'arrayType') {
-            //                 this.attributeTableData.push(item)
-            //             } else {
-            //                 value.children.push(item)
-            //             }
-            //         })
-            //         this.attributeTableData.push(value)
-            //     }
-            // },
-            // async loadAddressNode(node, resolve) {
-            //     if (node.level === 0) {
-            //         return resolve(this.addressTreeData)
-            //     } else if (node.level === 1) {
-            //         let res = await this.sessionBrowseroot()
-            //         return resolve(res.data)
-            //     } else {
-            //         let res = await this.sessionBrowse(node.data.nodeId)
-            //         if (res.data.references.length === 0) {
-            //             return resolve([])
-            //         } else {
-            //             return resolve(res.data.references)
-            //         }
-            //     }
-            // },
 
             handleMin() {
                 mainMini()
@@ -518,6 +440,7 @@
             },
             handleAddserver() {
                 this.addserverVisible = true
+                console.log("addserverVisible", this.addserverVisible)
             },
             tableRowClassName({ row, rowIndex }) {
                 if ('warn' in row) {
@@ -609,102 +532,26 @@
                     })
                 }
             },
-            connectServerListener() {
-                window.addEventListener('message', (e) => {
-                    if (e.data === 200) {
-                        this.addressTreeData.push({
-                            nodeId: 'i=84[RootFolder]',
-                            browseName: {
-                                namespaceIndex: 0,
-                                name: 'Root',
-                            },
-                            displayName: {
-                                text: 'Root',
-                            },
-                            nodeClass: 'Object',
-                        })
-                    }
-                })
-            },
 
             /* 菜单函数 */
             handleShowMenu() {
-                this.showMenu = !this.showMenu
-                if (this.showMenu) {
-                    this.menuList = menuListF();
-                    this.$nextTick(() => {
-                        let el = this.$refs.MenuWrapper
-                        Object.keys(this.menuItemCss).map(item => {
-                            el.style.setProperty(`--menu-item-${item}`, this.menuItemCss[item])
-                        })
-                        let arrowSize = this.menuItemCss.arrowSize.match(/\d+/)
-                        if (arrowSize) arrowSize = ~~arrowSize[0] || 10
-                        el.style.setProperty(`--menu-item-arrowRealSize`, arrowSize / 2 + 'px')
-                    })
-                }
+                showMenu(this)
             },
             handleMenuItemClick(item) {
                 menuItemClick(this, item)
-                // if (item.fn && typeof item.fn === 'function' && !item.disabled) {
-                //     item.fn()
-                //     this.showMenu = !this.showMenu
-                // }
             },
             handleSubMenuItemClick(subItem) {
-                if (subItem.fn && typeof subItem.fn === 'function' && !subItem.disabled) {
-                    subItem.fn(this.clickDomEl, this.activeEl)
-                    this.hoverFlag = false
-                    this.showMenu = !this.showMenu
-                }
+                subMenuItemClick(this, subItem)
             },
             handleMenuMouseEnter($event, item) {
-                if (item.children && !item.disabled) {
-                    this.hoverFlag = true
-                    const el = $event.currentTarget
-                    const subEl = el.querySelector('.__menu__sub__wrapper')
-                    const {
-                        offsetWidth
-                    } = el
-                    console.log(offsetWidth)
-                    const {
-                        offsetWidth: subOffsetWidth,
-                        offsetHeight: subOffsetHeight
-                    } = subEl
-                    const {
-                        innerWidth: windowWidth,
-                        innerHeight: windowHeight
-                    } = window
-                    const {
-                        top,
-                        left
-                    } = el.getBoundingClientRect()
-                    if (left + offsetWidth + subOffsetWidth > windowWidth - 5) {
-                        this.subLeft = left - subOffsetWidth + 5
-                    } else {
-                        this.subLeft = left + offsetWidth
-                    }
-                    if (top + subOffsetHeight > windowHeight - 5) {
-                        this.subTop = windowHeight - subOffsetHeight
-                    } else {
-                        this.subTop = top + 5
-                    }
-                }
+                menuMouseEnter(this, $event, item)
             },
 
             /* 测试类函数 */
-            handleSingle() {
-                console.log('hangleSingle+:', this.subscriptInit())
-                let res = this.subscriptSingle()
-                console.log(res)
-            },
-            handleGroup() {
-                console.log('handleGroup+:', this.subscriptInit())
-                let res = this.subscriptGroup()
-                console.log(res)
-            },
-            handleChild() {
-                let iframe = document.querySelector('.opcuaIframe')
-                iframe.contentWindow.postMessage('父页面发送的消息')
+            handleCs() {
+                window.uniclient.windowEvent.on('opcua:address.cs', (msg) => {
+                    console.log(msg)
+                })
             },
             //TODO 我加的
             async benchInit() {
@@ -826,11 +673,11 @@
             // this.attributeObserver()
             // this.triggerSubscript()
             // this.pollingClientInit()
-            // this.connectServerListener()
             // this.logInfoListener()
             // this.logWarnListener()
             // this.logErrorListener()
             // this.subscriptListener()
+            this.handleCs()
             //TODO 我加的
             this.benchInit()
             this.tabInit()
@@ -839,7 +686,6 @@
             // subscript()
         },
         created() {
-            // this.mainTabs = mainTabsF()
             this.subviewLeftTabs = subviewLeftTabsF()
             this.subviewRightTabs = subviewRightTabsF()
             this.problemTableData = problemTableF()

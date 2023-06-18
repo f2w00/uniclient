@@ -142,9 +142,64 @@ function getStyle(element, attr) {
     }
 }
 
+/* 菜单函数 */
+function showMenu(that) {
+    that.showMenu = !that.showMenu
+    if (that.showMenu) {
+        that.menuList = menuListF();
+        that.$nextTick(() => {
+            let el = that.$refs.MenuWrapper
+            Object.keys(that.menuItemCss).map(item => {
+                el.style.setProperty(`--menu-item-${item}`, that.menuItemCss[item])
+            })
+            let arrowSize = that.menuItemCss.arrowSize.match(/\d+/)
+            if (arrowSize) arrowSize = ~~arrowSize[0] || 10
+            el.style.setProperty(`--menu-item-arrowRealSize`, arrowSize / 2 + 'px')
+        })
+    }
+}
 function menuItemClick(that, item) {
     if (item.fn && typeof item.fn === 'function' && !item.disabled) {
-        item.fn()
+        item.fn(that)
         that.showMenu = !that.showMenu
+    }
+}
+function subMenuItemClick(that, subItem) {
+    if (subItem.fn && typeof subItem.fn === 'function' && !subItem.disabled) {
+        subItem.fn(that)
+        that.hoverFlag = false
+        that.showMenu = !that.showMenu
+    }
+}
+function menuMouseEnter(that, $event, item) {
+    if (item.children && !item.disabled) {
+        that.hoverFlag = true
+        const el = $event.currentTarget
+        const subEl = el.querySelector('.__menu__sub__wrapper')
+        const {
+            offsetWidth
+        } = el
+        const {
+            offsetWidth: subOffsetWidth,
+            offsetHeight: subOffsetHeight
+        } = subEl
+        const {
+            innerWidth: windowWidth,
+            innerHeight: windowHeight
+        } = window
+        const {
+            top,
+            left
+        } = el.getBoundingClientRect()
+        if (left + offsetWidth + subOffsetWidth > windowWidth - 5) {
+            that.subLeft = left - subOffsetWidth + 5
+        } else {
+            that.subLeft = left + offsetWidth
+        }
+        if (top + subOffsetHeight > windowHeight - 5) {
+            that.subTop = windowHeight - subOffsetHeight
+        } else {
+            that.subTop = top + 5
+        }
     }
 }
