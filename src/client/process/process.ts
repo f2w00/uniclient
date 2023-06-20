@@ -1,8 +1,8 @@
-import { ChildProcess, fork, ForkOptions } from 'child_process'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
-import { ErrorHandler } from '../error/error'
-import { RunningRecord } from '../store/store'
-import { LocalEvents } from '../../platform/ipc/events/ipc.events'
+import {ChildProcess, fork, ForkOptions} from 'child_process'
+import {ipcClient} from '../../platform/ipc/handlers/ipc.handler'
+import {ErrorHandler} from '../error/error'
+import {RunningRecord} from '../../platform/base/store/store'
+import {LocalEvents} from '../../platform/ipc/events/ipc.events'
 
 export type IpcCommunicateModel = {
     purpose: string

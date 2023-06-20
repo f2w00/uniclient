@@ -1,6 +1,5 @@
-import { mkdir, mkdirSync, writeFile, writeFileSync } from 'fs'
-import { ErrorHandler } from '../../../client/error/error'
-import { workspaceAttribute } from '../../../client/workspace/workspace'
+import {mkdirSync, writeFileSync} from 'fs'
+import {workspaceAttribute} from '../../../client/workspace/workspace'
 
 export interface IProject {
     workspace: workspaceAttribute

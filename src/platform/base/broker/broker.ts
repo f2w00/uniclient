@@ -1,5 +1,5 @@
-import { ipcClient } from './../../ipc/handlers/ipc.handler.js'
-import { RunningRecord } from '../../../client/store/store'
+import {ipcClient} from '../../ipc/handlers/ipc.handler'
+import {RunningRecord} from '../store/store'
 
 type pipeId = string
 

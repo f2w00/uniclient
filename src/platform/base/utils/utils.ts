@@ -1,4 +1,4 @@
-import { readdirSync, statSync, watch } from 'fs'
+import {readdirSync, statSync, watch} from 'fs'
 
 export class Utils {
     /**
@@ -62,8 +62,7 @@ export class FileUtils {
     }
 
     static openFolder(fileName: string) {
-        let files = readdirSync(fileName)
-        return files
+        return readdirSync(fileName)
     }
 
     static deleteFile(files: string[], fileName: string) {

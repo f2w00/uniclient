@@ -1,10 +1,6 @@
-import { existsSync, writeFileSync } from 'fs'
-import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
+import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import EventEmitter from 'events'
-import { Config } from '../../config/config.default'
-import { ClientStore, StorePrivate } from '../../../../client/store/store'
-
-// const Log = require('../../../../platform/base/log/log')
+import {StorePrivate} from '../../../../platform/base/store/store'
 
 export module DbUtils {
     /**
@@ -34,7 +30,9 @@ export module DbUtils {
     export function formatDateYMW(date: Date) {
         let day = date.getDay()
         let d = date.getDate()
-        return `week_${date.getFullYear()}_${date.getMonth() + 1}_${Math.ceil((d + 6 - day) / 7)}`
+        return `week_${date.getFullYear()}_${date.getMonth() + 1}_${Math.ceil((
+                                                                                  d + 6 - day) /
+                                                                              7)}`
     }
 
     export function formatDateY(date: Date) {
@@ -54,7 +52,8 @@ export module DbUtils {
 
 export module CertUtils {
     export function validateCertOptions(param: CreateSelfSignCertificateParam1) {
-        if (!(typeof param.subject === 'string')) {
+        if (!(
+            typeof param.subject === 'string')) {
             if (param.subject.country) {
                 if (param.subject.country.length > 2) {
                     return false
@@ -68,29 +67,38 @@ export module CertUtils {
 
 export class CommunicateUtil {
     static events: EventEmitter = new EventEmitter()
+    static project: string
 
     constructor() {
+        CommunicateUtil.events.on('Workspace.getProjectFileName.return', (project) => {
+            CommunicateUtil.project = project
+        })
+        CommunicateUtil.getProjectInfo()
         CommunicateUtil.addListenerToProcess()
+    }
+
+    static getProjectInfo() {
+        CommunicateUtil.emitToClient('Workspace.getProjectFileInfo', ['uaclient'])
     }
 
     static emitToClient(event: string, args?: any[]) {
         process.send
-            ? process.send({
-                  purpose: 'sendToClient',
-                  event: event,
-                  args: args,
-              })
-            : null
+        ? process.send({
+                           purpose: 'sendToClient',
+                           event: event,
+                           args: args,
+                       })
+        : null
     }
 
     static addListenerToClient(event: string, handler: (...args: any[]) => void) {
         process.send
-            ? process.send({
-                  purpose: 'addListenerToClient',
-                  event: event,
-                  handler: handler,
-              })
-            : null
+        ? process.send({
+                           purpose: 'addListenerToClient',
+                           event: event,
+                           handler: handler,
+                       })
+        : null
     }
 
     static addListenerToCommunicate(event: string, handler: (...args: any[]) => void) {
@@ -111,15 +119,19 @@ export class RecordUtil {
     static recordNames: string[]
 
     constructor(recordFile?: string) {
-        RecordUtil.store = new StorePrivate({ name: 'uaclient', clearInvalidConfig: false, fileExtension: 'json' })
+        RecordUtil.store = new StorePrivate({
+                                                name: 'uaclient',
+                                                clearInvalidConfig: false,
+                                                fileExtension: 'json'
+                                            })
         RecordUtil.restoreRecord(recordFile)
         RecordUtil.recordNames = StorePrivate.get('recordNames')
-            ? StorePrivate.get('recordNames')
-            : ['uaRecord:default']
+                                 ? StorePrivate.get('recordNames')
+                                 : ['uaRecord:default']
     }
 
     static recordParams(module: string, param: any) {
-        RecordUtil.paramsToRecord.set(module, { ...param })
+        RecordUtil.paramsToRecord.set(module, {...param})
     }
 
     static getRecords() {

@@ -70,7 +70,7 @@ function generateUserDataPath() {
 }
 
 function generateConfigs(dataPath, join, existsSync, mkdirSync) {
-    const { ClientStore } = require('./client/store/store')
+    const {ClientStore} = require('./platform/base/store/store')
     new ClientStore({ client: false, cwd: dataPath })
     const detectPlugins = () => {
         const { readdirSync } = require('fs')

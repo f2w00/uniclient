@@ -1,7 +1,7 @@
 import Store from 'electron-store'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
-import { appDataPath } from '../paths'
-import { LocalEvents, renderEvents } from '../../platform/ipc/events/ipc.events'
+import {ipcClient} from '../../ipc/handlers/ipc.handler'
+import {appDataPath} from '../../../client/paths'
+import {LocalEvents, renderEvents} from '../../ipc/events/ipc.events'
 
 export type storeOptions = {
     name: string

@@ -9,7 +9,7 @@ const events_1 = require("events");
 const ipc_events_js_1 = require("../platform/ipc/events/ipc.events.js");
 const ipc_handler_js_1 = require("../platform/ipc/handlers/ipc.handler.js");
 const electron_window_state_1 = __importDefault(require("electron-window-state"));
-const store_js_1 = require("../client/store/store.js");
+const store_js_1 = require("../platform/base/store/store.js");
 class Workbench extends events_1.EventEmitter {
     existViews;
     mainWindow;

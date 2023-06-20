@@ -1,8 +1,8 @@
-import { IProject, ProjectManagerFactory } from '../../platform/base/project/project'
-import { ClientStore, RunningRecord } from '../store/store.js'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
-import { FileUtils } from '../../platform/base/utils/utils.js'
-import { LocalEvents, renderEvents } from '../../platform/ipc/events/ipc.events'
+import {IProject, ProjectManagerFactory} from '../../platform/base/project/project'
+import {ClientStore, RunningRecord} from '../../platform/base/store/store.js'
+import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
+import {FileUtils} from '../../platform/base/utils/utils.js'
+import {LocalEvents, renderEvents} from '../../platform/ipc/events/ipc.events'
 
 enum storeNames {
     workspaceManager = 'recentManagers',
@@ -63,13 +63,13 @@ export class WorkspaceManager implements IWorkspaceManager {
                 return this.createProject(projectName, projectType)
             }
         )
-        ipcClient.onClient('Workspace.getProjectFileName', (module: string) => {
+        ipcClient.onClient('Workspace.getProjectFileInfo', (module: string) => {
             ipcClient.emitToChild(
-                'Workspace.getProjectFileName.return',
+                'Workspace.getProjectFileInfo.return',
                 module,
-                ProjectManagerFactory.currentProject.storagePath
-                    ? ProjectManagerFactory.currentProject.storagePath
-                    : undefined
+                ProjectManagerFactory.currentProject
+                ? ProjectManagerFactory.currentProject
+                : undefined
             )
         })
         ipcClient.handleRender(renderEvents.benchEvents.clientInfo, (_, ...args) => {

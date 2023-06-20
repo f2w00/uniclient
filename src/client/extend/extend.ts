@@ -1,9 +1,10 @@
-import { existsSync } from 'fs'
+import {existsSync} from 'fs'
 import EventEmitter from 'events'
-import { ClientStore, RunningRecord } from '../store/store.js'
-import { ExtensionActivator } from './activator.js'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
-import { renderEvents } from '../../platform/ipc/events/ipc.events.js'
+import {ClientStore, RunningRecord} from '../../platform/base/store/store.js'
+import {ExtensionActivator} from './activator.js'
+import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
+import {renderEvents} from '../../platform/ipc/events/ipc.events.js'
+
 const { plugins, platform } = require('../paths.js')
 
 type extensionStorage = string

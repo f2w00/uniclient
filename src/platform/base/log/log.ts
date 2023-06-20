@@ -1,12 +1,12 @@
-import { configure, getLogger, Configuration, Logger } from 'log4js'
-import { MainEmitEvents } from '../../ipc/events/ipc.events.js'
-import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
-import { ClientStore, RunningRecord } from '../../../client/store/store.js'
-import { appDataPath } from '../../../client/paths.js'
+import {Configuration, configure, getLogger, Logger} from 'log4js'
+import {MainEmitEvents} from '../../ipc/events/ipc.events.js'
+import {ipcClient} from '../../ipc/handlers/ipc.handler.js'
+import {RunningRecord} from '../store/store.js'
+import {appDataPath} from '../../../client/paths.js'
 
-enum ConfigNames {
-    log = 'LogConfig',
-}
+// enum ConfigNames {
+//     log = 'LogConfig',
+// }
 
 type Source = string | undefined
 type Warn = string
