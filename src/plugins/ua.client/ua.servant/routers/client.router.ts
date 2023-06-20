@@ -18,5 +18,5 @@ export module ClientRouter {
     router.get('/private_key', ClientController.getPrivateKey)
     router.get('/cert', ClientController.getCertificate)
     router.get('/servers', ClientController.getServers)
-    router.get('/records', ClientController.getRecords)
+    router.get('/record_names', ClientController.getRecords)
 }

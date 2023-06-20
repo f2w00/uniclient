@@ -1,7 +1,7 @@
 import { ChildProcess, fork, ForkOptions } from 'child_process'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
 import { ErrorHandler } from '../error/error'
-import { StartRecord } from '../store/store'
+import { RunningRecord } from '../store/store'
 import { LocalEvents } from '../../platform/ipc/events/ipc.events'
 
 export type IpcCommunicateModel = {
@@ -24,7 +24,7 @@ export class ProcessManager {
         //         value.send({event: 'project:fileName', message: fileName})
         //     })
         // })
-        StartRecord.completeLoading('process')
+        RunningRecord.completeLoading('process')
     }
 
     /**
@@ -86,5 +86,6 @@ export class ProcessManager {
                 process.kill()
             }
         })
+        RunningRecord.completeClose('process')
     }
 }

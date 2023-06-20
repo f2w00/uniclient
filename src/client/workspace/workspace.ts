@@ -1,5 +1,5 @@
 import { IProject, ProjectManagerFactory } from '../../platform/base/project/project'
-import { ClientStore, StartRecord } from '../store/store.js'
+import { ClientStore, RunningRecord } from '../store/store.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { FileUtils } from '../../platform/base/utils/utils.js'
 import { LocalEvents, renderEvents } from '../../platform/ipc/events/ipc.events'
@@ -65,9 +65,11 @@ export class WorkspaceManager implements IWorkspaceManager {
         )
         ipcClient.onClient('Workspace.getProjectFileName', (module: string) => {
             ipcClient.emitToChild(
-                'Workspace.getProjectFileName',
+                'Workspace.getProjectFileName.return',
                 module,
                 ProjectManagerFactory.currentProject.storagePath
+                    ? ProjectManagerFactory.currentProject.storagePath
+                    : undefined
             )
         })
         ipcClient.handleRender(renderEvents.benchEvents.clientInfo, (_, ...args) => {
@@ -84,7 +86,7 @@ export class WorkspaceManager implements IWorkspaceManager {
             ipcClient.emitLocal(LocalEvents.innerEvents.loadProject, this.workspace.storagePath + '/' + this.onStart)
             this.loadProject(this.workspace.storagePath + '/' + this.onStart)
         }
-        StartRecord.completeLoading('workspace')
+        RunningRecord.completeLoading('workspace')
     }
 
     createProject(projectName: string, projectType: string) {
@@ -213,12 +215,13 @@ export class GlobalWorkspaceManager {
 
     static changeWorkspace() {}
 
-    updateStore() {
+    static updateStore() {
         ClientStore.set('workspace', 'recentManagers', [...GlobalWorkspaceManager.recent.values()])
         ClientStore.set(storeNames.moduleStoreName, 'currentManager', GlobalWorkspaceManager.currentManager)
     }
 
-    beforeClose() {
-        this.updateStore()
+    static beforeClose() {
+        GlobalWorkspaceManager.updateStore()
+        RunningRecord.completeClose('workspace')
     }
 }

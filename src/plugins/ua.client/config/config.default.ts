@@ -5,25 +5,9 @@ import path from 'path'
 import { DataTypes } from 'sequelize'
 let Path = require('path')
 export module Config {
-    export let usualConfig = require('../config.json')
-
     export let port = process.env.APP_PORT ? process.env.APP_PORT : 3030
 
     export let mqLength = process.env.MQ_LENGTH ? process.env.MQ_LENGTH : 200
-
-    let _dbPath = ''
-    export let getDbPath = () => {
-        return _dbPath
-    }
-
-    CommunicateUtil.emitToClient('Workspace.getProjectFileName', ['uaclient'])
-    CommunicateUtil.events.on('Workspace.getProjectFileName', (project) => {
-        _dbPath = project
-    })
-
-    export let recordJsonFilePath = Path.join(__dirname, '../ua.servant/records/')
-    export let usingRecord = usualConfig.usingRecord ? usualConfig.usingRecord : 'default.json'
-
     export let defaultTable = DbUtils.formatDateYMW(new Date())
     export let certRoot = path.join(__dirname, '..', '..', 'ua.client', 'certificates', 'PKI')
 
@@ -117,7 +101,5 @@ export module Config {
     // }
 
     export let defaultPipeName = 'uaclient'
-    export function beforeClose() {
-        writeFileSync('../config.json', JSON.stringify(Config.usualConfig))
-    }
+    export function beforeClose() {}
 }

@@ -7,7 +7,7 @@ import { ClientError, Log } from '../platform/base/log/log.js'
 import { parallel, series } from 'async'
 import { ClientStore } from './store/store.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
-import { MainEmitEvents, renderEvents } from '../platform/ipc/events/ipc.events.js'
+import { LocalEvents, MainEmitEvents, renderEvents } from '../platform/ipc/events/ipc.events.js'
 import { GlobalWorkspaceManager } from './workspace/workspace'
 import { ProcessManager } from './process/process.js'
 import { globalShortcut } from 'electron'
@@ -98,7 +98,7 @@ export class Client {
     }
 
     private createBaseService() {
-        new ClientStore()
+        new ClientStore({ client: true })
     }
 
     private createWorkbench() {
@@ -166,22 +166,25 @@ export class Client {
     private quit() {
         this.mainWindow.hide()
         this.beforeCloseRender.forEach((func) => func())
-        series([
-            //终结broker转发者服务
-            async () => {
-                this.broker.beforeClose()
-            },
-            //结束extensionManager服务
-            async () => {
-                this.extension.beforeClose()
-            },
-            async () => {
-                this.broker.beforeClose()
-            },
-        ]).then(() => {
-            this.workbench.beforeClose()
-            ProcessManager.beforeClose()
+        ipcClient.onLocal(LocalEvents.innerEvents.extensionClosed, () => {
+            parallel([
+                async () => {
+                    this.broker.beforeClose()
+                },
+                async () => {
+                    Log.beforeClose()
+                },
+                async () => {
+                    GlobalWorkspaceManager.beforeClose()
+                },
+                async () => {
+                    ProcessManager.beforeClose()
+                },
+            ])
+        })
+        ipcClient.onLocal(LocalEvents.innerEvents.completeClose, () => {
             app.quit()
         })
+        this.extension.beforeClose()
     }
 }

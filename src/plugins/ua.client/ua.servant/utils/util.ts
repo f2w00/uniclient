@@ -2,6 +2,7 @@ import { existsSync, writeFileSync } from 'fs'
 import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
 import EventEmitter from 'events'
 import { Config } from '../../config/config.default'
+import { ClientStore, StorePrivate } from '../../../../client/store/store'
 
 // const Log = require('../../../../platform/base/log/log')
 
@@ -104,36 +105,47 @@ export class CommunicateUtil {
 }
 
 export class RecordUtil {
-    //todo record出错
+    static store: StorePrivate
     static paramsToRecord: Map<string, any>
+    static using: string = 'uaRecord:default'
+    static recordNames: string[]
 
     constructor(recordFile?: string) {
-        let obj = recordFile ? RecordUtil.restoreRecordFromJson(recordFile) : RecordUtil.restoreRecordFromJson()
+        RecordUtil.store = new StorePrivate({ name: 'uaclient', clearInvalidConfig: false, fileExtension: 'json' })
+        RecordUtil.restoreRecord(recordFile)
+        RecordUtil.recordNames = StorePrivate.get('recordNames')
+            ? StorePrivate.get('recordNames')
+            : ['uaRecord:default']
     }
 
     static recordParams(module: string, param: any) {
         RecordUtil.paramsToRecord.set(module, { ...param })
     }
 
-    static getRecord() {
-        return RecordUtil.paramsToRecord
+    static getRecords() {
+        return RecordUtil.paramsToRecord.keys
     }
 
-    static restoreRecordFromJson(fileName?: string) {
-        if (fileName) {
-            if (!existsSync(fileName)) {
-                writeFileSync(fileName, JSON.stringify({}), 'utf-8')
-            }
-            Config.usualConfig['usingRecord'] = fileName
+    static restoreRecord(recordName?: string) {
+        let obj = {}
+        if (recordName) {
+            obj = StorePrivate.get(recordName)
+            RecordUtil.using = recordName
+            RecordUtil.recordNames.push(recordName)
         } else {
-            fileName = (Config.recordJsonFilePath + Config.usualConfig['usingRecord']) as string
+            let name = StorePrivate.get('usingRecord')
+            if (!name) {
+                StorePrivate.set('usingRecord', 'uaRecord:default')
+            }
+            obj = name ? StorePrivate.get(name) : undefined
         }
-        let obj = require(fileName)
-        RecordUtil.paramsToRecord = new Map<string, any>(Object.entries(obj))
+        RecordUtil.paramsToRecord = new Map<string, any>(obj ? Object.entries(obj) : undefined)
         return obj
     }
 
-    static recordToJson(fileName: string) {
-        writeFileSync(fileName, JSON.stringify(Object.fromEntries(RecordUtil.paramsToRecord)), 'utf-8')
+    static recordToJson() {
+        StorePrivate.set(RecordUtil.using, Object.fromEntries(RecordUtil.paramsToRecord))
+        StorePrivate.set('recordNames', RecordUtil.recordNames)
+        StorePrivate.set('usingRecord', RecordUtil.using)
     }
 }

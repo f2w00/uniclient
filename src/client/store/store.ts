@@ -10,17 +10,20 @@ export type storeOptions = {
 }
 
 export class ClientStore {
-    static stores: Map<string, Store>
+    static stores: Map<string, Store> = new Map<string, Store>()
     static cwd: string
-    static inited = false
     static renderStore: Store
 
-    constructor(cwd?: string) {
-        if (!ClientStore.inited) {
-            ClientStore.cwd = cwd ? cwd : appDataPath
-            ClientStore.stores = new Map<string, Store>()
+    constructor(options?: { client?: boolean; cwd?: string }) {
+        ClientStore.cwd = options?.cwd ? options.cwd : appDataPath
+        // ClientStore.create({
+        //     name: 'config',
+        //     fileExtension: 'json',
+        //     clearInvalidConfig: false,
+        // })
+        if (options?.client) {
             ClientStore.create({
-                name: 'config',
+                name: 'public',
                 fileExtension: 'json',
                 clearInvalidConfig: false,
             })
@@ -29,7 +32,6 @@ export class ClientStore {
                 fileExtension: 'json',
                 clearInvalidConfig: false,
             })
-            ClientStore.inited = true
             this.initBind()
         }
     }
@@ -110,15 +112,49 @@ export class ClientStore {
     }
 }
 
-export class StartRecord {
+export class StorePrivate {
+    static store: Store
+
+    constructor(options: storeOptions) {
+        StorePrivate.store = new Store({ ...options, cwd: appDataPath })
+    }
+
+    static set(key: string, content: any): boolean {
+        StorePrivate.store.set(key, content)
+        return true
+    }
+
+    static get(key: string): any {
+        return StorePrivate.store.get(key)
+    }
+
+    static del(key: string) {
+        StorePrivate.store.delete(key)
+        return true
+    }
+
+    static has(key: string): boolean {
+        return StorePrivate.store.has(key)
+    }
+}
+
+export class RunningRecord {
     static moduleNum = 5
-    static startedServices: string[] = []
+    static startedServices: Map<string, string> = new Map()
 
     static completeLoading(module: string) {
-        StartRecord.startedServices.push(module)
+        RunningRecord.startedServices.set(module, module)
         if (module == 'extension') ipcClient.emitLocal(LocalEvents.innerEvents.loadedExtension)
-        if (StartRecord.startedServices.length >= StartRecord.moduleNum) {
+        if (RunningRecord.startedServices.size >= RunningRecord.moduleNum) {
             ipcClient.emitLocal(LocalEvents.innerEvents.completeLoading)
+        }
+    }
+
+    static completeClose(module: string) {
+        RunningRecord.startedServices.delete(module)
+        if (module == 'extension') ipcClient.emitLocal(LocalEvents.innerEvents.extensionClosed)
+        if (RunningRecord.startedServices.size == 1) {
+            ipcClient.emitLocal(LocalEvents.innerEvents.completeClose)
         }
     }
 }

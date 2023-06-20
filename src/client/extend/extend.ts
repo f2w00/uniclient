@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import EventEmitter from 'events'
-import { ClientStore, StartRecord } from '../store/store.js'
+import { ClientStore, RunningRecord } from '../store/store.js'
 import { ExtensionActivator } from './activator.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { renderEvents } from '../../platform/ipc/events/ipc.events.js'
@@ -79,7 +79,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
                 this.emit('extension-invalid', extension)
             }
         })
-        StartRecord.completeLoading('extension')
+        RunningRecord.completeLoading('extension')
     }
 
     findExtension(from: string, extension: IExtension): number {
@@ -202,5 +202,6 @@ export class GlobalExtensionManager {
         this.updateStoreOfManagers()
         this.revert()
         this.currentManager.beforeClose()
+        RunningRecord.completeClose('extension')
     }
 }

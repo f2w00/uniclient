@@ -59,7 +59,9 @@ export namespace MainEmitEvents {
 export namespace LocalEvents {
     export enum innerEvents {
         loadedExtension = 'extension:loaded',
+        extensionClosed = 'extension:closed',
         completeLoading = 'client:start.complete',
+        completeClose = 'client:close.complete',
         sendIpc = 'sendToIpc',
         loadProject = 'project:load',
     }
