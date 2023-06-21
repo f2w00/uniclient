@@ -2,7 +2,7 @@ import {Configuration, configure, getLogger, Logger} from 'log4js'
 import {MainEmitEvents} from '../../ipc/events/ipc.events.js'
 import {ipcClient} from '../../ipc/handlers/ipc.handler.js'
 import {RunningRecord} from '../store/store.js'
-import {appDataPath} from '../../../client/paths.js'
+import {appDataPath} from '../paths'
 
 // enum ConfigNames {
 //     log = 'LogConfig',

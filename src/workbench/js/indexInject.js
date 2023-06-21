@@ -5,6 +5,11 @@ let mainTabsData = [
         content: 'Tab 1 content',
         src: '../../src/plugins/ua.client/ua.render/dataView.html',
     },
+    {
+        title: 'easy-report',
+        name: 'easy-report',
+        src: '../../src/plugins/easy-report/index.html',
+    },
 ]
 let subviewLeftTabsData = [
     { title: 'mainMenu', name: 'mainMenu', iconSrc: './assets/icon/icon.svg', disabled: true },

@@ -10,7 +10,7 @@ import {ipcClient} from '../platform/ipc/handlers/ipc.handler.js'
 import {LocalEvents, MainEmitEvents, renderEvents} from '../platform/ipc/events/ipc.events.js'
 import {GlobalWorkspaceManager} from './workspace/workspace'
 import {ProcessManager} from './process/process.js'
-import {mainIconPath, mainPreloadPath, mainViewPath} from './paths.js'
+import {mainIconPath, mainPreloadPath, mainViewPath} from '../platform/base/paths'
 
 enum shortCuts {
     dev = 'Alt+d',

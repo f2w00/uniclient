@@ -10,7 +10,7 @@ import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
 import { UaMessage } from '../models/message.model'
 import { ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam } from '../models/params.model'
 import { Config } from '../../config/config.default'
-import { ClientError, ClientWarn } from '../../../../platform/base/log/log'
+const { ClientError, ClientWarn } = require('uniclient/base/log/log')
 import { CommunicateUtil, RecordUtil } from '../utils/util'
 
 export module SubscriptService {

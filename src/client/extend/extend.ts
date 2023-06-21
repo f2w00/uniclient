@@ -1,11 +1,11 @@
-import {existsSync} from 'fs'
+import { existsSync } from 'fs'
 import EventEmitter from 'events'
-import {ClientStore, RunningRecord} from '../../platform/base/store/store.js'
-import {ExtensionActivator} from './activator.js'
-import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
-import {renderEvents} from '../../platform/ipc/events/ipc.events.js'
+import { ClientStore, RunningRecord } from '../../platform/base/store/store.js'
+import { ExtensionActivator } from './activator.js'
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
+import { renderEvents } from '../../platform/ipc/events/ipc.events.js'
 
-const { plugins, platform } = require('../paths.js')
+const { plugins, platform } = require('../../platform/base/paths')
 
 type extensionStorage = string
 type extensionActivateEvent = string
@@ -163,7 +163,7 @@ export class GlobalExtensionManager {
         }
         return pirates.addHook(
             (code: string, filename: string) => {
-                return code.replace(/require\((['"])uniclient\1\)/, `require("${apiPath}")`)
+                return code.replace(/(require\([',"])(uniclient)/g, '$1'+apiPath);
             },
             { exts: ['.js'], matcher: matcher }
         )

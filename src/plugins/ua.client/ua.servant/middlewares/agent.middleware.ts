@@ -25,8 +25,8 @@ import {
 import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
 import { Certificate } from 'node-opcua-crypto'
 import { CertUtils, CommunicateUtil, DbUtils, RecordUtil } from '../utils/util'
-import { LogPrivate } from '../../../../platform/base/log/log'
-import { appDataPath } from '../../../../client/paths'
+const { LogPrivate } = require('uniclient/base/log/log.js')
+const { appDataPath } = require('uniclient/base/paths')
 
 type Source = string | undefined
 type Warn = string

@@ -71,7 +71,7 @@ function generateUserDataPath() {
 
 function generateConfigs(dataPath, join, existsSync, mkdirSync) {
     const {ClientStore} = require('./platform/base/store/store')
-    new ClientStore({ client: false, cwd: dataPath })
+    new ClientStore({ client: false, cwd: dataPath+'/store'})
     const detectPlugins = () => {
         const { readdirSync } = require('fs')
         let pluginPath = join(__dirname, './plugins')
@@ -80,9 +80,9 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
         let onStart = []
         let extend = new Map()
         paths.forEach((value, index) => {
-            let acualPath = pluginPath + '/' + value + '/package.json'
-            if (existsSync(acualPath)) {
-                let { uniPlugin } = require(acualPath)
+            let actualPath = pluginPath + '/' + value + '/package.json'
+            if (existsSync(actualPath)) {
+                let { uniPlugin } = require(actualPath)
                 uniPlugin ? plugins.push(uniPlugin) : null
                 if ('projectExtend' in uniPlugin) {
                     uniPlugin.projectExtend.forEach((value) => {

@@ -16,7 +16,7 @@ import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
 import { ClientService } from './client.service'
 import { is } from 'typia'
 import { HistoryValueParam } from '../models/params.model'
-import { ClientError, ClientWarn } from '../../../../platform/base/log/log'
+const { ClientError, ClientWarn } = require('uniclient/base/log/log')
 
 export module SessionService {
     export let session!: ClientSession

@@ -1,6 +1,6 @@
 import Store from 'electron-store'
 import {ipcClient} from '../../ipc/handlers/ipc.handler'
-import {appDataPath} from '../../../client/paths'
+import {appDataPath} from '../paths'
 import {LocalEvents, renderEvents} from '../../ipc/events/ipc.events'
 
 export type storeOptions = {
@@ -15,18 +15,8 @@ export class ClientStore {
     static renderStore: Store
 
     constructor(options?: { client?: boolean; cwd?: string }) {
-        ClientStore.cwd = options?.cwd ? options.cwd : appDataPath
-        // ClientStore.create({
-        //     name: 'config',
-        //     fileExtension: 'json',
-        //     clearInvalidConfig: false,
-        // })
+        ClientStore.cwd = options?.cwd ? options.cwd : appDataPath+'/store'
         if (options?.client) {
-            ClientStore.create({
-                name: 'public',
-                fileExtension: 'json',
-                clearInvalidConfig: false,
-            })
             ClientStore.renderStore = new Store({
                 name: 'render',
                 fileExtension: 'json',
@@ -116,7 +106,7 @@ export class StorePrivate {
     static store: Store
 
     constructor(options: storeOptions) {
-        StorePrivate.store = new Store({ ...options, cwd: appDataPath })
+        StorePrivate.store = new Store({ ...options, cwd: appDataPath+'/store' })
     }
 
     static set(key: string, content: any): boolean {

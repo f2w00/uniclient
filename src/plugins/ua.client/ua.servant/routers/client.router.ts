@@ -13,11 +13,13 @@ export module ClientRouter {
     router.post('/connect', ClientController.connect)
     router.post('/disconnect', ClientController.disconnect)
     router.post('/endpoints', ClientController.getEndpoints)
-    router.post('/restore', ClientController.restore)
 
     router.get('/private_key', ClientController.getPrivateKey)
     router.get('/cert', ClientController.getCertificate)
     router.get('/servers', ClientController.getServers)
-    router.get('/record_names', ClientController.getRecords)
+    //每次运行首先检查下两项,并且尝试restore
     router.get('/project_info', ClientController.projectInfo)
+    router.get('/pki_ready',ClientController.pkiReady)
+    router.post('/restore', ClientController.restore)
+    router.get('/record_names', ClientController.getRecords)
 }

@@ -1,44 +1,41 @@
-import { writeFileSync } from 'fs'
 import { MessageSecurityMode, SecurityPolicy } from 'node-opcua'
-import { CommunicateUtil, DbUtils } from '../ua.servant/utils/util.js'
+import { DbUtils } from '../ua.servant/utils/util.js'
 import path from 'path'
-import { DataTypes } from 'sequelize'
-let Path = require('path')
 export module Config {
-    export let port = process.env.APP_PORT ? process.env.APP_PORT : 3030
+    export let port = 3030
 
-    export let mqLength = process.env.MQ_LENGTH ? process.env.MQ_LENGTH : 200
+    export let mqLength = 200
     export let defaultTable = DbUtils.formatDateYMW(new Date())
     export let certRoot = path.join(__dirname, '..', '..', 'ua.client', 'certificates', 'PKI')
 
     export let defaultAttributes = {
         server: {
-            type: DataTypes.STRING,
+            type: 'DataTypes.STRING',
             allowNull: false,
             field: 'server',
         },
         nodeId: {
-            type: DataTypes.STRING,
+            type: 'DataTypes.STRING',
             allowNull: false,
             field: 'nodeId',
         },
         displayName: {
-            type: DataTypes.STRING,
+            type: 'DataTypes.STRING',
             allowNull: false,
             field: 'displayName',
         },
         value: {
-            type: DataTypes.STRING,
+            type: 'DataTypes.STRING',
             allowNull: false,
             field: 'value',
         },
         dataType: {
-            type: DataTypes.STRING,
+            type: 'DataTypes.STRING',
             allowNull: false,
             field: 'dataType',
         },
         sourceTimestamp: {
-            type: DataTypes.STRING,
+            type: 'DataTypes.STRING',
             allowNull: false,
             field: 'sourceTimestamp',
         },
@@ -48,7 +45,7 @@ export module Config {
         //     field: 'serverTimestamp',
         // },
         statusCode: {
-            type: DataTypes.STRING,
+            type: 'DataTypes.STRING',
             allowNull: false,
             field: 'statusCode',
         },
@@ -88,17 +85,6 @@ export module Config {
             categories: { default: { appenders: ['uaclient'], level: 'info' } },
         }
     }
-
-    // export let defaultLog = {
-    //     appenders: {
-    //         client: {
-    //             type: 'file',
-    //             filename: logPath,
-    //             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
-    //         },
-    //     },
-    //     categories: {default: {appenders: ['uaclient'], level: 'info'}},
-    // }
 
     export let defaultPipeName = 'uaclient'
     export function beforeClose() {}

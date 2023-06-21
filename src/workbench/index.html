@@ -794,6 +794,11 @@
             },
             created() {
                 // this.mainTabs = mainTabsF()
+                this.mainTabs.push({
+        title: 'easy-report',
+        name: 'easy-report',
+        src: '../../src/plugins/easy-report/dist/index.html',
+    },)
                 this.subviewLeftTabs = subviewLeftTabsF()
                 this.subviewRightTabs = subviewRightTabsF()
                 this.problemTableData = problemTableF()

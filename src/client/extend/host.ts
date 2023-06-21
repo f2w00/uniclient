@@ -1,5 +1,5 @@
 import { IExtension } from './extend.js'
-import { plugins } from '../paths.js'
+import { plugins, platform } from '../../platform/base/paths'
 
 /**
  * @description activate是插件激活时执行的函数,
@@ -20,11 +20,26 @@ class WorkerActivator {
             instance.activate()
             WorkerActivator.beforeExtensionClose = instance.beforeClose
             if (iExtension.worker) {
+                await WorkerActivator.hookRequire(platform)
                 await require(plugins + iExtension.worker)
             }
         } catch (e: any) {
             throw e
         }
+    }
+
+    static async hookRequire(apiPath: string) {
+        const pirates = await import('pirates')
+        apiPath = apiPath.replace(/\\/g, '/')
+        const matcher = (filename: string) => {
+            return filename.includes('plugins')
+        }
+        return pirates.addHook(
+            (code: string, filename: string) => {
+                return code.replace(/(require\([',"])(uniclient)/g, '$1'+apiPath);
+            },
+            { exts: ['.js'], matcher: matcher }
+        )
     }
 
     static beforeClose() {

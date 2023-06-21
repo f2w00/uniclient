@@ -3,7 +3,7 @@ import { ChildProcess } from 'child_process'
 import { IExtension, IExtensionIdentifier } from './extend.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
 import { LocalEvents } from '../../platform/ipc/events/ipc.events'
-const { plugins, extensionHost } = require('../paths')
+const { plugins, extensionHost } = require('../../platform/base/paths')
 
 type extensionId = string
 

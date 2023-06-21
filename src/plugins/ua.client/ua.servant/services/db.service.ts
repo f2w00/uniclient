@@ -1,15 +1,14 @@
-import { Persistence } from './../../../../platform/base/persist/persistence'
+const { Persistence } = require('uniclient/base/persist/persistence')
 import { TableCreateModes, UaErrors, UaSources } from '../../common/ua.enums'
 import { Config } from '../../config/config.default'
 import { CommunicateUtil, DbUtils } from '../utils/util'
 import { IDbData, IFieldNames } from '../models/params.model'
-import { DataTypes } from 'sequelize'
 import { UaMessage } from '../models/message.model'
 import { ClientError } from '../middlewares/agent.middleware'
 export module DbService {
     export let defaultTableName: string = Config.defaultTable
     export let defaultAttributes: any = Config.defaultAttributes
-    export let persist!: Persistence
+    export let persist!: any
 
     /**
      * @description 用于初始化database,如果表名不存在则创建一个新表
@@ -42,48 +41,7 @@ export module DbService {
                 case TableCreateModes.customBoth: {
                     if (tableName) defaultTableName = tableName
                     if (fields) {
-                        defaultAttributes = {
-                            server: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.serverF,
-                            },
-                            nodeId: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.nodeIdF,
-                            },
-                            displayName: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.displayNameF,
-                            },
-                            value: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.valueF,
-                            },
-                            dataType: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.dataTypeF,
-                            },
-                            sourceTimestamp: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.sourceTimestampF,
-                            },
-                            // serverTimestamp: {
-                            //     type: DataTypes.STRING,
-                            //     allowNull: false,
-                            //     field: fields.serverTimestampF,
-                            // },
-                            statusCode: {
-                                type: DataTypes.STRING,
-                                allowNull: false,
-                                field: fields.statusCodeF,
-                            },
-                        }
+                        defaultAttributes = Config.defaultAttributes
                     }
                     break
                 }

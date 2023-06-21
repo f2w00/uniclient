@@ -2,19 +2,18 @@ import { OPCUACertificateManager } from 'node-opcua'
 import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
 import { Certificate } from 'node-opcua-crypto'
 import { UaErrors, UaSources } from '../../common/ua.enums'
-import { Config } from '../../config/config.default'
-import { ClientError } from '../../../../platform/base/log/log'
-
-// const cry = require("node-opcua-pki")
+const { ClientError } = require('uniclient/base/log/log')
+const { appDataPath } = require('uniclient/base/paths')
+const { StorePrivate } = require('uniclient/base/store/store.js')
 
 export module CertificateService {
     export let certificate = new OPCUACertificateManager({
-        rootFolder: Config.certRoot,
+        rootFolder: appDataPath + '/node-cert',
         name: 'pki',
         automaticallyAcceptUnknownCertificate: true,
     })
+    certificate.initialize()
 
-    //todo node-opcua-pki命令测试
     /**
      * @description 创建一个证书,dns即domain names,默认证书根文件夹为项目根目录,
      * 默认pem文件存放路径为certificatees/PKI/own/cert/client_cert.pem
@@ -41,7 +40,10 @@ export module CertificateService {
      */
     export async function createCertificate(params: CreateSelfSignCertificateParam1) {
         try {
+            params.startDate = new Date(params.startDate)
+            params.outputFile = appDataPath + '/cert/' + params.outputFile
             await certificate.createSelfSignedCertificate({ ...params })
+            StorePrivate.set('pkiReady', true)
         } catch (e: any) {
             throw new ClientError(UaSources.certService, UaErrors.errorCreatCert, e.message, e.stack)
         }

@@ -104,3 +104,5 @@ src/plugins/ua.client/**/*.js
 backup/
 default/
 client.data/
+!client.data/store/
+src/plugins/easy-report/
