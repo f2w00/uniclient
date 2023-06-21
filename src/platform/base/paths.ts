@@ -1,5 +1,4 @@
 const { join } = require('path')
-
 export const client = join(__dirname, '../client')
 export const plugins = join(__dirname, '../plugins')
 export const platform = join(__dirname, '../platform')
