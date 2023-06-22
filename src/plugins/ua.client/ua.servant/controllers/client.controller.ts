@@ -1,10 +1,11 @@
-import { ClientService } from '../services/client.service'
-import { ResponseModel } from '../models/response.model'
-import { Next, ParameterizedContext } from 'koa'
-import { IRouterParamContext } from 'koa-router'
-import { CommunicateUtil, RecordUtil } from '../utils/util'
+import {ClientService} from '../services/client.service'
+import {ResponseModel} from '../models/response.model'
+import {Next, ParameterizedContext} from 'koa'
+import {IRouterParamContext} from 'koa-router'
+import {RecordUtil} from '../utils/util'
 import 'koa-body/lib/index'
-const { StorePrivate } = require('uniclient/base/store/store.js')
+
+const {StorePrivate, sharedData} = require('uniclient')
 
 export module ClientController {
     export async function init(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {
@@ -88,7 +89,7 @@ export module ClientController {
     }
 
     export async function projectInfo(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {
-        ctx.body = new ResponseModel(CommunicateUtil.project)
+        ctx.body = new ResponseModel(sharedData.get('projectInfo'))
     }
 
     export async function pkiReady(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {

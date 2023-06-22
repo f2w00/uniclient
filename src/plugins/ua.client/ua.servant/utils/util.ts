@@ -1,6 +1,7 @@
-import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
+import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import EventEmitter from 'events'
-const { StorePrivate } = require('uniclient/base/store/store.js')
+
+const {StorePrivate} = require('uniclient')
 
 export module DbUtils {
     /**
@@ -64,18 +65,9 @@ export module CertUtils {
 
 export class CommunicateUtil {
     static events: EventEmitter = new EventEmitter()
-    static project: string
 
     constructor() {
-        CommunicateUtil.events.on('Workspace.getProjectFileName.return', (project) => {
-            CommunicateUtil.project = project
-        })
-        CommunicateUtil.getProjectInfo()
         CommunicateUtil.addListenerToProcess()
-    }
-
-    static getProjectInfo() {
-        CommunicateUtil.emitToClient('Workspace.getProjectFileInfo', ['uaclient'])
     }
 
     static emitToClient(event: string, args?: any[]) {

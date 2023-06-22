@@ -15,7 +15,7 @@ export class ClientStore {
     static renderStore: Store
 
     constructor(options?: { client?: boolean; cwd?: string }) {
-        ClientStore.cwd = options?.cwd ? options.cwd : appDataPath+'/store'
+        ClientStore.cwd = options?.cwd ? options.cwd : appDataPath + '/store'
         if (options?.client) {
             ClientStore.renderStore = new Store({
                 name: 'render',
@@ -106,7 +106,7 @@ export class StorePrivate {
     static store: Store
 
     constructor(options: storeOptions) {
-        StorePrivate.store = new Store({ ...options, cwd: appDataPath+'/store' })
+        StorePrivate.store = new Store({...options, cwd: appDataPath + '/store'})
     }
 
     static set(key: string, content: any): boolean {
@@ -137,6 +137,7 @@ export class RunningRecord {
         if (module == 'extension') ipcClient.emitLocal(LocalEvents.innerEvents.loadedExtension)
         if (RunningRecord.startedServices.size >= RunningRecord.moduleNum) {
             ipcClient.emitLocal(LocalEvents.innerEvents.completeLoading)
+            ipcClient.emitToRender('clientLoaded')
         }
     }
 
@@ -148,3 +149,10 @@ export class RunningRecord {
         }
     }
 }
+
+export const sharedData = new Store({
+                                        name: 'share',
+                                        clearInvalidConfig: false,
+                                        fileExtension: 'json',
+                                        cwd: appDataPath + '/store',
+                                    })

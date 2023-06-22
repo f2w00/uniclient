@@ -5,13 +5,19 @@ import {
     ModifySubscriptionOptions,
     TimestampsToReturn,
 } from 'node-opcua'
-import { SessionService } from './session.service'
-import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
-import { UaMessage } from '../models/message.model'
-import { ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam } from '../models/params.model'
-import { Config } from '../../config/config.default'
-const { ClientError, ClientWarn } = require('uniclient/base/log/log')
-import { CommunicateUtil, RecordUtil } from '../utils/util'
+import {SessionService} from './session.service'
+import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
+import {UaMessage} from '../models/message.model'
+import {
+    ItemAndName,
+    NodeID,
+    SubscriptGroupParam,
+    SubscriptSingleParam
+} from '../models/params.model'
+import {Config} from '../../config/config.default'
+import {CommunicateUtil, RecordUtil} from '../utils/util'
+
+const {ClientError, ClientWarn} = require('uniclient')
 
 export module SubscriptService {
     export let subscription!: ClientSubscription

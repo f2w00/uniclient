@@ -9,5 +9,5 @@ export const mainPreloadPath = join(__dirname, '../../workbench/preload.js')
 export const mainViewPath = join(__dirname, '../../workbench/index.html')
 export const mainIconPath = join(__dirname, '../../workbench/assets/icon/icon.ico')
 export const appDataPath = process.env['UNICLIENT_APPDATA']
-    ? process.env['UNICLIENT_APPDATA']
-    : join(__dirname, '../../client.data')
+                           ? process.env['UNICLIENT_APPDATA']
+                           : join(__dirname, '../../../client.data')

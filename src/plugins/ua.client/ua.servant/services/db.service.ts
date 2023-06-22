@@ -1,10 +1,12 @@
-const { Persistence } = require('uniclient/base/persist/persistence')
-import { TableCreateModes, UaErrors, UaSources } from '../../common/ua.enums'
-import { Config } from '../../config/config.default'
-import { CommunicateUtil, DbUtils } from '../utils/util'
-import { IDbData, IFieldNames } from '../models/params.model'
-import { UaMessage } from '../models/message.model'
-import { ClientError } from '../middlewares/agent.middleware'
+const {Persistence} = require('uniclient')
+const {sharedData} = require('uniclient')
+import {TableCreateModes, UaErrors, UaSources} from '../../common/ua.enums'
+import {Config} from '../../config/config.default'
+import {CommunicateUtil, DbUtils} from '../utils/util'
+import {IDbData, IFieldNames} from '../models/params.model'
+import {UaMessage} from '../models/message.model'
+import {ClientError} from '../middlewares/agent.middleware'
+
 export module DbService {
     export let defaultTableName: string = Config.defaultTable
     export let defaultAttributes: any = Config.defaultAttributes
@@ -93,14 +95,12 @@ export module DbService {
         try {
             let table = tableName ? tableName : defaultTableName
             let attribute = attributes ? attributes : defaultAttributes
-            CommunicateUtil.events.on('Workspace.getProjectFileName.return', (project) => {
-                persist = new Persistence(
-                    attribute,
-                    { dialect: 'sqlite', storage: project + '/database/data.db', logging: false },
-                    table
-                )
-            })
-            CommunicateUtil.emitToClient('Workspace.getProjectFileName', ['uaclient'])
+            let projectPath = sharedData.get('projectInfo')
+            persist = new Persistence(
+                attribute,
+                {dialect: 'sqlite', storage: projectPath + '/database/data.db', logging: false},
+                table
+            )
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorCreatTable, e.message, e.stack)
         }

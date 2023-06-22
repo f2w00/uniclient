@@ -12,11 +12,12 @@ import {
     UserTokenType,
     WriteValueOptions,
 } from 'node-opcua'
-import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
-import { ClientService } from './client.service'
-import { is } from 'typia'
-import { HistoryValueParam } from '../models/params.model'
-const { ClientError, ClientWarn } = require('uniclient/base/log/log')
+import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
+import {ClientService} from './client.service'
+import {is} from 'typia'
+import {HistoryValueParam} from '../models/params.model'
+
+const {ClientError, ClientWarn} = require('uniclient')
 
 export module SessionService {
     export let session!: ClientSession

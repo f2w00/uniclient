@@ -12,7 +12,7 @@ export class ErrorHandler {
     }
 
     static reportRejection(rejection: any) {
-        ErrorHandler.errorHandler(rejection)
+        ErrorHandler.rejectionHandler(rejection)
     }
 
     static addListener(listener: ErrorListenerCallback) {

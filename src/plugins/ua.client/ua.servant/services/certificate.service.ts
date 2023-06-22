@@ -1,17 +1,18 @@
-import { OPCUACertificateManager } from 'node-opcua'
-import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
-import { Certificate } from 'node-opcua-crypto'
-import { UaErrors, UaSources } from '../../common/ua.enums'
-const { ClientError } = require('uniclient/base/log/log')
-const { appDataPath } = require('uniclient/base/paths')
-const { StorePrivate } = require('uniclient/base/store/store.js')
+import {OPCUACertificateManager} from 'node-opcua'
+import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
+import {Certificate} from 'node-opcua-crypto'
+import {UaErrors, UaSources} from '../../common/ua.enums'
+
+const {ClientError} = require('uniclient')
+const {appDataPath} = require('uniclient')
+const {StorePrivate} = require('uniclient')
 
 export module CertificateService {
     export let certificate = new OPCUACertificateManager({
-        rootFolder: appDataPath + '/node-cert',
-        name: 'pki',
-        automaticallyAcceptUnknownCertificate: true,
-    })
+                                                             rootFolder: appDataPath + '/node-cert',
+                                                             name: 'pki',
+                                                             automaticallyAcceptUnknownCertificate: true,
+                                                         })
     certificate.initialize()
 
     /**
