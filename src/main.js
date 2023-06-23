@@ -55,7 +55,7 @@ function generateUserDataPath() {
                         )
                         data.replace(/^UNICLIENT_APPDATA=.*$/g, `UNICLIENT_APPDATA='${dataPath}'`)
                     } else {
-                        let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}/cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
+                        let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
                     }
                     writeFileSync(envPath, String(data))
                 })
@@ -70,8 +70,8 @@ function generateUserDataPath() {
 }
 
 function generateConfigs(dataPath, join, existsSync, mkdirSync) {
-    const {ClientStore} = require('./platform/base/store/store')
-    new ClientStore({ client: false, cwd: dataPath+'/store'})
+    const { ClientStore } = require('./platform/base/store/store')
+    new ClientStore({ client: false, cwd: dataPath + '/store' })
     const detectPlugins = () => {
         const { readdirSync } = require('fs')
         let pluginPath = join(__dirname, './plugins')
@@ -120,7 +120,7 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
             workspaceName: 'default',
             storagePath: defaultPath,
         },
-        projects: [],
+        folders: [],
         onStart: [],
     })
 }

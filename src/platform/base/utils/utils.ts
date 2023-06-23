@@ -1,4 +1,4 @@
-import {readdirSync, statSync, watch} from 'fs'
+import { readdirSync, statSync, watch } from 'fs'
 
 type file = {
     name: string
@@ -19,7 +19,7 @@ export class FileUtils {
         return readdirSync(fileName)
     }
 
-    static deleteFile(files: string[], fileName: string) {
+    static detectFile(files: string[], fileName: string) {
         let result: file[] = []
         files.forEach((value) => {
             let isDir = statSync(fileName + '/' + value).isDirectory()

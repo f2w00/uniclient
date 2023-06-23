@@ -106,3 +106,4 @@ default/
 client.data/
 !client.data/store/
 src/plugins/easy-report/
+release/

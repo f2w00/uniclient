@@ -1,16 +1,16 @@
-import {GlobalExtensionManager} from './extend/extend.js'
-import {Workbench} from '../workbench/workbench'
-import {Broker} from '../platform/base/broker/broker.js'
-import {app, BrowserWindow, globalShortcut} from 'electron'
-import {ErrorHandler} from './error/error.js'
-import {ClientError, Log} from '../platform/base/log/log.js'
-import {parallel} from 'async'
-import {ClientStore} from '../platform/base/store/store.js'
-import {ipcClient} from '../platform/ipc/handlers/ipc.handler.js'
-import {LocalEvents, MainEmitEvents, renderEvents} from '../platform/ipc/events/ipc.events.js'
-import {GlobalWorkspaceManager} from './workspace/workspace'
-import {ProcessManager} from './process/process.js'
-import {mainIconPath, mainPreloadPath, mainViewPath} from '../platform/base/paths'
+import { GlobalExtensionManager } from './extend/extend.js'
+import { Workbench } from '../workbench/workbench'
+import { Broker } from '../platform/base/broker/broker.js'
+import { app, BrowserWindow, globalShortcut } from 'electron'
+import { ErrorHandler } from './error/error.js'
+import { ClientError, Log } from '../platform/base/log/log.js'
+import { parallel } from 'async'
+import { ClientStore } from '../platform/base/store/store.js'
+import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
+import { LocalEvents, MainEmitEvents, renderEvents } from '../platform/ipc/events/ipc.events.js'
+import { GlobalWorkspaceManager } from './workspace/workspace'
+import { ProcessManager } from './process/process.js'
+import { mainIconPath, mainPreloadPath, mainViewPath } from '../platform/base/paths'
 
 enum shortCuts {
     dev = 'Alt+d',
@@ -103,7 +103,7 @@ export class Client {
     private createWorkbench() {
         this.workbench = new Workbench(mainPreloadPath, mainViewPath, mainIconPath)
         this.mainWindow = this.workbench.getMainWindow()
-        this.mainWindow.webContents.once('did-finish-load', async () => {
+        this.mainWindow.once('ready-to-show', async () => {
             await this.mainWindow.show()
             ipcClient.onLocal('emitToRender', (event, ...args) => {
                 this.mainWindow.webContents.send(event, ...args)

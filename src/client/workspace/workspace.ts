@@ -1,9 +1,9 @@
-import {IProject, ProjectManagerFactory} from '../../platform/base/project/project'
-import {ClientStore, RunningRecord, sharedData} from '../../platform/base/store/store.js'
-import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
-import {FileUtils} from '../../platform/base/utils/utils.js'
-import {LocalEvents, renderEvents} from '../../platform/ipc/events/ipc.events'
-import {appDataPath} from '../../platform/base/paths'
+import { IProject, ProjectManagerFactory } from '../../platform/base/project/project'
+import { ClientStore, RunningRecord, sharedData } from '../../platform/base/store/store.js'
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
+import { FileUtils } from '../../platform/base/utils/utils.js'
+import { LocalEvents, renderEvents } from '../../platform/ipc/events/ipc.events'
+import { appDataPath } from '../../platform/base/paths'
 
 enum storeNames {
     workspaceManager = 'recentManagers',
@@ -51,32 +51,19 @@ export class WorkspaceManager implements IWorkspaceManager {
     }
 
     initBind() {
-        ipcClient.handleRender(
-            renderEvents.workspaceEvents.projectLoad,
-            (event, projectName, fileName: string) => {
-                console.log(fileName)
-                if (this.loadedProjects.has(projectName)) {
-                    return this.loadedProjects.get(projectName)
-                }
-                return this.loadProject(fileName)
+        ipcClient.handleRender(renderEvents.workspaceEvents.projectLoad, (event, projectName, fileName: string) => {
+            console.log(fileName)
+            if (this.loadedProjects.has(projectName)) {
+                return this.loadedProjects.get(projectName)
             }
-        )
+            return this.loadProject(fileName)
+        })
         ipcClient.handleRender(
             renderEvents.workspaceEvents.projectCreate,
             (event, projectName: string, projectType: string) => {
                 return this.createProject(projectName, projectType)
             }
         )
-        // ipcClient.onClient('Workspace.getProjectFileInfo', (module: string) => {
-        //     ipcClient.emitToChild(
-        //         'Workspace.getProjectFileInfo.return',
-        //         module,
-        //         ProjectManagerFactory.currentProject ? ProjectManagerFactory.currentProject : undefined
-        //     )
-        // })
-        // ipcClient.onClient('Workspace.getAppDataPath', (module: string) => {
-        //     ipcClient.emitToChild('Workspace.getAppDataPath.return', module, appDataPath)
-        // })
         ipcClient.handleRender(renderEvents.benchEvents.clientInfo, (_, ...args) => {
             return {
                 currentProject: ProjectManagerFactory.currentProject,
@@ -88,10 +75,7 @@ export class WorkspaceManager implements IWorkspaceManager {
 
     toStart() {
         if (this.onStart && this.onStart.length > 0 && !this.loadedProjects.has(this.onStart)) {
-            ipcClient.emitLocal(
-                LocalEvents.innerEvents.loadProject,
-                this.workspace.storagePath + '/' + this.onStart
-            )
+            ipcClient.emitLocal(LocalEvents.innerEvents.loadProject, this.workspace.storagePath + '/' + this.onStart)
             this.loadProject(this.workspace.storagePath + '/' + this.onStart)
         }
         sharedData.set('appDataPath', appDataPath)
@@ -109,13 +93,10 @@ export class WorkspaceManager implements IWorkspaceManager {
             projectName: projectName + `.${projectType}`,
             projectType: projectType,
         })
-        return this.loadProject(this.workspace.storagePath +
-                                `\\${projectName}` +
-                                `\\.${projectType}`)
+        return this.loadProject(this.workspace.storagePath + `\\${projectName}` + `\\.${projectType}`)
     }
 
-    deleteProject() {
-    }
+    deleteProject() {}
 
     loadProject(fileName: string) {
         GlobalWorkspaceManager.projectExtend.forEach((projectType: string) => {
@@ -143,10 +124,10 @@ export class GlobalWorkspaceManager {
         GlobalWorkspaceManager.recent = new Map()
         GlobalWorkspaceManager.projectExtend = []
         ClientStore.create({
-                               name: storeNames.moduleStoreName,
-                               fileExtension: 'json',
-                               clearInvalidConfig: false,
-                           })
+            name: storeNames.moduleStoreName,
+            fileExtension: 'json',
+            clearInvalidConfig: false,
+        })
         this.initBind()
         GlobalWorkspaceManager.loadWorkspace()
     }
@@ -155,26 +136,23 @@ export class GlobalWorkspaceManager {
         ipcClient.handleRender(renderEvents.workspaceEvents.openFolder, (_, fileName: string) => {
             let files = FileUtils.openFolder(fileName)
             if (files.includes('.project')) {
-                ipcClient.emitLocal('project:load', fileName, files)
+                ipcClient.emitLocal(renderEvents.workspaceEvents.projectLoad, fileName, files)
             }
-            return FileUtils.deleteFile(files, fileName)
+            return FileUtils.detectFile(files, fileName)
         })
-        ipcClient.handleRender(
-            renderEvents.workspaceEvents.load,
-            (_, workspace: workspaceAttribute) => {
-                GlobalWorkspaceManager.loadWorkspace(workspace)
-                let recent: workspaceAttribute[] = []
-                GlobalWorkspaceManager.recent.forEach((value) => {
-                    recent.push(value.workspace)
-                })
-                let info: IClientInfo = {
-                    currentWorkspace: GlobalWorkspaceManager.currentManager.workspace,
-                    recentWorkspaces: recent,
-                    currentProject: null,
-                }
-                return info
+        ipcClient.handleRender(renderEvents.workspaceEvents.load, (_, workspace: workspaceAttribute) => {
+            GlobalWorkspaceManager.loadWorkspace(workspace)
+            let recent: workspaceAttribute[] = []
+            GlobalWorkspaceManager.recent.forEach((value) => {
+                recent.push(value.workspace)
+            })
+            let info: IClientInfo = {
+                currentWorkspace: GlobalWorkspaceManager.currentManager.workspace,
+                recentWorkspaces: recent,
+                currentProject: null,
             }
-        )
+            return info
+        })
     }
 
     static loadWorkspace(workspace?: workspaceAttribute) {
@@ -190,18 +168,9 @@ export class GlobalWorkspaceManager {
             GlobalWorkspaceManager.recent.set(workspace.workspaceName, current)
             GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
         } else {
-            let recent: IWorkspaceManager[] = ClientStore.get(
-                storeNames.moduleStoreName,
-                storeNames.workspaceManager
-            )
-            let current: IWorkspaceManager = ClientStore.get(
-                storeNames.moduleStoreName,
-                storeNames.currentManager
-            )
-            GlobalWorkspaceManager.projectExtend = ClientStore.get(
-                storeNames.moduleStoreName,
-                storeNames.projectExtend
-            )
+            let recent: IWorkspaceManager[] = ClientStore.get(storeNames.moduleStoreName, storeNames.workspaceManager)
+            let current: IWorkspaceManager = ClientStore.get(storeNames.moduleStoreName, storeNames.currentManager)
+            GlobalWorkspaceManager.projectExtend = ClientStore.get(storeNames.moduleStoreName, storeNames.projectExtend)
             if (current) {
                 GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
             }
@@ -248,20 +217,15 @@ export class GlobalWorkspaceManager {
         return GlobalWorkspaceManager.currentManager.workspace
     }
 
-    static changeWorkspace() {
-    }
+    static changeWorkspace() {}
 
     static updateStore() {
-        ClientStore.set(
-            storeNames.moduleStoreName,
-            'recentManagers',
-            [...GlobalWorkspaceManager.recent.values()]
-        )
-        ClientStore.set(
-            storeNames.moduleStoreName,
-            'currentManager',
-            GlobalWorkspaceManager.currentManager
-        )
+        ClientStore.set(storeNames.moduleStoreName, 'recentManagers', [...GlobalWorkspaceManager.recent.values()])
+        ClientStore.set(storeNames.moduleStoreName, 'currentManager', {
+            workspace: GlobalWorkspaceManager.currentManager.workspace,
+            folders: GlobalWorkspaceManager.currentManager.folders,
+            onStart: GlobalWorkspaceManager.currentManager.onStart,
+        })
     }
 
     static beforeClose() {
