@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="../../../../workbench/element-ui/css/index.css" />
-    <link rel="stylesheet" href="./opcua.css" />
+    <link rel="stylesheet" href="./css/opcua.css" />
     <title>address</title>
 </head>
 
@@ -37,7 +37,7 @@
 </body>
 <script src="../../../../workbench/vue/vue.js"></script>
 <script src="../../../../workbench/element-ui/index.js"></script>
-<script src="./tool.js"></script>
+<script src="./utils/tool.js"></script>
 <script type="module">
     import clientApi from '../../../../workbench/api/clientApi.js'
     import sessionApi from '../../../../workbench/api/sessionApi.js'
@@ -233,7 +233,7 @@
         },
         mounted() {
             subviewItemInit(window, document)
-            // this.pollingClientInit()
+            this.pollingClientInit()
             this.connectServerListener()
             window.parent.uniclient.windowEvent.on('leftBar:created.opcua', (dataView) => {
                 dataView.forEach((info) => {

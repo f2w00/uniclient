@@ -7,14 +7,6 @@ let menuList = [
         }
     },
     {
-        label: '服务',
-        tips: 'Server',
-        fn: (that) => {
-            console.log("Server")
-            that.handleAddserver()
-        }
-    },
-    {
         label: '文档',
         tips: 'Document',
         fn: (that) => {
@@ -36,6 +28,14 @@ let menuList = [
         label: 'OPCUA',
         tips: '',
         children: [
+            {
+                label: '服务',
+                tips: 'Server',
+                fn: (that) => {
+                    console.log("Server", "addServerView")
+                    that.handleAddserver({ viewPath: '../../src/plugins/ua.client/ua.render/opcua/addServerView.html' })
+                }
+            },
             {
                 label: '打开',
                 tips: 'Open',
