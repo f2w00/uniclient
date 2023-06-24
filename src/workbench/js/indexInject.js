@@ -65,47 +65,21 @@ let menuList = [
 let subviewLeftTabsData = [
     { title: 'mainMenu', name: 'mainMenu', iconSrc: './assets/icon/icon.svg', disabled: true },
     {
-        title: 'Tab 2',
-        name: '2',
-        content: '资源管理器',
+        title: 'space',
+        name: 'space',
+        content: '项目',
         iconSrc: './assets/icon/space.svg',
-        itemList: [
-            {
-                title: 'Project-2',
-                name: '1',
-                content: 'Project-2',
-                items: [],
-            },
-            {
-                title: 'Address-2',
-                name: '2',
-                content: 'Address-2',
-                items: [],
-            },
-        ],
+        viewPath: './components/projectView.html',
     },
     {
-        title: 'Tab 3',
-        name: '3',
-        content: '资源管理器',
+        title: 'plugin',
+        name: 'plugin',
+        content: '插件',
         iconSrc: './assets/icon/plugin.svg',
-        itemList: [
-            {
-                title: 'Project-3',
-                name: '1',
-                content: 'Project-3',
-                items: [],
-            },
-            {
-                title: 'Address-3',
-                name: '2',
-                content: 'Address-3',
-                items: [],
-            },
-        ],
+        viewPath: './components/welcome.html',
     },
     {
-        title: 'Tab 3',
+        title: 'tutorial',
         name: 'tutorial',
         content: '用户手册',
         iconSrc: './assets/icon/tutorial.svg',
@@ -137,10 +111,34 @@ let subviewLeftTabsData = [
         ],
     },
     {
-        name: 'uaclient',
+        title: 'opcua',
+        name: 'opcua',
         content: 'opcua',
         iconSrc: './assets/icon/project.svg',
         viewPath: '../../src/plugins/ua.client/ua.render/opcua/address.html',
+        clickSendToWindow: [],
+        clickCreateTab: [
+            {
+                event: 'leftBar:created.opcua',
+                params: [
+                    {
+                        title: 'dataView',
+                        name: 'dataView',
+                        content: 'dataView',
+                        position: 'main',
+                        src: '../../src/plugins/ua.client/ua.render/opcua/dataView.html',
+                    },
+                    {
+                        title: 'attributes',
+                        name: 'attributes',
+                        content: 'attributes',
+                        iconSrc: './assets/icon/attribute-management.svg',
+                        position: 'right',
+                        src: '../../src/plugins/ua.client/ua.render/opcua/attributes.html',
+                    },
+                ]
+            }
+        ]
     },
 ]
 let subviewRightTabsData = [
@@ -156,12 +154,7 @@ let subviewRightTabsData = [
                 name: '1',
                 content: 'Attributes',
                 items: [],
-            } /* {
-        title: 'References',
-        name: '2',
-        content: 'References',
-        items: []
-    } */,
+            }
         ],
     },
     {

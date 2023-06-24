@@ -105,6 +105,9 @@
 .subviewRight-content .el-tabs--right {
     height: 100%;
 }
+.subviewRight-content .el-tabs--right .el-tabs__nav-scroll {
+    padding-top: calc(var(--top-bar-height) + 4px);
+}
 
 .subviewRight-content .el-tabs__header.is-right {
     width: var(--right-bar-width);

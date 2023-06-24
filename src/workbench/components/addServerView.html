@@ -416,11 +416,12 @@
 </script>
 <script type="text/javascript">
     async function connectServer(autoConnect) {
+        // window.parent.uniclient.windowEvent.emit(`opcua:session.init`, 200)
         if (autoConnect) {
             let res1 = await clientConnect()
             let res2 = await sessionInit()
             if (res2.code === 200) {
-                window.parent.uniclient.windowEvent.emit(`opcua:address.cs`, "hello world")
+                window.parent.uniclient.windowEvent.emit(`opcua:session.init`, res2.code)
             }
         } else {
             console.log('非自动连接')

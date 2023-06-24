@@ -1,0 +1,48 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../../../workbench/element-ui/css/index.css" />
+    <link rel="stylesheet" href="./opcua.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="subviewItembtn">{{msg}}</div>
+        <!-- <div class="subviewItemoptions">
+            <el-table v-if="itemlist.title === 'Attributes'" :data="attributeTableData" height="100%"
+                style="width: 100%" row-key="id" border default-expand-all
+                :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                <el-table-column prop="attribute" label="attributes" width="135"> </el-table-column>
+                <el-table-column prop="value" label="values"> </el-table-column>
+            </el-table>
+            <el-table v-else :data="itemlist.items" height="250" style="width: 100%" row-key="id" border
+                default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                <el-table-column prop="date" label="References" width="150"> </el-table-column>
+                <el-table-column prop="name" label="Target DisplayName"> </el-table-column>
+            </el-table>
+        </div> -->
+    </div>
+</body>
+<script src="../../../../workbench/vue/vue.js"></script>
+<script src="../../../../workbench/element-ui/index.js"></script>
+<script type="module">
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                msg: 'hello world',
+                dataviewData: [],
+                pageWidth: null,
+                widthList: {},
+                multipleSelection: [],
+            }
+        },
+        computed: {},
+        methods: {},
+        mounted() { },
+        created() { },
+    })
+</script>
+
+</html>

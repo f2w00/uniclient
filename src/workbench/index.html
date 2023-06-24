@@ -104,97 +104,62 @@
                                 </span>
                                 <div class="grid-box">
                                     <div class="titleBox">{{item.content}}</div>
-                                    <iframe :src="item.viewPath" :class="item.name+'Right'" frameborder="none"></iframe>
+                                    <iframe :src="item.src" :id="'iframe:'+item.name" :class="item.name+'Right'"
+                                        frameborder="none"></iframe>
                                 </div>
-
-                                <!-- <div
-                                            v-for="itemlist in item.itemList"
-                                            :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'"
-                                        >
-                                            <div class="subviewItembtn">{{itemlist.title}}</div>
-                                            <div class="subviewItemoptions">
-                                                <el-table
-                                                    v-if="itemlist.title === 'Attributes'"
-                                                    :data="attributeTableData"
-                                                    height="100%"
-                                                    style="width: 100%"
-                                                    row-key="id"
-                                                    border
-                                                    default-expand-all
-                                                    :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-                                                >
-                                                    <el-table-column prop="attribute" label="attributes" width="135">
-                                                    </el-table-column>
-                                                    <el-table-column prop="value" label="values"> </el-table-column>
-                                                </el-table>
-                                                <el-table
-                                                    v-else
-                                                    :data="itemlist.items"
-                                                    height="250"
-                                                    style="width: 100%"
-                                                    row-key="id"
-                                                    border
-                                                    default-expand-all
-                                                    :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-                                                >
-                                                    <el-table-column prop="date" label="References" width="150">
-                                                    </el-table-column>
-                                                    <el-table-column prop="name" label="Target DisplayName">
-                                                    </el-table-column>
-                                                </el-table>
-                                            </div>
-                                        </div> -->
+                            </el-tab-pane>
+                        </el-tabs>
                     </div>
-                    </el-tab-pane>
-                    </el-tabs>
                 </div>
+                <!-- TODO 右侧边栏顶部图层 -->
+                <!-- <span class="rightBarTopmark"></span> -->
             </div>
-        </div>
-        <el-dialog class="addServerDialog" title="Add Server" :close-on-click-modal="false"
-            :visible.sync="addserverVisible" top="15px" @close='handleCancle'>
-            <div class="configName">
-                Configuration Name
-                <input class="configInput" type="text" v-model="configurationName" :placeholder="configurationName"
-                    style="color: #606266" />
-            </div>
-            <iframe name="addServerIframe" id="addServerIframe" src="./components/addServerView.html"></iframe>
-            <div slot="footer" class="dialog-footer">
-                <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
-                <el-button @click="addserverVisible = false">Cancle</el-button>
-                <el-button type="primary" @click="handleConnectServer">OK</el-button>
-            </div>
-        </el-dialog>
-        <div class="menu_dialog" v-if="showMenu">
-            <div class="__menu__wrapper" ref="MenuWrapper">
-                <template v-for="(item, index) in menuList">
-                    <div class="__menu__item" v-if="!item.hidden && !item.line" :key="index"
-                        :class="{ disabled: item.disabled }" @mousedown.stop="handleMenuItemClick(item)"
-                        @mouseenter="handleMenuMouseEnter($event, item)">
-                        <span class="__menu__item-icon" v-if="hasIcon">
-                            <i v-if="IconType === 'font-icon'" v-show="item.icon" :class="item.icon"></i>
-                        </span>
-                        <span class="__menu__item-label">{{ item.label }}</span>
-                        <span class="__menu__item-tips">{{ item.tips || '' }}</span>
-                        <span class="__menu__item-arrow" v-if="hasSubMenu"
-                            :class="{ show: hasSubMenu && item.children }"
-                            :style="{ width: menuItemCss['arrowSize'], height: menuItemCss['arrowSize'] }">
-                            <span class="__menu__item-arrow-after" v-show="hasSubMenu && item.children"></span>
-                        </span>
-                        <div class="__menu__sub__wrapper" :style="{ top: `${subTop}px`, left: `${subLeft}px` }"
-                            v-show=" hoverFlag" v-if="item.children && item.children.length > 0">
-                            <template v-for="(subItem, subIndex) in item.children">
-                                <div class="__menu__sub__item" :key="subIndex" v-if="!subItem.hidden && !subItem.line"
-                                    :class="{ disabled: subItem.disabled }"
-                                    @mousedown.stop="handleSubMenuItemClick(subItem)">
-                                    <span class="__menu__sub__item-label">{{ subItem.label }}</span>
-                                    <span class="__menu__sub__item-tips">{{ subItem.tips || '' }}</span>
-                                </div>
-                                <div class="__menu__line" v-if="subItem.line" :key="subIndex"></div>
-                            </template>
+            <el-dialog class="addServerDialog" title="Add Server" :close-on-click-modal="false"
+                :visible.sync="addserverVisible" top="15px" @close='handleCancle'>
+                <div class="configName">
+                    Configuration Name
+                    <input class="configInput" type="text" v-model="configurationName" :placeholder="configurationName"
+                        style="color: #606266" />
+                </div>
+                <iframe name="addServerIframe" id="addServerIframe" src="./components/addServerView.html"></iframe>
+                <div slot="footer" class="dialog-footer">
+                    <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
+                    <el-button @click="addserverVisible = false">Cancle</el-button>
+                    <el-button type="primary" @click="handleConnectServer">OK</el-button>
+                </div>
+            </el-dialog>
+            <div class="menu_dialog" v-if="showMenu">
+                <div class="__menu__wrapper" ref="MenuWrapper">
+                    <template v-for="(item, index) in menuList">
+                        <div class="__menu__item" v-if="!item.hidden && !item.line" :key="index"
+                            :class="{ disabled: item.disabled }" @mousedown.stop="handleMenuItemClick(item)"
+                            @mouseenter="handleMenuMouseEnter($event, item)">
+                            <span class="__menu__item-icon" v-if="hasIcon">
+                                <i v-if="IconType === 'font-icon'" v-show="item.icon" :class="item.icon"></i>
+                            </span>
+                            <span class="__menu__item-label">{{ item.label }}</span>
+                            <span class="__menu__item-tips">{{ item.tips || '' }}</span>
+                            <span class="__menu__item-arrow" v-if="hasSubMenu"
+                                :class="{ show: hasSubMenu && item.children }"
+                                :style="{ width: menuItemCss['arrowSize'], height: menuItemCss['arrowSize'] }">
+                                <span class="__menu__item-arrow-after" v-show="hasSubMenu && item.children"></span>
+                            </span>
+                            <div class="__menu__sub__wrapper" :style="{ top: `${subTop}px`, left: `${subLeft}px` }"
+                                v-show=" hoverFlag" v-if="item.children && item.children.length > 0">
+                                <template v-for="(subItem, subIndex) in item.children">
+                                    <div class="__menu__sub__item" :key="subIndex"
+                                        v-if="!subItem.hidden && !subItem.line" :class="{ disabled: subItem.disabled }"
+                                        @mousedown.stop="handleSubMenuItemClick(subItem)">
+                                        <span class="__menu__sub__item-label">{{ subItem.label }}</span>
+                                        <span class="__menu__sub__item-tips">{{ subItem.tips || '' }}</span>
+                                    </div>
+                                    <div class="__menu__line" v-if="subItem.line" :key="subIndex"></div>
+                                </template>
+                            </div>
                         </div>
-                    </div>
-                    <div class="__menu__line" v-if="item.line" :key="index"></div>
-                </template>
+                        <div class="__menu__line" v-if="item.line" :key="index"></div>
+                    </template>
+                </div>
             </div>
         </div>
     </div>
@@ -212,8 +177,8 @@
         el: '#app',
         data: function () {
             return {
-                leftTabActivate: '1',
-                rightTabActivate: '1',
+                leftTabActivate: 'space',
+                rightTabActivate: '',
                 bottomTabActivate: '1',
                 addserverVisible: false,
                 configurationName: '',
@@ -271,29 +236,6 @@
         },
         methods: {
             // /* 接口类函数 */
-            // async clientInit() {
-            //     const param = {
-            //         applicationName: 'NodeOPCUA-Client',
-            //         connectionStrategy: {
-            //             initialDelay: 1000,
-            //             maxRetry: 1,
-            //         },
-            //         securityMode: 1,
-            //         keepSessionAlive: true,
-            //         securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
-            //         endpointMustExist: false,
-            //     }
-            //     return await clientApi.clientInit(param)
-            // },
-            // async sessionBrowseroot() {
-            //     const param = {}
-            //     return await sessionApi.sessionBrowseroot(param)
-            // },
-            // async sessionRead(node) {
-            //     const param = { nodeId: null }
-            //     param.nodeId = node
-            //     return await sessionApi.sessionRead(param)
-            // },
             // async sessionBrowse(node) {
             //     const param = { node: null, browseNext: false }
             //     param.node = node
@@ -390,7 +332,9 @@
                         })
                     }
                     if (info.clickCreateTab) {
-                        window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
+                        info.clickCreateTab.forEach((value) => {
+                            window.uniclient.windowEvent.emit(value.event, value.params)
+                        })
                     }
                 }
                 let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
@@ -410,6 +354,17 @@
                 }
             },
             handleTabright(tab, event) {
+                let info = window.exsistRightTabs.get(tab._props.name)
+                if (info) {
+                    if (info.clickSendToWindow) {
+                        info.clickSendToWindow.forEach((value) => {
+                            window.uniclient.windowEvent.emit(value.event, ...value.params)
+                        })
+                    }
+                    if (info.clickCreateTab) {
+                        window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
+                    }
+                }
                 let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
                 let resizeItem = document.querySelector('.subviewRight .resizeShow')
                 if (this.rightTabActivate !== tab._props.name) {
@@ -440,7 +395,6 @@
             },
             handleAddserver() {
                 this.addserverVisible = true
-                console.log("addserverVisible", this.addserverVisible)
             },
             tableRowClassName({ row, rowIndex }) {
                 if ('warn' in row) {
@@ -480,15 +434,6 @@
                         attributes: true,
                     })
                 })
-            },
-            async pollingClientInit() {
-                let flag = true
-                do {
-                    let res = await this.clientInit()
-                    if (res.code === 200) {
-                        flag = false
-                    }
-                } while (flag)
             },
 
             /* 监听类函数 */
@@ -596,11 +541,15 @@
                 }
                 window.exsistTabs = new Map()
                 window.exsistLeftTabs = new Map()
+                window.exsistRightTabs = new Map()
                 this.mainTabs.forEach((value) => {
                     window.exsistTabs.set(value.name, value)
                 })
                 this.subviewLeftTabs.forEach((value) => {
                     window.exsistLeftTabs.set(value.name, value)
+                })
+                this.subviewRightTabs.forEach((value) => {
+                    window.exsistRightTabs.set(value.name, value)
                 })
 
 
@@ -613,6 +562,13 @@
                         if (attribute.name != 'welcome') {
                             window.uniclient.windowEvent.emit('mainTab:remove', 'welcome')
                         }
+                    }
+                })
+                window.uniclient.windowEvent.on('mainTab:create.right', (attribute) => {
+                    if (!window.exsistRightTabs.has(attribute.name)) {
+                        this.subviewRightTabs.push(attribute)
+                        window.exsistRightTabs.set(attribute.name, attribute)
+                        this.rightTabActivate = attribute.name
                     }
                 })
                 window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
@@ -672,12 +628,10 @@
             // targetView(window, '#decisonBox .el-tab-pane')
             // this.attributeObserver()
             // this.triggerSubscript()
-            // this.pollingClientInit()
             // this.logInfoListener()
             // this.logWarnListener()
             // this.logErrorListener()
             // this.subscriptListener()
-            this.handleCs()
             //TODO 我加的
             this.benchInit()
             this.tabInit()
@@ -687,7 +641,7 @@
         },
         created() {
             this.subviewLeftTabs = subviewLeftTabsF()
-            this.subviewRightTabs = subviewRightTabsF()
+            // this.subviewRightTabs = subviewRightTabsF()
             this.problemTableData = problemTableF()
         },
     })

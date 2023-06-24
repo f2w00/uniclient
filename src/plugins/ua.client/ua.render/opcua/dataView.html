@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../../../workbench/element-ui/css/index.css" />
+    <link rel="stylesheet" href="./plugIn.css" />
+</head>
+
+<body>
+    <div id="app">
+        <el-table ref="multipleTable" :data="dataviewData" height="100%"
+            style="width: 100% ;-webkit-border-vertical-spacing: 10px" row-key="nodeId" border stripe default-expand-all
+            :tree-props="{children: 'children', hasChildren: 'hasChildren'}" :header-cell-style="{color:'#a52a2a'}"
+            @selection-change="handleSelectionChange">
+            <!-- <el-table-column type="selection" width="30">
+            </el-table-column> -->
+            <el-table-column type="index" label="#" width="30"> </el-table-column>
+            <el-table-column prop="server" label="Server" :width="widthList.server ? widthList.server : 'auto'">
+                <template slot-scope="scope">
+                    <el-tooltip class="item" effect="light" popper-class="tableTooltip">
+                        <div slot="content">
+                            <div class="tipBox">{{scope.row.server}}</div>
+                        </div>
+                        <div class="oneLine">{{scope.row.server}}</div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column prop="nodeId" label="NodeId" :width="widthList.nodeId ? widthList.nodeId : 'auto'">
+                <template slot-scope="scope">
+                    <el-tooltip class="item" effect="light" popper-class="tableTooltip">
+                        <div slot="content">
+                            <div class="tipBox">{{scope.row.nodeId}}</div>
+                        </div>
+                        <div class="oneLine">{{scope.row.nodeId}}</div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column prop="displayName" label="DisplayName"
+                :width="widthList.displayName ? widthList.displayName : 'auto'">
+                <template slot-scope="scope">
+                    <el-tooltip class="item" effect="light" popper-class="tableTooltip">
+                        <div slot="content">
+                            <div class="tipBox">{{scope.row.displayName}}</div>
+                        </div>
+                        <div class="oneLine">{{scope.row.displayName}}</div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column prop="value" label="Value" :width="widthList.value ? widthList.value : 'auto'">
+                <template slot-scope="scope">
+                    <el-tooltip class="item" effect="light" popper-class="tableTooltip">
+                        <div slot="content">
+                            <div class="tipBox">{{scope.row.value}}</div>
+                        </div>
+                        <div class="oneLine">{{scope.row.value}}</div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column prop="dataType" label="DataType" :width="widthList.dataType ? widthList.dataType : 'auto'">
+                <template slot-scope="scope">
+                    <el-tooltip class="item" effect="light" popper-class="tableTooltip">
+                        <div slot="content">
+                            <div class="tipBox">{{scope.row.dataType}}</div>
+                        </div>
+                        <div class="oneLine">{{scope.row.dataType}}</div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column prop="sourceTimestamp" label="SourceTimestamp"
+                :width="widthList.sourceTimestamp ? widthList.sourceTimestamp : 'auto'">
+                <template slot-scope="scope">
+                    <el-tooltip class="item" effect="light" popper-class="tableTooltip">
+                        <div slot="content">
+                            <div class="tipBox">{{scope.row.sourceTimestamp}}</div>
+                        </div>
+                        <div class="oneLine">{{scope.row.sourceTimestamp}}</div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column prop="statusCode" label="StatusCode"
+                :width="widthList.statusCode ? widthList.statusCode : 'auto'">
+                <template slot-scope="scope">
+                    <el-tooltip class="item" effect="light" popper-class="tableTooltip">
+                        <div slot="content">
+                            <div class="tipBox">{{scope.row.statusCode}}</div>
+                        </div>
+                        <div class="oneLine">{{scope.row.statusCode}}</div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            </el-table-colu>
+            <template slot="header" slot-scope="scope">
+                <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
+            </template>
+            </el-table-column>
+    </div>
+</body>
+<script src="../../../../workbench/vue/vue.js"></script>
+<script src="../../../../workbench/element-ui/index.js"></script>
+<script type="module">
+    const dataMap = new Map()
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                dataviewData: [],
+                pageWidth: null,
+                widthList: {},
+                multipleSelection: [],
+            }
+        },
+        computed: {},
+        methods: {
+            getTableWidth() {
+                const el = document.querySelector('.el-table')
+                this.pageWidth = parseInt(getStyle(el, 'width')) - 30 //将固定列宽减去
+                // console.log(this.pageWidth)
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val
+            },
+            dataListener() {
+                window.addEventListener('message', (e) => {
+                    // console.log(e.data)
+                    let index = dataMap.get(e.data.nodeId)
+                    if (index || index === 0) {
+                        // this.dataviewData[index] = e.data
+                        this.$set(this.dataviewData, index, e.data)
+                    } else {
+                        this.dataviewData.push(e.data)
+                        dataMap.set(e.data.nodeId, this.dataviewData.length - 1)
+                        // this.handleflexColumnWidth(e.data)
+                        this.handleColumnWidth(e.data)
+                    }
+                })
+            },
+            handleflexColumnWidth(lineData) {
+                // this.getTableWidth()
+                // let minWidth = Math.floor(this.pageWidth / 10)
+                // let totalWidth = 0
+                // let averageWidth = 0
+                // let map = flexWidth(lineData)
+                // map.forEach((value, key) => {
+                //     totalWidth += value
+                // })
+                // // console.log(totalWidth, this.pageWidth)
+                // averageWidth = Math.floor((this.pageWidth - totalWidth) / 7)
+                // if (this.pageWidth > totalWidth) {
+                //     map.forEach((value, key) => {
+                //         let width = value + averageWidth > minWidth ? value + averageWidth : minWidth
+                //         totalWidth += width
+                //         map.set(key, width)
+                //         this.$set(this.widthList, key, width)
+                //     })
+                // } else {
+                //     do {
+                //         totalWidth = 0
+                //         map.forEach((value, key) => {
+                //             let width = value + averageWidth > minWidth ? value + averageWidth : minWidth
+                //             totalWidth += width
+                //             // console.log(totalWidth, averageWidth, width)
+                //             map.set(key, width)
+                //             this.$set(this.widthList, key, width)
+                //         })
+                //     } while (totalWidth > this.pageWidth)
+                // }
+            },
+            handleColumnWidth(lineData) {
+                // this.getTableWidth()
+                // let map = flexWidth(lineData)
+                // map.forEach((value, key) => {
+                //     if (key == 'server') {
+                //         this.$set(this.widthList, key, this.pageWidth * 0.25)
+                //     } else if (key == 'nodeId') {
+                //         this.$set(this.widthList, key, this.pageWidth * 0.13)
+                //     } else if (key == 'displayName') {
+                //         this.$set(this.widthList, key, this.pageWidth * 0.12)
+                //     } else if (key == 'statusCode') {
+                //         this.$set(this.widthList, key, this.pageWidth * 0.1)
+                //     } else if (key == 'sourceTimestamp') {
+                //         this.$set(this.widthList, key, this.pageWidth * 0.18)
+                //     } else if (key == 'value') {
+                //         this.$set(this.widthList, key, this.pageWidth * 0.12)
+                //     } else if (key == 'dataType') {
+                //         this.$set(this.widthList, key, this.pageWidth * 0.1)
+                //     }
+                // })
+            },
+        },
+        mounted() {
+            this.dataListener()
+        },
+        created() { },
+    })
+</script>
+<script>
+    function flexWidth(data) {
+        let strMap = new Map()
+        let widthMap = new Map()
+        if (Array.isArray(data)) {
+            for (let i = 0; i < data.length; i++) {
+                for (item in data[i]) {
+                    if (item !== 'serverTimestamp') {
+                        // TODO: 数据来源的属性比展示的多
+                        if (strMap.get(item)) {
+                            const now_temp = data[i][item] + ''
+                            const max_temp = strMap.get(item) + ''
+                            if (now_temp.length > max_temp.length) {
+                                strMap.set(item, data[i][item])
+                            }
+                        } else {
+                            strMap.set(item, data[i][item])
+                        }
+                    }
+                }
+            }
+        } else {
+            for (item in data) {
+                if (item !== 'serverTimestamp') {
+                    // TODO: 数据来源的属性比展示的多
+                    if (strMap.get(item)) {
+                        const now_temp = data[item] + ''
+                        const max_temp = strMap.get(item) + ''
+                        if (now_temp.length > max_temp.length) {
+                            strMap.set(item, data[item])
+                        }
+                    } else {
+                        strMap.set(item, data[item])
+                    }
+                }
+            }
+        }
+        for (let i of strMap) {
+            let width = 0
+            for (const char of i[1].toString()) {
+                if ((char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')) {
+                    width += 8
+                } else if (char >= '\u4e00' && char <= '\u9fa5') {
+                    width += 12
+                } else {
+                    width += 8
+                }
+            }
+            widthMap.set(i[0], width)
+        }
+        return widthMap
+    }
+    function getStyle(element, attr) {
+        if (element.currentStyle) {
+            return element.currentStyle[attr]
+        } else {
+            return getComputedStyle(element, null).getPropertyValue(attr)
+        }
+    }
+</script>
+<style>
+</style>
+
+</html>
