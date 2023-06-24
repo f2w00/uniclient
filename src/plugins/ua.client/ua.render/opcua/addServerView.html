@@ -231,7 +231,7 @@
             </el-tabs>
             <div slot="footer" class="dialog-footer">
                 <el-checkbox v-model="isAutoConnect">Connect Automatically</el-checkbox>
-                <el-button @click="addserverVisible = false">Cancle</el-button>
+                <el-button @click="handleCancle">Cancle</el-button>
                 <el-button type="primary" @click="handleConnectServer">OK</el-button>
             </div>
         </div>
@@ -388,16 +388,6 @@
         },
         computed: {},
         methods: {
-            selectChanged(value) {
-                console.log(value)
-            },
-            discoveryfilterNode(value, data) {
-                if (!value) return true
-                return data.label.indexOf(value) !== -1
-            },
-            clearEndpointUrl() {
-                this.endpointUrl = ''
-            },
             async clientConnect() {
                 const param = { endpointUrl: '' }
                 param.endpointUrl = this.endpointUrl
@@ -411,17 +401,33 @@
                 }
                 return await sessionApi.sessionInit(param)
             },
-            async sessionBrowseroot() {
-                const param = {}
-                return await sessionApi.sessionBrowseroot(param)
+            selectChanged(value) {
+                console.log(value)
+            },
+            discoveryfilterNode(value, data) {
+                if (!value) return true
+                return data.label.indexOf(value) !== -1
+            },
+            clearEndpointUrl() {
+                this.endpointUrl = ''
             },
             handleCancle() {
-                this.isAutoConnect = false
+                window.parent.uniclient.windowEvent.emit(`uniclient:dialog.cancle`)
             },
-            handleConnectServer() {
-                var iframeDom = document.getElementById('addServerIframe')
-                iframeDom.contentWindow.connectServer(this.isAutoConnect)
-                this.addserverVisible = false
+            async handleConnectServer() {
+                window.parent.uniclient.windowEvent.emit(`opcua:session.init`, 200)
+                // if (this.isAutoConnect) {
+                //     let res1 = await this.clientConnect()
+                //     let res2 = await this.sessionInit()
+                //     if (res2.code === 200) {
+                //         window.parent.uniclient.windowEvent.emit(`opcua:session.init`, res2.code)
+                //     }
+                // } else {
+                //     console.log('非自动连接')
+                //     await this.clientConnect()
+                // }
+                // this.clearEndpointUrl()
+                window.parent.uniclient.windowEvent.emit(`uniclient:dialog.cancle`)
             },
             handleParentheight() {
                 parent.document.querySelector("#dialogIframe").style.height = 0;
@@ -437,28 +443,8 @@
             this.handleParentheight()
         },
         created() {
-            window.clearEndpointUrl = this.clearEndpointUrl
-            window.clientConnect = this.clientConnect
-            window.sessionInit = this.sessionInit
-            window.sessionBrowseroot = this.sessionBrowseroot
         },
     })
-</script>
-<script type="text/javascript">
-    async function connectServer(autoConnect) {
-        // window.parent.uniclient.windowEvent.emit(`opcua:session.init`, 200)
-        if (autoConnect) {
-            let res1 = await clientConnect()
-            let res2 = await sessionInit()
-            if (res2.code === 200) {
-                window.parent.uniclient.windowEvent.emit(`opcua:session.init`, res2.code)
-            }
-        } else {
-            console.log('非自动连接')
-            await clientConnect()
-        }
-        clearEndpointUrl()
-    }
 </script>
 
 </html>

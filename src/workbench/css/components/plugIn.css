@@ -44,10 +44,10 @@ body {
 .el-table__indent {
     padding: 0 !important;
 }
-.el-table--border{
+.el-table--border {
     border: none;
 }
-.el-table__body{
+.el-table__body {
     /* TODO 行间距 */
     -webkit-border-vertical-spacing: 10px;
 }
@@ -77,8 +77,6 @@ body {
     border-bottom: 5px solid #eaeaeb; */
     /* box-shadow: 0 0 10px 10px #eaeaeb; */
 }
-.el-table .cell::b
-
 .el-table .el-table__row--level-0 {
     background-color: #73cbfa;
 }
@@ -98,12 +96,12 @@ body {
     white-space: nowrap;
     word-break: break-all;
 }
-.tableTooltip{
+.tableTooltip {
     min-width: 100px !important;
     max-width: 300px !important;
     text-align: center !important;
 }
-.tableTooltip .tipBox{
+.tableTooltip .tipBox {
     background-color: antiquewhite;
 }
 /* .el-tabs__active-bar {

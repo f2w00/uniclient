@@ -178,22 +178,7 @@
                 addressTreeData: [],
                 logTableData: [],
                 problemTableData: [],
-                attributeTableData: [],
-                subviewItemoptionProps: {
-                    children: 'children',
-                    label: 'label',
-                },
-                subviewItemProjectProps: {
-                    children: 'children',
-                    label: 'label',
-                },
-                subviewItemAddressProps: {
-                    label: function (data, node) {
-                        return data.displayName.text
-                    },
-                    children: 'zones',
-                    isLeaf: 'leaf',
-                },
+
                 //菜单
                 subLeft: 0,
                 subTop: 0,
@@ -224,7 +209,7 @@
         methods: {
             /* 元素调用类函数 */
             handleCancledialog() {
-                console.log("handleCancledialog")
+                this.dialogVisible = false
             },
             handleAddserver(value) {
                 this.iframeUrl = value.viewPath
@@ -330,6 +315,11 @@
             },
 
             /* 监听类函数 */
+            dialogListener() {
+                window.uniclient.windowEvent.on(`uniclient:dialog.cancle`, (e) => {
+                    this.handleCancledialog()
+                })
+            },
             async logErrorListener() {
                 getLogError((result) => {
                     this.logTableData.push(result)
@@ -351,23 +341,6 @@
                     // console.log(result)
                     iframe.contentWindow.postMessage(result)
                 })
-            },
-            triggerSubscript() {
-                var target = document.querySelectorAll('#decisonBox .el-tab-pane')
-                for (let i = 0; i < target.length; i++) {
-                    target[i].addEventListener('main:dragBack', async (e) => {
-                        let data = e.detail.data
-                        // console.log(data)
-                        let res = await this.subscriptInit()
-                        if (data.nodeClass === 'Variable') {
-                            let res1 = await this.subscriptSingle(data.nodeId, data.displayName)
-                        } else {
-                            let reslist = await this.getSessionGroup(data.nodeId, 0)
-                            let nodeGroup = reslist.split('|')
-                            let res2 = await this.subscriptGroup(nodeGroup)
-                        }
-                    })
-                }
             },
 
             /* 菜单函数 */
@@ -517,11 +490,11 @@
         },
         mounted() {
             // this.attributeObserver()
-            // this.triggerSubscript()
             // this.logInfoListener()
             // this.logWarnListener()
             // this.logErrorListener()
             // this.subscriptListener()
+            this.dialogListener()
             //TODO 我加的
             this.benchInit()
             this.tabInit()
