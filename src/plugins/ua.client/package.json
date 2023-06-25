@@ -36,7 +36,7 @@
         "version": "1",
         "storage": "\\ua.client\\package.json",
         "main": "\\ua.client\\extension.js",
-        "worker": "\\ua.client\\ua.servant\\ua.servant.js",
+        "worker": "\\ua.client\\uaclient.js",
         "render": {
             "extraButtons": [
                 {

@@ -9,7 +9,7 @@
 
 <body>
     <div id="app" class="dataviewApp">
-        <el-table ref="multipleTable" :data="dataviewData" height="100%"
+        <el-table ref="multipleTable" :data="dataviewData" height="100%" empty-text=" "
             style="width: 100% ;-webkit-border-vertical-spacing: 10px" row-key="nodeId" border stripe default-expand-all
             :tree-props="{children: 'children', hasChildren: 'hasChildren'}" :header-cell-style="{color:'#a52a2a'}"
             @selection-change="handleSelectionChange">
@@ -98,8 +98,7 @@
 <script src="../../../../workbench/vue/vue.js"></script>
 <script src="../../../../workbench/element-ui/index.js"></script>
 <script src="./utils/tool.js"></script>
-<!-- <script src="./utils/extern.js"></script> -->
-<!-- <script src="../../../../workbench/js/indexExtern.js"></script> -->
+<script src="./utils/extern.js"></script>
 <script type="module">
     import clientApi from './api/clientApi.js'
     import sessionApi from './api/sessionApi.js'
@@ -139,19 +138,19 @@
                 this.multipleSelection = val
             },
             dataListener() {
-                // subscript((result) => {
-                //     console.log(result)
-                //     let index = dataMap.get(result.nodeId)
-                //     if (index || index === 0) {
-                //         // this.dataviewData[index] = result
-                //         this.$set(this.dataviewData, index, result)
-                //     } else {
-                //         this.dataviewData.push(result)
-                //         dataMap.set(result.nodeId, this.dataviewData.length - 1)
-                //         // this.handleflexColumnWidth(result)
-                //         this.handleColumnWidth(result)
-                //     }
-                // })
+                subscript((result) => {
+                    console.log(result)
+                    let index = dataMap.get(result.nodeId)
+                    if (index || index === 0) {
+                        // this.dataviewData[index] = result
+                        this.$set(this.dataviewData, index, result)
+                    } else {
+                        this.dataviewData.push(result)
+                        dataMap.set(result.nodeId, this.dataviewData.length - 1)
+                        // this.handleflexColumnWidth(result)
+                        this.handleColumnWidth(result)
+                    }
+                })
             },
             triggerSubscript() {
                 window.parent.uniclient.windowEvent.on(`opcua:subscript.dragback`, async (e) => {
@@ -200,25 +199,25 @@
                 // }
             },
             handleColumnWidth(lineData) {
-                // this.getTableWidth()
-                // let map = flexWidth(lineData)
-                // map.forEach((value, key) => {
-                //     if (key == 'server') {
-                //         this.$set(this.widthList, key, this.pageWidth * 0.25)
-                //     } else if (key == 'nodeId') {
-                //         this.$set(this.widthList, key, this.pageWidth * 0.13)
-                //     } else if (key == 'displayName') {
-                //         this.$set(this.widthList, key, this.pageWidth * 0.12)
-                //     } else if (key == 'statusCode') {
-                //         this.$set(this.widthList, key, this.pageWidth * 0.1)
-                //     } else if (key == 'sourceTimestamp') {
-                //         this.$set(this.widthList, key, this.pageWidth * 0.18)
-                //     } else if (key == 'value') {
-                //         this.$set(this.widthList, key, this.pageWidth * 0.12)
-                //     } else if (key == 'dataType') {
-                //         this.$set(this.widthList, key, this.pageWidth * 0.1)
-                //     }
-                // })
+                this.getTableWidth()
+                let map = flexWidth(lineData)
+                map.forEach((value, key) => {
+                    if (key == 'server') {
+                        this.$set(this.widthList, key, this.pageWidth * 0.25)
+                    } else if (key == 'nodeId') {
+                        this.$set(this.widthList, key, this.pageWidth * 0.13)
+                    } else if (key == 'displayName') {
+                        this.$set(this.widthList, key, this.pageWidth * 0.12)
+                    } else if (key == 'statusCode') {
+                        this.$set(this.widthList, key, this.pageWidth * 0.1)
+                    } else if (key == 'sourceTimestamp') {
+                        this.$set(this.widthList, key, this.pageWidth * 0.18)
+                    } else if (key == 'value') {
+                        this.$set(this.widthList, key, this.pageWidth * 0.12)
+                    } else if (key == 'dataType') {
+                        this.$set(this.widthList, key, this.pageWidth * 0.1)
+                    }
+                })
             },
         },
         mounted() {
