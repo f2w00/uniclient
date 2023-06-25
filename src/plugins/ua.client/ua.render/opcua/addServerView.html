@@ -257,7 +257,7 @@
                 authentPassword: '',
                 authentCertificate: '',
                 authentKey: '',
-                endpointUrl: 'opc.tcp://DESKTOP-EBEGF63:53530/OPCUA/SimulationServer',
+                endpointUrl: 'opc.tcp://DESKTOP-7O3FAUK:53530/OPCUA/SimulationServer',
                 reversechecked: '',
                 pointFilterName: '',
                 securityPolicy: '',
@@ -415,18 +415,17 @@
                 window.parent.uniclient.windowEvent.emit(`uniclient:dialog.cancle`)
             },
             async handleConnectServer() {
-                window.parent.uniclient.windowEvent.emit(`opcua:session.init`, 200)
-                // if (this.isAutoConnect) {
-                //     let res1 = await this.clientConnect()
-                //     let res2 = await this.sessionInit()
-                //     if (res2.code === 200) {
-                //         window.parent.uniclient.windowEvent.emit(`opcua:session.init`, res2.code)
-                //     }
-                // } else {
-                //     console.log('非自动连接')
-                //     await this.clientConnect()
-                // }
-                // this.clearEndpointUrl()
+                // window.parent.uniclient.windowEvent.emit(`opcua:session.init`, 200)
+                if (this.isAutoConnect) {
+                    let res1 = await this.clientConnect()
+                    let res2 = await this.sessionInit()
+                    if (res2.code === 200) {
+                        window.parent.uniclient.windowEvent.emit(`opcua:session.init`, res2.code)
+                    }
+                } else {
+                    await this.clientConnect()
+                }
+                this.clearEndpointUrl()
                 window.parent.uniclient.windowEvent.emit(`uniclient:dialog.cancle`)
             },
             handleParentheight() {

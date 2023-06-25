@@ -213,6 +213,7 @@
                         clearInterval(intervalId);
                     }
                     let res = await _this.clientInit()
+                    console.log(res)
                     if (res.code === 200) {
                         flag = true
                     }
@@ -228,7 +229,7 @@
         },
         mounted() {
             subviewItemInit(window, document)
-            // this.pollingClientInit()
+            this.pollingClientInit()
             this.connectServerListener()
             window.parent.uniclient.windowEvent.on('leftBar:created.opcua', (dataView) => {
                 dataView.forEach((info) => {
