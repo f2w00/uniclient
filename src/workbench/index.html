@@ -315,6 +315,26 @@
             },
 
             /* 监听类函数 */
+            leftcloseListener() {
+                const _this = this;
+                window.uniclient.windowEvent.on(`leftBar:close`, (e) => {
+                    let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
+                    let resizeItem = document.querySelector('.subviewLeft .resizeShow')
+                    if (_this.leftTabActivate != e) {
+                        _this.leftTabActivate = e
+                        tabsContent.style.display = 'block'
+                        resizeItem.style.display = 'block'
+                    } else {
+                        if (tabsContent.style.display == 'none') {
+                            tabsContent.style.display = 'block'
+                            resizeItem.style.display = 'block'
+                        } else {
+                            tabsContent.style.display = 'none'
+                            resizeItem.style.display = 'none'
+                        }
+                    }
+                })
+            },
             dialogListener() {
                 window.uniclient.windowEvent.on(`uniclient:dialog.cancle`, (e) => {
                     this.handleCancledialog()
@@ -335,13 +355,6 @@
                     this.logTableData.push(result)
                 })
             },
-            async subscriptListener() {
-                let iframe = document.querySelector('.opcuaIframe')
-                subscript((result) => {
-                    // console.log(result)
-                    iframe.contentWindow.postMessage(result)
-                })
-            },
 
             /* 菜单函数 */
             handleShowMenu() {
@@ -357,12 +370,6 @@
                 menuMouseEnter(this, $event, item)
             },
 
-            /* 测试类函数 */
-            handleCs() {
-                window.uniclient.windowEvent.on('opcua:address.cs', (msg) => {
-                    console.log(msg)
-                })
-            },
             //TODO 我加的
             async benchInit() {
                 document.addEventListener('DOMContentLoaded', async () => {
@@ -493,7 +500,7 @@
             // this.logInfoListener()
             // this.logWarnListener()
             // this.logErrorListener()
-            // this.subscriptListener()
+            this.leftcloseListener()
             this.dialogListener()
             //TODO 我加的
             this.benchInit()

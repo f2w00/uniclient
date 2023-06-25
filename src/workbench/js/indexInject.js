@@ -114,7 +114,7 @@ let subviewLeftTabsData = [
         title: 'opcua',
         name: 'opcua',
         content: 'opcua',
-        iconSrc: './assets/icon/project.svg',
+        iconSrc: '../../src/plugins/ua.client/ua.render/opcua/assets/project.svg',
         viewPath: '../../src/plugins/ua.client/ua.render/opcua/address.html',
         clickSendToWindow: [],
         clickCreateTab: [
@@ -136,6 +136,28 @@ let subviewLeftTabsData = [
                         position: 'right',
                         src: '../../src/plugins/ua.client/ua.render/opcua/attributes.html',
                     },
+                ]
+            }
+        ]
+    },
+    {
+        title: 'easy-report',
+        name: 'easy-report',
+        content: 'easy-report',
+        iconSrc: '../../src/plugins/easy-report/assets/report.svg',
+        viewPath: '../../src/plugins/easy-report/index.html',
+        clickSendToWindow: [],
+        clickCreateTab: [
+            {
+                event: 'leftBar:created.easy-report',
+                params: [
+                    {
+                        title: 'easy-report',
+                        name: 'easy-report',
+                        content: 'easy-report',
+                        position: 'main',
+                        src: '../../src/plugins/easy-report/dist/index.html',
+                    }
                 ]
             }
         ]
