@@ -1,9 +1,11 @@
-import { ClientService } from '../services/client.service'
-import { ResponseModel } from '../models/response.model'
-import { Next, ParameterizedContext } from 'koa'
-import { IRouterParamContext } from 'koa-router'
+import {ClientService} from '../services/client.service'
+import {ResponseModel} from '../models/response.model'
+import {Next, ParameterizedContext} from 'koa'
+import {IRouterParamContext} from 'koa-router'
+import {RecordUtil} from '../utils/util'
 import 'koa-body/lib/index'
-import { Config } from '../../config/config.default'
+
+const {StorePrivate, sharedData} = require('uniclient')
 
 export module ClientController {
     export async function init(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {
@@ -76,26 +78,21 @@ export module ClientController {
     }
 
     export async function restore(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {
-        const { existsSync } = require('fs')
-        const { RecordUtil } = require('../utils/util')
-        let fileName = Config.recordJsonFilePath + ctx.request.body['recordName']
-        let record = undefined
-        if (existsSync(fileName)) {
-            record = RecordUtil.restoreRecordFromJson(fileName)
-        }
-        ctx.body = new ResponseModel(RecordUtil.restoreRecordFromJson(record))
+        let recordName = ctx.request.body['recordName']
+        let record = RecordUtil.restoreRecord(recordName)
+        ctx.body = new ResponseModel(record)
     }
 
     export async function getRecords(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {
-        const { readdirSync } = require('fs')
-        const { join } = require('path')
-        let results = readdirSync(join(__dirname, '../records'))
-        let result: string[] = []
-        results.forEach((value: string, index: number) => {
-            if (value.endsWith('.json')) {
-                result.push(value)
-            }
-        })
+        let result = RecordUtil.getRecords()
         ctx.body = new ResponseModel(result)
+    }
+
+    export async function projectInfo(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {
+        ctx.body = new ResponseModel(sharedData.get('projectInfo'))
+    }
+
+    export async function pkiReady(ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>, next: Next) {
+        ctx.body = new ResponseModel(StorePrivate.get('pkiReady'))
     }
 }

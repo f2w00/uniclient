@@ -87,11 +87,6 @@ typings/
 # Electron-Forge
 out/
 /.history/
-/client.data/*
-!/client.data/config.json
-!/client.data/extensions.json
-!/client.data/workspace.json
-!/client.data/render.json
 /.VSCodeCounter/
 /.vscode/
 /.idea/
@@ -100,10 +95,20 @@ logs/
 package-lock.json
 src/client/**/*.js
 src/platform/**/*.js
-src/plugins/ua.client/**/*.js
+!src/platform/webpack.config.js
+src/plugins/ua.client/ua.servant/**/*.js
+src/plugins/ua.client/common/*.js
+src/plugins/ua.client/config/*.js
 !src/plugins/ua.client/extension.js
 !src/workbench/**/*.js
 *.zip
 *.idea
 *.vscode
 backup/
+default/
+client.data/
+!client.data/store/
+src/plugins/easy-report/
+release/
+test/
+.env/

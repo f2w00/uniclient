@@ -11,7 +11,7 @@ module.exports = {
             //不同进程
             SubscriptService.record()
             Config.beforeClose()
-            RecordUtil.recordToJson(Config.recordJsonFilePath + Config.usingRecord)
+            RecordUtil.recordToJson()
             console.log('closed')
         },
     },

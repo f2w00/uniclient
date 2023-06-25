@@ -2,7 +2,8 @@ import { ProcessManager } from '../process/process'
 import { ChildProcess } from 'child_process'
 import { IExtension, IExtensionIdentifier } from './extend.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
-const { plugins, extensionHost } = require('../paths')
+import { LocalEvents } from '../../platform/ipc/events/ipc.events'
+const { plugins, extensionHost } = require('../../platform/base/paths')
 
 type extensionId = string
 
@@ -22,17 +23,16 @@ export interface IExtensionInstanceManager {
 }
 
 export class ExtensionActivator {
-    //todo 用起始事件代替直接加载
     static extensionInstanceManagers: Map<extensionId, IExtensionInstanceManager> = new Map()
 
     static doActivateExtension(iExtension: IExtension, onStart?: boolean) {
         if (onStart) {
             if (iExtension.worker) {
-                ipcClient.onceLocal('client:start.complete', () => {
+                ipcClient.onceLocal(LocalEvents.innerEvents.completeLoading, () => {
                     ExtensionActivator.activateWorker(iExtension)
                 })
             } else {
-                ipcClient.onceLocal('client:start.complete', async () => {
+                ipcClient.onceLocal(LocalEvents.innerEvents.completeLoading, async () => {
                     let { extension } = await require(plugins + iExtension.main)
                     let instance: IExtensionInstance = extension
                     await instance.activate()

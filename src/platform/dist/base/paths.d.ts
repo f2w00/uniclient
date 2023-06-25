@@ -1,0 +1,10 @@
+export declare const client: any;
+export declare const plugins: any;
+export declare const platform: any;
+export declare const workbench: any;
+export declare const src: any;
+export declare const extensionHost: any;
+export declare const mainPreloadPath: any;
+export declare const mainViewPath: any;
+export declare const mainIconPath: any;
+export declare const appDataPath: any;

@@ -1,7 +1,8 @@
-import {ChildProcess,fork,ForkOptions} from 'child_process'
+import {ChildProcess, fork, ForkOptions} from 'child_process'
 import {ipcClient} from '../../platform/ipc/handlers/ipc.handler'
 import {ErrorHandler} from '../error/error'
-import {StartRecord} from '../store/store'
+import {RunningRecord} from '../../platform/base/store/store'
+import {LocalEvents} from '../../platform/ipc/events/ipc.events'
 
 export type IpcCommunicateModel = {
     purpose: string
@@ -15,15 +16,15 @@ export class ProcessManager {
 
     constructor() {
         ProcessManager.processes = new Map()
-        ipcClient.onClient('sendToIpc', (module: string, message: any) => {
+        ipcClient.onClient(LocalEvents.innerEvents.sendIpc, (module: string, message: any) => {
             ProcessManager.sendToProcess(module, message)
         })
-        ipcClient.onLocal('project:fileName', (fileName: string) => {
-            ProcessManager.processes.forEach(value => {
-                value.send({event: 'project:fileName', message: fileName})
-            })
-        })
-        StartRecord.completeLoading('process')
+        // ipcClient.onLocal('project:fileName', (fileName: string) => {
+        //     ProcessManager.processes.forEach(value => {
+        //         value.send({event: 'project:fileName', message: fileName})
+        //     })
+        // })
+        RunningRecord.completeLoading('process')
     }
 
     /**
@@ -33,8 +34,7 @@ export class ProcessManager {
      * @param message
      * @param options
      */
-    static async createChildProcess(
-        fileName: string, module: string, message?: any, options?: ForkOptions) {
+    static async createChildProcess(fileName: string, module: string, message?: any, options?: ForkOptions) {
         let child = await fork(fileName, options)
         if (child.pid) {
             ProcessManager.bindEvent(child)
@@ -49,8 +49,8 @@ export class ProcessManager {
             switch (message.purpose) {
                 case 'sendToClient': {
                     message.args
-                    ? ipcClient.emitClient(message.event, ...message.args)
-                    : ipcClient.emitClient(message.event)
+                        ? ipcClient.emitClient(message.event, ...message.args)
+                        : ipcClient.emitClient(message.event)
                     break
                 }
                 case 'addListenerToClient': {
@@ -60,7 +60,7 @@ export class ProcessManager {
             }
         })
         child.on('uncaughtException', ErrorHandler.currentHandler)
-        child.on('unhandledRejection',ErrorHandler.rejectionHandler)
+        child.on('unhandledRejection', ErrorHandler.rejectionHandler)
     }
 
     static killProcess(module: string) {
@@ -80,11 +80,12 @@ export class ProcessManager {
     static beforeClose() {
         ProcessManager.processes.forEach((process, module) => {
             if (module.startsWith('extensionProcess')) {
-                process.send({event: 'extension:close'})
+                process.send({ event: 'extension:close' })
             } else {
                 process.send('close')
                 process.kill()
             }
         })
+        RunningRecord.completeClose('process')
     }
 }

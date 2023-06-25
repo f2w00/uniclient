@@ -1,7 +1,9 @@
 import { IProject, ProjectManagerFactory } from '../../platform/base/project/project'
-import { ClientStore, StartRecord } from '../store/store.js'
+import { ClientStore, RunningRecord, sharedData } from '../../platform/base/store/store.js'
 import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
 import { FileUtils } from '../../platform/base/utils/utils.js'
+import { LocalEvents, renderEvents } from '../../platform/ipc/events/ipc.events'
+import { appDataPath } from '../../platform/base/paths'
 
 enum storeNames {
     workspaceManager = 'recentManagers',
@@ -49,24 +51,20 @@ export class WorkspaceManager implements IWorkspaceManager {
     }
 
     initBind() {
-        ipcClient.handle('render:project.load', (event, projectName, fileName: string) => {
+        ipcClient.handleRender(renderEvents.workspaceEvents.projectLoad, (event, projectName, fileName: string) => {
             console.log(fileName)
             if (this.loadedProjects.has(projectName)) {
                 return this.loadedProjects.get(projectName)
             }
             return this.loadProject(fileName)
         })
-        ipcClient.handle('render:project.create', (event, projectName: string, projectType: string) => {
-            return this.createProject(projectName, projectType)
-        })
-        ipcClient.onClient('Workspace.getProjectFileName', (module: string) => {
-            ipcClient.emitToChild(
-                'Workspace.getProjectFileName',
-                module,
-                ProjectManagerFactory.currentProject.storagePath
-            )
-        })
-        ipcClient.handle('client:info', (_, ...args) => {
+        ipcClient.handleRender(
+            renderEvents.workspaceEvents.projectCreate,
+            (event, projectName: string, projectType: string) => {
+                return this.createProject(projectName, projectType)
+            }
+        )
+        ipcClient.handleRender(renderEvents.benchEvents.clientInfo, (_, ...args) => {
             return {
                 currentProject: ProjectManagerFactory.currentProject,
                 currentWorkspace: this.workspace,
@@ -77,16 +75,20 @@ export class WorkspaceManager implements IWorkspaceManager {
 
     toStart() {
         if (this.onStart && this.onStart.length > 0 && !this.loadedProjects.has(this.onStart)) {
-            ipcClient.emitLocal('project:load', this.workspace.storagePath + '/' + this.onStart)
+            ipcClient.emitLocal(LocalEvents.innerEvents.loadProject, this.workspace.storagePath + '/' + this.onStart)
             this.loadProject(this.workspace.storagePath + '/' + this.onStart)
         }
-        StartRecord.completeLoading('workspace')
+        sharedData.set('appDataPath', appDataPath)
+        RunningRecord.completeLoading('workspace')
     }
 
     createProject(projectName: string, projectType: string) {
         let fileName = this.workspace.storagePath + `\\${projectName}` + `\\.${projectType}`
         ProjectManagerFactory.createProject(fileName, {
-            workspace: { workspaceName: this.workspace.workspaceName, storagePath: this.workspace.storagePath },
+            workspace: {
+                workspaceName: this.workspace.workspaceName,
+                storagePath: this.workspace.storagePath,
+            },
             storagePath: fileName,
             projectName: projectName + `.${projectType}`,
             projectType: projectType,
@@ -105,7 +107,11 @@ export class WorkspaceManager implements IWorkspaceManager {
         })
         let project: IProject = require(fileName + '/.project/project.json')
         ProjectManagerFactory.produceProjectManager(project)
-        return { project: ProjectManagerFactory.currentProject, subFiles: FileUtils.openFolder(fileName) }
+        sharedData.set('projectInfo', project ? project : null)
+        return {
+            project: ProjectManagerFactory.currentProject,
+            subFiles: FileUtils.openFolder(fileName),
+        }
     }
 }
 
@@ -127,14 +133,14 @@ export class GlobalWorkspaceManager {
     }
 
     initBind() {
-        ipcClient.handle('render:folder.open', (_, fileName: string) => {
+        ipcClient.handleRender(renderEvents.workspaceEvents.openFolder, (_, fileName: string) => {
             let files = FileUtils.openFolder(fileName)
             if (files.includes('.project')) {
-                ipcClient.emitLocal('project:load', fileName, files)
+                ipcClient.emitLocal(renderEvents.workspaceEvents.projectLoad, fileName, files)
             }
-            return FileUtils.deleteFile(files, fileName)
+            return FileUtils.detectFile(files, fileName)
         })
-        ipcClient.handle('render:workspace.load', (_, workspace: workspaceAttribute) => {
+        ipcClient.handleRender(renderEvents.workspaceEvents.load, (_, workspace: workspaceAttribute) => {
             GlobalWorkspaceManager.loadWorkspace(workspace)
             let recent: workspaceAttribute[] = []
             GlobalWorkspaceManager.recent.forEach((value) => {
@@ -151,11 +157,15 @@ export class GlobalWorkspaceManager {
 
     static loadWorkspace(workspace?: workspaceAttribute) {
         if (workspace) {
-            let current = {
-                workspace: { workspaceName: workspace.workspaceName, storagePath: workspace.storagePath },
+            let current: IWorkspaceManager = {
+                workspace: {
+                    workspaceName: workspace.workspaceName,
+                    storagePath: workspace.storagePath,
+                },
                 folders: FileUtils.getSubfolders(workspace.storagePath),
                 onStart: null,
             }
+            GlobalWorkspaceManager.recent.set(workspace.workspaceName, current)
             GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
         } else {
             let recent: IWorkspaceManager[] = ClientStore.get(storeNames.moduleStoreName, storeNames.workspaceManager)
@@ -209,12 +219,17 @@ export class GlobalWorkspaceManager {
 
     static changeWorkspace() {}
 
-    updateStore() {
-        ClientStore.set('workspace', 'recentManagers', [...GlobalWorkspaceManager.recent.values()])
-        ClientStore.set(storeNames.moduleStoreName, 'currentManager', GlobalWorkspaceManager.currentManager)
+    static updateStore() {
+        ClientStore.set(storeNames.moduleStoreName, 'recentManagers', [...GlobalWorkspaceManager.recent.values()])
+        ClientStore.set(storeNames.moduleStoreName, 'currentManager', {
+            workspace: GlobalWorkspaceManager.currentManager.workspace,
+            folders: GlobalWorkspaceManager.currentManager.folders,
+            onStart: GlobalWorkspaceManager.currentManager.onStart,
+        })
     }
 
-    beforeClose() {
-        this.updateStore()
+    static beforeClose() {
+        GlobalWorkspaceManager.updateStore()
+        RunningRecord.completeClose('workspace')
     }
 }

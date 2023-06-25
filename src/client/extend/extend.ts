@@ -1,10 +1,11 @@
-import { existsSync } from 'fs'
+import {existsSync} from 'fs'
 import EventEmitter from 'events'
-import { ClientStore, StartRecord } from '../store/store.js'
-import { ExtensionActivator } from './activator.js'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
-import { rendererEvents } from '../../platform/ipc/events/ipc.events.js'
-const { plugins, platform } = require('../paths.js')
+import {ClientStore, RunningRecord} from '../../platform/base/store/store.js'
+import {ExtensionActivator} from './activator.js'
+import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
+import {renderEvents} from '../../platform/ipc/events/ipc.events.js'
+
+const {plugins, platform} = require('../../platform/base/paths')
 
 type extensionStorage = string
 type extensionActivateEvent = string
@@ -63,8 +64,8 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     }
 
     initBind() {
-        ipcClient.handle('extension:infos.get', (_) => {
-            return { enabledExtensions: this.enabledExtensions, onStart: this.onStart }
+        ipcClient.handleRender(renderEvents.extensionEvents.getInfo, (_) => {
+            return {enabledExtensions: this.enabledExtensions, onStart: this.onStart}
         })
     }
 
@@ -72,14 +73,14 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         this.enabledExtensions.forEach((extension: IExtension, index: number) => {
             if (verifyStoragePath(plugins + extension.storage)) {
                 this.onStart.includes(extension.identifier.id)
-                    ? ExtensionActivator.doActivateExtension(extension, true)
-                    : ExtensionActivator.doActivateExtension(extension, false)
+                ? ExtensionActivator.doActivateExtension(extension, true)
+                : ExtensionActivator.doActivateExtension(extension, false)
             } else {
                 delete this.enabledExtensions[index]
                 this.emit('extension-invalid', extension)
             }
         })
-        StartRecord.completeLoading('extension')
+        RunningRecord.completeLoading('extension')
     }
 
     findExtension(from: string, extension: IExtension): number {
@@ -136,10 +137,10 @@ export class GlobalExtensionManager {
 
     constructor() {
         ClientStore.create({
-            name: storeNames.extension,
-            fileExtension: 'json',
-            clearInvalidConfig: false,
-        })
+                               name: storeNames.extension,
+                               fileExtension: 'json',
+                               clearInvalidConfig: false,
+                           })
         this.startUp()
     }
 
@@ -162,14 +163,17 @@ export class GlobalExtensionManager {
         }
         return pirates.addHook(
             (code: string, filename: string) => {
-                return code.replace(/require\((['"])uniclient\1\)/, `require("${apiPath}")`)
+                return code.replace(/(require\([',"])(uniclient)/g, '$1' + apiPath + '/uniclient');
             },
-            { exts: ['.js'], matcher: matcher }
+            {exts: ['.js'], matcher: matcher}
         )
     }
 
     loadManager() {
-        let manager: IExtensionManager = ClientStore.get(storeNames.extension, 'globalExtensionManager')
+        let manager: IExtensionManager = ClientStore.get(
+            storeNames.extension,
+            'globalExtensionManager'
+        )
         this.currentManager = new ExtensionManager(manager)
         //监听无效扩展事件
         this.currentManager.on('extension-invalid', (extension: IExtension) => {
@@ -182,13 +186,16 @@ export class GlobalExtensionManager {
      */
     bindEventsToMain() {
         //绑定插件安装
-        ipcClient.on(rendererEvents.extensionEvents.install, (event, extension: IExtension) => {
+        ipcClient.onRender(renderEvents.extensionEvents.install, (event, extension: IExtension) => {
             this.currentManager.installExtension(extension)
         })
         //绑定插件卸载方法
-        ipcClient.on(rendererEvents.extensionEvents.uninstall, (event, extension: IExtension) => {
-            this.currentManager.uninstallExtension(extension)
-        })
+        ipcClient.onRender(
+            renderEvents.extensionEvents.uninstall,
+            (event, extension: IExtension) => {
+                this.currentManager.uninstallExtension(extension)
+            }
+        )
     }
 
     updateStoreOfManagers() {
@@ -202,5 +209,6 @@ export class GlobalExtensionManager {
         this.updateStoreOfManagers()
         this.revert()
         this.currentManager.beforeClose()
+        RunningRecord.completeClose('extension')
     }
 }

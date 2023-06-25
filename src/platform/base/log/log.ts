@@ -1,12 +1,12 @@
-import { configure, getLogger, Configuration, Logger } from 'log4js'
-import { LocalEvents } from '../../ipc/events/ipc.events.js'
-import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
-import { ClientStore, StartRecord } from '../../../client/store/store.js'
-import { appDataPath } from '../../../client/paths.js'
+import {Configuration, configure, getLogger, Logger} from 'log4js'
+import {MainEmitEvents} from '../../ipc/events/ipc.events.js'
+import {ipcClient} from '../../ipc/handlers/ipc.handler.js'
+import {RunningRecord} from '../store/store.js'
+import {appDataPath} from '../paths'
 
-enum ConfigNames {
-    log = 'LogConfig',
-}
+// enum ConfigNames {
+//     log = 'LogConfig',
+// }
 
 type Source = string | undefined
 type Warn = string
@@ -62,17 +62,17 @@ export class Log {
 
     constructor(loggerName: loggerName = 'client', config?: Configuration) {
         ipcClient.onClient('Log:info', (info: any) => {
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.info, info)
         })
         ipcClient.onClient('Log:error', (info: any) => {
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.error, info)
         })
         ipcClient.onClient('Log:warn', (info: any) => {
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.warn, info)
         })
         this.configureLog(config)
         Log.clientLogger = getLogger(loggerName)
-        StartRecord.completeLoading('log')
+        RunningRecord.completeLoading('log')
     }
 
     static info(info: ClientInfo) {
@@ -81,7 +81,7 @@ export class Log {
                 source: info.source,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.info, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.info, info)
         } catch (e: any) {
             throw e
         }
@@ -95,7 +95,7 @@ export class Log {
                 stack: info.trace,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.error, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.error, info)
         } catch (e: any) {
             throw e
         }
@@ -108,7 +108,7 @@ export class Log {
                 warn: info.warn,
                 ...info.message,
             })
-            ipcClient.emitToRender(LocalEvents.logEmitEvents.warn, info)
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.warn, info)
         } catch (e: any) {
             throw e
         }
@@ -136,6 +136,10 @@ export class Log {
         } catch (e: any) {
             throw e
         }
+    }
+
+    static beforeClose() {
+        RunningRecord.completeClose('log')
     }
 }
 

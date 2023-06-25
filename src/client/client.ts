@@ -1,17 +1,22 @@
 import { GlobalExtensionManager } from './extend/extend.js'
 import { Workbench } from '../workbench/workbench'
 import { Broker } from '../platform/base/broker/broker.js'
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, globalShortcut } from 'electron'
 import { ErrorHandler } from './error/error.js'
 import { ClientError, Log } from '../platform/base/log/log.js'
-import { parallel, series } from 'async'
-import { ClientStore } from './store/store.js'
+import { parallel } from 'async'
+import { ClientStore } from '../platform/base/store/store.js'
 import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
-import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
+import { LocalEvents, MainEmitEvents, renderEvents } from '../platform/ipc/events/ipc.events.js'
 import { GlobalWorkspaceManager } from './workspace/workspace'
 import { ProcessManager } from './process/process.js'
-import { globalShortcut } from 'electron'
-import { mainIconPath, mainPreloadPath, mainViewPath } from './paths.js'
+import { mainIconPath, mainPreloadPath, mainViewPath } from '../platform/base/paths'
+
+enum shortCuts {
+    dev = 'Alt+d',
+    zoomUp = 'CommandOrControl+=',
+    zoomDown = 'CommandOrControl+-',
+}
 
 export class Client {
     workbench!: Workbench
@@ -53,7 +58,6 @@ export class Client {
         new ErrorHandler()
         ErrorHandler.setUnexpectedErrorHandler((error: any) => {
             console.log(error)
-
             if ('source' in error) {
                 Log.error(error)
             } else {
@@ -81,27 +85,27 @@ export class Client {
     }
 
     private bindQuitEvents() {
-        ipcClient.on(rendererEvents.benchEvents.quit, () => {
+        ipcClient.onRender(renderEvents.benchEvents.quit, () => {
             this.quit()
         })
-        ipcClient.on(rendererEvents.benchEvents.close, () => {
+        ipcClient.onRender(renderEvents.benchEvents.close, () => {
             this.quit()
         })
-        ipcClient.on('render:beforeClose', (_, callback) => {
+        ipcClient.onRender(renderEvents.benchEvents.beforeClose, (_, callback) => {
             this.beforeCloseRender.push(callback)
         })
     }
 
     private createBaseService() {
-        new ClientStore()
+        new ClientStore({ client: true })
     }
 
     private createWorkbench() {
         this.workbench = new Workbench(mainPreloadPath, mainViewPath, mainIconPath)
         this.mainWindow = this.workbench.getMainWindow()
-        this.mainWindow.webContents.once('did-finish-load', async () => {
+        this.mainWindow.once('ready-to-show', async () => {
             await this.mainWindow.show()
-            ipcClient.registerToEmit('emitToRender', (event, ...args) => {
+            ipcClient.onLocal('emitToRender', (event, ...args) => {
                 this.mainWindow.webContents.send(event, ...args)
             })
         })
@@ -109,25 +113,25 @@ export class Client {
     }
 
     private registerShortCut() {
-        globalShortcut.register('Alt+d', () => {
+        globalShortcut.register(shortCuts.dev, () => {
             if (this.mainWindow.isFocused()) {
                 this.mainWindow.webContents.isDevToolsOpened()
                     ? this.mainWindow.webContents.closeDevTools()
                     : this.mainWindow.webContents.openDevTools()
             }
         })
-        globalShortcut.register('CommandOrControl+=', () => {
+        globalShortcut.register(shortCuts.zoomUp, () => {
             let current = this.mainWindow.webContents.getZoomLevel()
             this.mainWindow.webContents.setZoomLevel(current + 0.1)
-            ipcClient.emitToRender('notice', {
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.notice, {
                 title: '全局缩放',
                 message: `${Math.round((current + 0.1) * 100)}%`,
             })
         })
-        globalShortcut.register('CommandOrControl+-', () => {
+        globalShortcut.register(shortCuts.zoomDown, () => {
             let current = this.mainWindow.webContents.getZoomLevel()
             this.mainWindow.webContents.setZoomLevel(current - 0.1)
-            ipcClient.emitToRender('notice', {
+            ipcClient.emitToRender(MainEmitEvents.logEmitEvents.notice, {
                 title: '全局缩放',
                 message: `${Math.round((current - 0.1) * 100)}%`,
             })
@@ -161,22 +165,25 @@ export class Client {
     private quit() {
         this.mainWindow.hide()
         this.beforeCloseRender.forEach((func) => func())
-        series([
-            //终结broker转发者服务
-            async () => {
-                this.broker.beforeClose()
-            },
-            //结束extensionManager服务
-            async () => {
-                this.extension.beforeClose()
-            },
-            async () => {
-                this.broker.beforeClose()
-            },
-        ]).then(() => {
-            this.workbench.beforeClose()
-            ProcessManager.beforeClose()
+        ipcClient.onLocal(LocalEvents.innerEvents.extensionClosed, () => {
+            parallel([
+                async () => {
+                    this.broker.beforeClose()
+                },
+                async () => {
+                    Log.beforeClose()
+                },
+                async () => {
+                    GlobalWorkspaceManager.beforeClose()
+                },
+                async () => {
+                    ProcessManager.beforeClose()
+                },
+            ])
+        })
+        ipcClient.onLocal(LocalEvents.innerEvents.completeClose, () => {
             app.quit()
         })
+        this.extension.beforeClose()
     }
 }

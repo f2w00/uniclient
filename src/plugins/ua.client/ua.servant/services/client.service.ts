@@ -1,9 +1,15 @@
-import { FindServersOnNetworkRequestOptions, MessageSecurityMode, OPCUAClient, OPCUAClientOptions } from 'node-opcua'
-import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
-import { SessionService } from './session.service'
-import { Config } from '../../config/config.default'
-import { EndpointParam } from '../models/params.model'
-import { ClientError, ClientWarn } from '../../../../platform/base/log/log'
+import {
+    FindServersOnNetworkRequestOptions,
+    MessageSecurityMode,
+    OPCUAClient,
+    OPCUAClientOptions
+} from 'node-opcua'
+import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
+import {SessionService} from './session.service'
+import {Config} from '../../config/config.default'
+import {EndpointParam} from '../models/params.model'
+
+const {ClientError, ClientWarn} = require('uniclient')
 
 export module ClientService {
     export let client!: OPCUAClient

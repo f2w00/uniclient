@@ -1,14 +1,16 @@
 import Koa from 'koa'
-import { koaBody } from 'koa-body'
-import { Config } from '../config/config.default'
-import { ClientRouter } from './routers/client.router'
-import { SessionRouter } from './routers/session.router'
-import { SubscriptRouter } from './routers/subscript.router'
-import { CertificateRouter } from './routers/certificate.router'
-import { DbRouter } from './routers/db.router'
-import { ErrorMiddleware } from './middlewares/error.middleware'
-import { CommunicateUtil, RecordUtil } from './utils/util'
-import { parallel } from 'async'
+import {koaBody} from 'koa-body'
+import {Config} from '../config/config.default'
+import {ClientRouter} from './routers/client.router'
+import {SessionRouter} from './routers/session.router'
+import {SubscriptRouter} from './routers/subscript.router'
+import {CertificateRouter} from './routers/certificate.router'
+import {DbRouter} from './routers/db.router'
+import {ErrorMiddleware} from './middlewares/error.middleware'
+import {CommunicateUtil, RecordUtil} from './utils/util'
+import {parallel} from 'async'
+
+const {StorePrivate} = require('uniclient')
 
 export module Server {
     export async function activateServer() {
@@ -30,12 +32,13 @@ export module Server {
         } catch (e: any) {
             CommunicateUtil.emitToClient('Log.error', [e])
         }
+        new StorePrivate({
+            name: 'uaclient',
+            clearInvalidConfig: false,
+            fileExtension: 'json',
+        })
         new CommunicateUtil()
         new RecordUtil()
     }
 }
 Server.activateServer()
-// export function createPKI() {
-//     let exec = require("child_process").exec
-//     exec("npx node-opcua-pki createPKI")
-// }
