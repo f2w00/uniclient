@@ -112,5 +112,6 @@
     //     "transform": "typia/lib/transform"
     //   }
     // ]
-  }
+  },
+  "exclude": ["plugins/**/*","release/**/*"]
 }
