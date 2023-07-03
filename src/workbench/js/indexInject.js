@@ -2,24 +2,24 @@ let menuList = [
     {
         label: '日志',
         tips: 'Log',
-        fn: (that) => {
+        fn: `function fn(that){
             console.log("Log")
-        }
+        }`,
     },
     {
         label: '文档',
         tips: 'Document',
-        fn: (that) => {
+        fn: `function fn(that){
             console.log("Document")
-        }
+        }`
     },
     {
         label: '设置',
         tips: 'Settings',
-        fn: (that) => {
+        fn: `function fn(that){
             console.log("Settings")
-        },
-        disabled: () => true
+        }`,
+        disabled: true
     },
     {
         line: true
@@ -31,32 +31,32 @@ let menuList = [
             {
                 label: '服务',
                 tips: 'Server',
-                fn: (that) => {
-                    console.log("Server", "addServerView")
+                fn: `function fn(that){
+                    console.log("Server", "addServerView fn")
                     that.handleAddserver({ viewPath: '../../src/plugins/ua.client/ua.render/opcua/addServerView.html' })
-                }
+                }`
             },
             {
                 label: '打开',
                 tips: 'Open',
-                fn: (that) => {
+                fn: `function fn(that){
                     console.log("OPCUA", "打开")
-                }
+                }`
             },
             {
                 label: '编辑',
                 tips: 'Edit',
-                disabled: () => true,
-                fn: (that) => {
+                disabled: true,
+                fn: `function fn(that){
                     console.log("OPCUA", "编辑")
-                }
+                }`
             },
             {
                 label: '删除',
                 tips: 'Delete',
-                fn: (that) => {
+                fn: `function fn(that){
                     console.log("OPCUA", "删除")
-                }
+                }`
             }
         ]
     }

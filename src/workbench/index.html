@@ -24,7 +24,8 @@
                     </div>
                     <div class="line"></div>
                     <div class="subview-content subviewLeft-content">
-                        <el-tabs :value="leftTabActivate" tab-position="left" @tab-click="handleTableft">
+                        <el-tabs :value="uniclientActivate.leftTabActivate" tab-position="left"
+                            @tab-click="handleTableft">
                             <el-tab-pane v-for="(item, index) in subviewLeftTabs" :id="item.name" :name="item.name"
                                 :disabled="item.disabled">
                                 <span slot="label">
@@ -44,7 +45,8 @@
                 </div>
                 <main class="main content-box" id="main-content-box">
                     <div id="decisonBox" class="mainviewTop">
-                        <el-tabs v-model="mainTabsValue" type="border-card" closable @tab-remove="removeTab">
+                        <el-tabs v-model="uniclientActivate.mainTabsActivate" type="border-card" closable
+                            @tab-remove="removeTab">
                             <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
                                 :name="item.name" :class="item.name+'Tabpane'" :id="item.name">
                                 <iframe :class="item.name+'Iframe'" :src="item.src" :id="'iframe:'+item.name"></iframe>
@@ -60,8 +62,8 @@
                         <div class="resize mian-vertical"></div>
                         <div class="line"></div>
                         <div class="logview">
-                            <el-tabs>
-                                <el-tab-pane label="日志">
+                            <el-tabs :value="uniclientActivate.bottomTabActivate">
+                                <el-tab-pane label="日志" name="log">
                                     <el-table class="logTable" :data="logTableData" :row-class-name="tableRowClassName"
                                         height="100%" stripe style="width: 100%" border>
                                         <el-table-column prop="timeStamp" label="Timestamp" width="150">
@@ -73,7 +75,7 @@
                                         <el-table-column prop="warn" label="Warn"> </el-table-column>
                                     </el-table>
                                 </el-tab-pane>
-                                <el-tab-pane label="问题">
+                                <el-tab-pane label="问题" name="problem">
                                     <el-table class="logTable" :data="problemTableData" height="100%" stripe border
                                         style="width: 100%">
                                         <el-table-column prop="timestamp" label="Timestamp" width="150">
@@ -97,7 +99,8 @@
                     </div>
                     <div class="line"></div>
                     <div class="subview-content subviewRight-content">
-                        <el-tabs :value="rightTabActivate" tab-position="right" @tab-click="handleTabright">
+                        <el-tabs :value="uniclientActivate.rightTabActivate" tab-position="right"
+                            @tab-click="handleTabright">
                             <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
                                 <span slot="label">
                                     <img class="icon" :src="item.iconSrc" />
@@ -119,24 +122,26 @@
                 <iframe name="dialogIframe" id="dialogIframe" :src="iframeUrl" framebordering='0' scrolling="no"
                     style="width:100%;"></iframe>
             </el-dialog>
-            <div class="menu_dialog" v-if="showMenu">
+            <div class="menu_dialog" v-if="uniclientMenuConfig.showMenu">
                 <div class="__menu__wrapper" ref="MenuWrapper">
-                    <template v-for="(item, index) in menuList">
+                    <template v-for="(item, index) in uniclientMenuConfig.menuList">
                         <div class="__menu__item" v-if="!item.hidden && !item.line" :key="index"
                             :class="{ disabled: item.disabled }" @mousedown.stop="handleMenuItemClick(item)"
                             @mouseenter="handleMenuMouseEnter($event, item)">
-                            <span class="__menu__item-icon" v-if="hasIcon">
-                                <i v-if="IconType === 'font-icon'" v-show="item.icon" :class="item.icon"></i>
+                            <span class="__menu__item-icon" v-if="uniclientMenuConfig.hasIcon">
+                                <i v-if="uniclientMenuConfig.IconType === 'font-icon'" v-show="item.icon"
+                                    :class="item.icon"></i>
                             </span>
                             <span class="__menu__item-label">{{ item.label }}</span>
                             <span class="__menu__item-tips">{{ item.tips || '' }}</span>
                             <span class="__menu__item-arrow" v-if="hasSubMenu"
                                 :class="{ show: hasSubMenu && item.children }"
-                                :style="{ width: menuItemCss['arrowSize'], height: menuItemCss['arrowSize'] }">
+                                :style="{ width: uniclientMenuConfig.menuItemCss['arrowSize'], height: uniclientMenuConfig.menuItemCss['arrowSize'] }">
                                 <span class="__menu__item-arrow-after" v-show="hasSubMenu && item.children"></span>
                             </span>
-                            <div class="__menu__sub__wrapper" :style="{ top: `${subTop}px`, left: `${subLeft}px` }"
-                                v-show=" hoverFlag" v-if="item.children && item.children.length > 0">
+                            <div class="__menu__sub__wrapper"
+                                :style="{ top: `${uniclientMenuConfig.subTop}px`, left: `${uniclientMenuConfig.subLeft}px` }"
+                                v-show="uniclientMenuConfig.hoverFlag" v-if="item.children && item.children.length > 0">
                                 <template v-for="(subItem, subIndex) in item.children">
                                     <div class="__menu__sub__item" :key="subIndex"
                                         v-if="!subItem.hidden && !subItem.line" :class="{ disabled: subItem.disabled }"
@@ -165,31 +170,36 @@
         el: '#app',
         data: function () {
             return {
-                leftTabActivate: 'space',
-                rightTabActivate: '',
-                bottomTabActivate: '1',
+                //主应用展开索引
+                uniclientActivate: {
+                    leftTabActivate: 'space',
+                    rightTabActivate: '',
+                    bottomTabActivate: 'problem',
+                    mainTabsActivate: 'welcome',
+                },
+                //弹出框
                 dialogVisible: false,
                 iframeUrl: '',
-                activeIndex: '1',
-                mainTabsValue: 'welcome',
+                //tab页数据
                 mainTabs: [],
                 subviewLeftTabs: [],
                 subviewRightTabs: [],
-                addressTreeData: [],
+                //表格数据
                 logTableData: [],
                 problemTableData: [],
-
                 //菜单
-                subLeft: 0,
-                subTop: 0,
-                hoverFlag: false,
-                showMenu: false,
-                menuWidth: 200,
-                menuList: [],
-                hasIcon: false,
-                IconType: 'font-icon',
-                menuItemCss: {
-                    arrowSize: '10px',
+                uniclientMenuConfig: {
+                    subLeft: 0,
+                    subTop: 0,
+                    hoverFlag: false,
+                    showMenu: false,
+                    menuWidth: 200,
+                    menuList: [],
+                    hasIcon: false,
+                    IconType: 'font-icon',
+                    menuItemCss: {
+                        arrowSize: '10px',
+                    }
                 },
             }
         },
@@ -197,8 +207,8 @@
             //菜单调用
             hasSubMenu() {
                 let flag = false
-                for (let i = 0; i < this.menuList.length; i++) {
-                    if (this.menuList[i].children && this.menuList[i].children.length > 0) {
+                for (let i = 0; i < this.uniclientMenuConfig.menuList.length; i++) {
+                    if (this.uniclientMenuConfig.menuList[i].children && this.uniclientMenuConfig.menuList[i].children.length > 0) {
                         flag = true
                         break
                     }
@@ -241,8 +251,8 @@
                 }
                 let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
                 let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                if (this.leftTabActivate != tab._props.name) {
-                    this.leftTabActivate = tab._props.name
+                if (this.uniclientActivate.leftTabActivate != tab._props.name) {
+                    this.uniclientActivate.leftTabActivate = tab._props.name
                     tabsContent.style.display = 'block'
                     resizeItem.style.display = 'block'
                 } else {
@@ -269,8 +279,8 @@
                 }
                 let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
                 let resizeItem = document.querySelector('.subviewRight .resizeShow')
-                if (this.rightTabActivate !== tab._props.name) {
-                    this.rightTabActivate = tab._props.name
+                if (this.uniclientActivate.rightTabActivate !== tab._props.name) {
+                    this.uniclientActivate.rightTabActivate = tab._props.name
                     tabsContent.style.display = 'block'
                     resizeItem.style.display = 'block'
                 } else {
@@ -313,6 +323,35 @@
                     })
                 })
             },
+            uniclientActivateInitialize() {
+                const _this = this
+                window.uniclient.store('get', 'uniclientActivate')
+                    .then(res => {
+                        console.log(res)
+                        for (var key in res) {
+                            if (res.hasOwnProperty(key) === true) {
+                                if (res[key] !== null && res[key] !== undefined) {
+                                    _this.uniclientActivateInitialize[key] = res[key]
+                                }
+                            }
+                        }
+                        _this.uniclientActivate = res
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            },
+            uniclientMenuConfigInitialize() {
+                const _this = this
+                window.uniclient.store('get', 'uniclientMenuConfig')
+                    .then(res => {
+                        console.log(res)
+                        _this.uniclientMenuConfig.menuList = res
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            },
 
             /* 监听类函数 */
             leftcloseListener() {
@@ -320,8 +359,8 @@
                 window.uniclient.windowEvent.on(`leftBar:close`, (e) => {
                     let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
                     let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                    if (_this.leftTabActivate != e) {
-                        _this.leftTabActivate = e
+                    if (_this.uniclientActivate.leftTabActivate != e) {
+                        _this.uniclientActivate.leftTabActivate = e
                         tabsContent.style.display = 'block'
                         resizeItem.style.display = 'block'
                     } else {
@@ -429,7 +468,7 @@
                     if (!window.exsistTabs.has(attribute.name)) {
                         this.mainTabs.push(attribute)
                         window.exsistTabs.set(attribute.name, attribute)
-                        this.mainTabsValue = attribute.name
+                        this.uniclientActivate.mainTabsActivate = attribute.name
                         getTab(attribute)
                         if (attribute.name != 'welcome') {
                             window.uniclient.windowEvent.emit('mainTab:remove', 'welcome')
@@ -440,7 +479,7 @@
                     if (!window.exsistRightTabs.has(attribute.name)) {
                         this.subviewRightTabs.push(attribute)
                         window.exsistRightTabs.set(attribute.name, attribute)
-                        this.rightTabActivate = attribute.name
+                        this.uniclientActivate.rightTabActivate = attribute.name
                     }
                 })
                 window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
@@ -449,12 +488,12 @@
                     if (this.mainTabs.length == 0) {
                         window.uniclient.windowEvent.emit('showWelcome')
                     } else {
-                        this.mainTabsValue = this.mainTabs[this.mainTabs.length - 1].name
+                        this.uniclientActivate.mainTabsActivate = this.mainTabs[this.mainTabs.length - 1].name
                     }
 
                 })
                 window.uniclient.windowEvent.on('mainTab:change', (tabName) => {
-                    this.mainTabsValue = tabName
+                    this.uniclientActivate.mainTabsActivate = tabName
                 })
                 if (this.mainTabs.length == 0) {
                     window.uniclient.windowEvent.emit('mainTab:create', { title: 'welcome', name: 'welcome', src: './components/welcome.html' })
@@ -508,6 +547,17 @@
             this.onNoticeFromMain()
         },
         created() {
+            // -----------存
+            // window.uniclient.store('set', 'currentWorkspace', "D:\\Code\\Vscode\\uniclient\\default")
+            // window.uniclient.store('set', 'uniclientActivate', {
+            //     "leftTabActivate": "space",
+            //     "rightTabActivate": "",
+            //     "bottomTabActivate": "log",
+            //     "mainTabsActivate": "welcome"
+            // })
+
+            this.uniclientActivateInitialize()
+            this.uniclientMenuConfigInitialize()
             this.subviewLeftTabs = subviewLeftTabsF()
             this.problemTableData = problemTableF()
         },

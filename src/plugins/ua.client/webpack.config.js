@@ -17,7 +17,7 @@ module.exports = {
         },
     ],
     target: 'node',
-    // optimization: {
-    //     minimize: false,
-    // },
+    optimization: {
+        minimize: false,
+    },
 }

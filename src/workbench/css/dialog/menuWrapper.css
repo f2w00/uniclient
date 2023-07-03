@@ -1,4 +1,6 @@
 .__menu__wrapper {
+    --menu-width: 170px;
+    --menu-radius: 5px;
     --menu-background: #f0f0f0;
     --menu-boxShadow: 0 1px 5px #888;
     --menu-padding: 5px 0;
@@ -9,9 +11,9 @@
     --menu-item-iconFontSize: 14px;
     --menu-item-iconColor: #484852;
     --menu-item-labelColor: #484852;
-    --menu-item-labelFontSize: 14px;
+    --menu-item-labelFontSize: 12px;
     --menu-item-tipsColor: #889;
-    --menu-item-tipsFontSize: 12px;
+    --menu-item-tipsFontSize: 10px;
     --menu-item-arrowColor: #484852;
     --menu-item-disabledColor: #bcc;
     --menu-item-hoverBackground: rgba(255, 255, 255, 0.8);
@@ -31,11 +33,12 @@
 
 .__menu__wrapper {
     position: fixed;
-    width: 200px;
+    width: var(--menu-width);
     background: var(--menu-background);
     box-shadow: var(--menu-boxShadow);
     padding: var(--menu-padding);
     border-radius: var(--menu-borderRadius);
+    border-radius: var(--menu-radius);
     /* visibility: hidden; */
     z-index: 999;
 }
@@ -175,11 +178,11 @@
 
 .__menu__sub__wrapper {
     position: fixed;
-    width: 200px;
+    width: var(--menu-width);
     background: var(--menu-background);
     box-shadow: var(--menu-boxShadow);
+    border-radius: var(--menu-radius);
     padding: var(--menu-padding);
-    border-radius: var(--menu-borderRadius);
 }
 
 .__menu__item:hover .__menu__sub__wrapper {
