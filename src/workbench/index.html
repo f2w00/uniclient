@@ -327,7 +327,6 @@
                 const _this = this
                 window.uniclient.store('get', 'uniclientActivate')
                     .then(res => {
-                        console.log(res)
                         for (var key in res) {
                             if (res.hasOwnProperty(key) === true) {
                                 if (res[key] !== null && res[key] !== undefined) {
@@ -345,7 +344,6 @@
                 const _this = this
                 window.uniclient.store('get', 'uniclientMenuConfig')
                     .then(res => {
-                        console.log(res)
                         _this.uniclientMenuConfig.menuList = res
                     })
                     .catch(err => {
@@ -548,7 +546,7 @@
         },
         created() {
             // -----------存
-            window.uniclient.store('set', 'currentWorkspace', "D:\\Code\\Vscode\\uniclient\\default")
+            // window.uniclient.store('set', 'currentWorkspace', "D:\\Code\\Vscode\\uniclient\\default")
             // window.uniclient.store('set', 'uniclientActivate', {
             //     "leftTabActivate": "space",
             //     "rightTabActivate": "",
@@ -556,9 +554,9 @@
             //     "mainTabsActivate": "welcome"
             // })
 
-            window.uniclient.store('get', 'currentWorkspace').then(res => {
-                console.log(window.uniclient.file('open', res))
-            })
+            // window.uniclient.store('get', 'currentWorkspace').then(res => {
+            //     console.log(window.uniclient.file('open', res))
+            // })
 
             this.uniclientActivateInitialize()
             this.uniclientMenuConfigInitialize()

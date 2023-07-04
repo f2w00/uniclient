@@ -11,7 +11,8 @@
 <body>
     <div id="app">
         <div style=" width: 100%; height: 100%; ">
-            <el-tree :data="projectData" :props="subviewItemProjectProps" @node-click="handleNodeClick"></el-tree>
+            <el-tree :data="projectData" :props="subviewItemProjectProps" @node-click="handleNodeClick"
+                :load="loadProjectNode" lazy></el-tree>
         </div>
     </div>
 </body>
@@ -22,31 +23,41 @@
         el: '#app',
         data: function () {
             return {
-                projectData: [{
-                    name: '一级 1',
-                    children: [{
-                        name: '二级 1-1',
-                        children: [{
-                            name: '三级 1-1-1'
-                        }]
-                    }]
-                }, {
-                    label: '一级 2',
-                    children: [{
-                        label: '二级 2-1',
-                        children: [{
-                            label: '三级 2-1-1'
-                        }]
-                    }]
-                }],
+                projectData: [],
                 subviewItemProjectProps: {
-                    children: 'child',
+                    children: 'children',
                     label: 'name'
                 },
             }
         },
         computed: {},
         methods: {
+            async loadProjectNode(node, resolve) {
+                if (node.level === 0) {
+                    return resolve(this.projectData)
+                } else {
+                    console.log(node.data.name)
+                    if (node.data.isDir) {
+                        const _this = this
+                        window.parent.uniclient.store('get', 'currentWorkspace')
+                            .then(res => {
+                                res = res + "\\" + node.data.name
+                                console.log(res)
+                                window.parent.uniclient.file('open', res)
+                                    .then(res1 => {
+                                        console.log(res1)
+                                        return resolve(res1)
+                                    })
+                                    .catch(err1 => {
+                                        console.log(err1)
+                                    })
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+                    }
+                }
+            },
             handleNodeClick(data) {
                 console.log(data)
             },
@@ -57,7 +68,6 @@
                         _this.projectData = window.parent.uniclient.file('open', res)
                             .then(res1 => {
                                 _this.projectData = res1
-                                console.log(_this.projectData)
                             })
                             .catch(err1 => {
                                 console.log(err1)
