@@ -97,6 +97,9 @@ src/client/**/*.js
 src/platform/**/*.js
 !src/platform/webpack.config.js
 src/plugins/ua.client/ua.servant/**/*.js
+!src/plugins/ua.client/ua.render/**/*.js
+!src/plugins/ua.client/uaclient.js
+!src/plugins/ua.client/webpack.config.js
 src/plugins/ua.client/common/*.js
 src/plugins/ua.client/config/*.js
 !src/plugins/ua.client/extension.js
@@ -111,4 +114,4 @@ client.data/
 src/plugins/easy-report/
 release/
 test/
-.env/
+.env

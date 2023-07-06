@@ -3,7 +3,7 @@
     "productName": "uniclient",
     "version": "1.0.0",
     "description": "This client solve problems with plugins for any person or organization",
-    "main": "src/main.js",
+    "main": "src/main2.js",
     "type": "commonjs",
     "scripts": {
         "dev": "nodemon -e js,html,cjs,css --exec electron . --delay 2",

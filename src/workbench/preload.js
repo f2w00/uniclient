@@ -1,6 +1,7 @@
 const { ipcRenderer } = require('electron')
 const { rendererEvents } = require('../platform/ipc/events/ipc.events')
 const { EventEmitter } = require('events')
+const { sharedData } = require('../platform/base/store/store')
 
 function exposeInMain() {
     const mainFunctions = {
@@ -44,12 +45,9 @@ function exposeInMain() {
         },
         rendererEvents: rendererEvents,
         windowEvent: new EventEmitter(),
-        // getExtensions: async () => {
-        //     return await ipcRenderer.invoke('extension:infos.get')
-        // }
+        sharedData: sharedData,
     }
     window.uniclient = mainFunctions
 }
 
 exposeInMain()
-// window.uniclient.store('set', 'leftSide','ok')

@@ -804,7 +804,7 @@
                 this.problemTableData = problemTableF()
                 // window.uniclient.store('set','currentWorkspace',"workspace")
                 // window.uniclient.file('open','D:\\works\\idea_projects\\uniclient\\src\\workbench')
-                console.log(window.uniclient.file('open','D:\\works\\idea_projects\\uniclient\\src\\workbench'))
+                console.log(window.uniclient.sharedData.get('currentWorkspace'))
             },
         })
     </script>

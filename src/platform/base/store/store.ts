@@ -17,12 +17,14 @@ export class ClientStore {
     constructor(options?: { client?: boolean; cwd?: string }) {
         ClientStore.cwd = options?.cwd ? options.cwd : appDataPath + '/store'
         if (options?.client) {
-            ClientStore.renderStore = new Store({
-                name: 'render',
-                fileExtension: 'json',
-                clearInvalidConfig: false,
-                cwd: ClientStore.cwd,
-            })
+            if (!ClientStore.renderStore) {
+                ClientStore.renderStore = new Store({
+                    name: 'render',
+                    fileExtension: 'json',
+                    clearInvalidConfig: false,
+                    cwd: ClientStore.cwd,
+                })
+            }
             this.initBind()
         }
     }

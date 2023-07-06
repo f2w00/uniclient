@@ -173,6 +173,7 @@ export class GlobalWorkspaceManager {
             GlobalWorkspaceManager.projectExtend = ClientStore.get(storeNames.moduleStoreName, storeNames.projectExtend)
             if (current) {
                 GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
+                sharedData.set('currentWorkspace', current.workspace.storagePath)
             }
             if (recent) {
                 recent.forEach((value) => {
