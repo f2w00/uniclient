@@ -5,7 +5,7 @@ module.exports = {
     entry: path.join(__dirname, './ua.servant/ua.servant.js'),
     resolve: { alias: { hexoid: require.resolve('hexoid') } },
     output: {
-        path: path.join(__dirname, './dist'),
+        path: __dirname,
         filename: 'uaclient.js',
     },
     externals: [

@@ -1,28 +1,31 @@
-const { app, Menu, protocol } = require('electron')
 const { config } = require('dotenv')
 config()
 require('v8-compile-cache')
 
-app.setPath('appData', generateUserDataPath())
-Menu.setApplicationMenu(null)
-app.commandLine.appendArgument('--no-sandbox') //electron bug with gpu_error
-app.whenReady().then(() => {
-    protocol.interceptFileProtocol(
-        'file',
-        (req, callback) => {
-            callback(decodeURI(req.url.slice(8)))
-        },
-        (error) => {
-            if (error) {
-                console.error('Failed to register protocol')
+async function electronStart() {
+    const { app, Menu, protocol } = require('electron')
+    app.setPath('appData', generateUserDataPath())
+    Menu.setApplicationMenu(null)
+    app.commandLine.appendArgument('--no-sandbox') //electron bug with gpu_error
+    app.whenReady().then(() => {
+        protocol.interceptFileProtocol(
+            'file',
+            (req, callback) => {
+                callback(decodeURI(req.url.slice(8)))
+            },
+            (error) => {
+                if (error) {
+                    console.error('Failed to register protocol')
+                }
             }
-        }
-    )
-    startUp()
-})
+        )
+        clientStart()
+    })
+}
+electronStart()
 
-async function startUp() {
-    const { Client } = await require('./client/client.js')
+async function clientStart() {
+    const { Client } = await require('../src/client/client.js')
     new Client()
 }
 
@@ -42,7 +45,6 @@ function generateUserDataPath() {
             const { join } = require('path')
             dataPath = join(__dirname, '../client.data')
             let envPath = join(__dirname, '../.env')
-            console.log(existsSync('../.env'))
             if (!existsSync(envPath)) {
                 let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
                 writeFileSync(envPath, String(data))
@@ -70,7 +72,7 @@ function generateUserDataPath() {
 }
 
 function generateConfigs(dataPath, join, existsSync, mkdirSync) {
-    const { ClientStore } = require('./platform/base/store/store')
+    const { ClientStore } = require('../src/platform/base/store/store.js')
     new ClientStore({ client: false, cwd: dataPath + '/store' })
     const detectPlugins = () => {
         const { readdirSync } = require('fs')
@@ -109,6 +111,61 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
         fileExtension: 'json',
         clearInvalidConfig: false,
     })
+    ClientStore.create({ name: 'render', fileExtension: 'json', clearInvalidConfig: false })
+    ClientStore.set('render', 'uniclientActivate', {
+        leftTabActivate: 'space',
+        rightTabActivate: '',
+        bottomTabActivate: '',
+        mainTabsActivate: 'welcome',
+    })
+    ClientStore.set('render', 'uniclientMenuConfig', [
+        {
+            label: '日志',
+            tips: 'Log',
+            fn: 'function fn(that){ console.log("Log") }',
+        },
+        {
+            label: '文档',
+            tips: 'Document',
+            fn: 'function fn(that){ console.log("Document") }',
+        },
+        {
+            label: '设置',
+            tips: 'Settings',
+            fn: 'function fn(that){ console.log("Settings") }',
+            disabled: true,
+        },
+        {
+            line: true,
+        },
+        {
+            label: 'OPCUA',
+            tips: '',
+            children: [
+                {
+                    label: '服务',
+                    tips: 'Server',
+                    fn: 'function fn(that){ console.log("Server", "addServerView fn"); that.handleAddserver({ viewPath: \'../../src/plugins/ua.client/ua.render/opcua/addServerView.html\' }) }',
+                },
+                {
+                    label: '打开',
+                    tips: 'Open',
+                    fn: 'function fn(that){ console.log("OPCUA", "打开") }',
+                },
+                {
+                    label: '编辑',
+                    tips: 'Edit',
+                    disabled: true,
+                    fn: 'function fn(that){ console.log("OPCUA", "编辑") }',
+                },
+                {
+                    label: '删除',
+                    tips: 'Delete',
+                    fn: 'function fn(that){ console.log("OPCUA", "删除") }',
+                },
+            ],
+        },
+    ])
     ClientStore.set('workspace', 'recentManagers', [])
     ClientStore.set('workspace', 'projectExtend', pluginsInfo.infos.projectExtend)
     let defaultPath = join(__dirname, '../default')
@@ -124,14 +181,3 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
         onStart: [],
     })
 }
-
-//todo 加密文件编码
-// function encryptFile() {
-//     const { compileFile } = require('bytenode')
-//     const { writeFileSync } = require('fs')
-//     compileFile({
-//         filename: __dirname + './client/client.js',
-//         output: __dirname + './client-out/client.jsc',
-//     })
-//     writeFileSync(__dirname + './client/client.js', "require('bytenode');\nrequire('./client.jsc);")
-// }

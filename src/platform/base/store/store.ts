@@ -1,7 +1,7 @@
 import Store from 'electron-store'
-import {ipcClient} from '../../ipc/handlers/ipc.handler'
-import {appDataPath} from '../paths'
-import {LocalEvents, renderEvents} from '../../ipc/events/ipc.events'
+import { ipcClient } from '../../ipc/handlers/ipc.handler'
+import { appDataPath } from '../paths'
+import { LocalEvents, renderEvents } from '../../ipc/events/ipc.events'
 
 export type storeOptions = {
     name: string
@@ -17,11 +17,14 @@ export class ClientStore {
     constructor(options?: { client?: boolean; cwd?: string }) {
         ClientStore.cwd = options?.cwd ? options.cwd : appDataPath + '/store'
         if (options?.client) {
-            ClientStore.renderStore = new Store({
-                name: 'render',
-                fileExtension: 'json',
-                clearInvalidConfig: false,
-            })
+            if (!ClientStore.renderStore) {
+                ClientStore.renderStore = new Store({
+                    name: 'render',
+                    fileExtension: 'json',
+                    clearInvalidConfig: false,
+                    cwd: ClientStore.cwd,
+                })
+            }
             this.initBind()
         }
     }
@@ -106,7 +109,7 @@ export class StorePrivate {
     static store: Store
 
     constructor(options: storeOptions) {
-        StorePrivate.store = new Store({...options, cwd: appDataPath + '/store'})
+        StorePrivate.store = new Store({ ...options, cwd: appDataPath + '/store' })
     }
 
     static set(key: string, content: any): boolean {
@@ -151,8 +154,8 @@ export class RunningRecord {
 }
 
 export const sharedData = new Store({
-                                        name: 'share',
-                                        clearInvalidConfig: false,
-                                        fileExtension: 'json',
-                                        cwd: appDataPath + '/store',
-                                    })
+    name: 'share',
+    clearInvalidConfig: false,
+    fileExtension: 'json',
+    cwd: appDataPath + '/store',
+})
