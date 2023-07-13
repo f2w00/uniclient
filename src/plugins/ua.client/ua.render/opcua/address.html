@@ -161,12 +161,17 @@
                     return resolve(this.addressTreeData)
                 } else if (node.level === 1) {
                     let res = await this.sessionBrowseroot()
+                    node.expanded = true // 展开节点
+                    node.loaded = true // 标识：已加载
                     return resolve(res.data)
                 } else {
                     let res = await this.sessionBrowse(node.data.nodeId)
                     if (res.data.references.length === 0) {
+                        node.loaded = true // 标识：已加载
                         return resolve([])
                     } else {
+                        node.expanded = true // 展开节点
+                        node.loaded = true // 标识：已加载
                         return resolve(res.data.references)
                     }
                 }

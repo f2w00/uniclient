@@ -17,6 +17,11 @@
     <div id="app">
         <div class="container">
             <div class="main-container">
+                <div class="operationBox">
+                    <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
+                    <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
+                    <i class="el-icon-close close-btn" @click="handleClose"></i>
+                </div>
                 <div class="subview subviewLeft">
                     <div class="resizeShow">
                         <!-- 可能会影响拖动 -->
@@ -52,11 +57,6 @@
                                 <iframe :class="item.name+'Iframe'" :src="item.src" :id="'iframe:'+item.name"></iframe>
                             </el-tab-pane>
                         </el-tabs>
-                        <div class="operationBox">
-                            <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
-                            <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
-                            <i class="el-icon-close close-btn" @click="handleClose"></i>
-                        </div>
                     </div>
                     <footer class="main-bottom" id="main-bottom">
                         <div class="resize mian-vertical"></div>
@@ -88,8 +88,8 @@
                                 </el-tab-pane>
                             </el-tabs>
                         </div>
-                        <div class="operationBox">
-                            <i class="el-icon-minus minimize-btn" @click="handleTabbottom"></i>
+                        <div class="operationBox minimize-log">
+                            <i class="el-icon-minus" @click="handleTabbottom"></i>
                         </div>
                     </footer>
                 </main>
@@ -325,30 +325,19 @@
             },
             uniclientActivateInitialize() {
                 const _this = this
-                window.uniclient.store('get', 'uniclientActivate')
-                    .then(res => {
-                        for (var key in res) {
-                            if (res.hasOwnProperty(key) === true) {
-                                if (res[key] !== null && res[key] !== undefined) {
-                                    _this.uniclientActivateInitialize[key] = res[key]
-                                }
-                            }
+                let res = window.uniclient.sharedData.get('uniclientActivate')
+                for (var key in res) {
+                    if (res.hasOwnProperty(key) === true) {
+                        if (res[key] !== null && res[key] !== undefined) {
+                            _this.uniclientActivateInitialize[key] = res[key]
                         }
-                        _this.uniclientActivate = res
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
+                    }
+                }
+                _this.uniclientActivate = res
             },
             uniclientMenuConfigInitialize() {
                 const _this = this
-                window.uniclient.store('get', 'uniclientMenuConfig')
-                    .then(res => {
-                        _this.uniclientMenuConfig.menuList = res
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
+                _this.uniclientMenuConfig.menuList = window.uniclient.sharedData.get('uniclientMenuConfig')
             },
 
             /* 监听类函数 */
@@ -415,7 +404,8 @@
                         //TODO 定义mainMenu
                         this.handleShowMenu()
                     }
-                    window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
+                    window.benchConfigs = window.uniclient.sharedData.get('workbenchConfig')
+                    // window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
                     let bottom = document.getElementById('main-bottom')
                     let tabsLeft = document.querySelector('.subviewLeft-content .el-tabs__content')
                     let resizeItemLeft = document.querySelector('.subviewLeft .resizeShow')
@@ -425,7 +415,7 @@
                     resizeItemRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
                     tabsLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
                     resizeItemLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
-                    bottom.style.display = window.benchConfigs.downSide.display ? 'block' : 'none'
+                    bottom.style.display = window.benchConfigs.bottomSide.display ? 'block' : 'none'
                     window.uniclient.windowEvent.emit('domLoaded')
 
                     window.uniclient.windowEvent.on('bench:config', () => {
@@ -546,17 +536,20 @@
         },
         created() {
             // -----------存
-            // window.uniclient.store('set', 'currentWorkspace', "D:\\Code\\Vscode\\uniclient\\default")
-            // window.uniclient.store('set', 'uniclientActivate', {
-            //     "leftTabActivate": "space",
-            //     "rightTabActivate": "",
-            //     "bottomTabActivate": "log",
-            //     "mainTabsActivate": "welcome"
+            // window.uniclient.sharedData.set('currentWorkspace', "D:\\Code\\Vscode\\uniclient\\default")
+            // window.uniclient.sharedData.set('workbenchConfig', {
+            //     "rightSide": {
+            //         "display": true
+            //     },
+            //     "leftSide": {
+            //         "display": true
+            //     },
+            //     "bottomSide": {
+            //         "display": true
+            //     }
             // })
 
-            // window.uniclient.store('get', 'currentWorkspace').then(res => {
-            //     console.log(window.uniclient.file('open', res))
-            // })
+            // console.log(window.uniclient.sharedData.get('currentWorkspace'))
 
             this.uniclientActivateInitialize()
             this.uniclientMenuConfigInitialize()

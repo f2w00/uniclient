@@ -11,8 +11,14 @@
 <body>
     <div id="app">
         <div style=" width: 100%; height: 100%; ">
-            <el-tree :data="projectData" :props="subviewItemProjectProps" @node-click="handleNodeClick"
-                :load="loadProjectNode" lazy></el-tree>
+            <el-tree :props="subviewItemProjectProps" :load="loadProjectNode" lazy @node-click="handleNodeClick">
+                <span class="custom-tree-node" slot-scope="{node,data}">
+                    <span>
+                        <img class="iconTree" v-if="data.isDir" src="../assets/icon/Object.svg" />
+                        {{data.name}}
+                    </span>
+                </span>
+            </el-tree>
         </div>
     </div>
 </body>
@@ -23,10 +29,9 @@
         el: '#app',
         data: function () {
             return {
-                projectData: [],
                 subviewItemProjectProps: {
                     children: 'children',
-                    label: 'name'
+                    label: 'name',
                 },
             }
         },
@@ -34,56 +39,74 @@
         methods: {
             async loadProjectNode(node, resolve) {
                 if (node.level === 0) {
-                    return resolve(this.projectData)
+                    window.parent.uniclient.store('get', 'currentWorkspace')
+                        .then(res => {
+                            window.parent.uniclient.file('open', res)
+                                .then(res1 => {
+                                    return resolve(res1)
+                                })
+                                .catch(err1 => {
+                                    console.log(err1)
+                                    return resolve([])
+                                })
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
                 } else {
-                    console.log(node.data.name)
                     if (node.data.isDir) {
                         const _this = this
                         window.parent.uniclient.store('get', 'currentWorkspace')
                             .then(res => {
-                                res = res + "\\" + node.data.name
-                                console.log(res)
+                                res = res + "\\" + getPath(node)
                                 window.parent.uniclient.file('open', res)
                                     .then(res1 => {
-                                        console.log(res1)
-                                        return resolve(res1)
+                                        if (res1.length > 0) {
+                                            node.expanded = true // 展开节点
+                                            node.loaded = true // 标识：已加载
+                                            return resolve(res1)
+                                        }
+                                        node.loaded = true // 标识：已加载
+                                        return resolve([])
                                     })
                                     .catch(err1 => {
                                         console.log(err1)
+                                        node.loaded = true // 标识：已加载
+                                        return resolve([])
                                     })
                             })
                             .catch(err => {
                                 console.log(err)
                             })
+                    } else {
+                        node.loaded = true // 标识：已加载
+                        return resolve([])
                     }
                 }
             },
-            handleNodeClick(data) {
-                console.log(data)
-            },
-            projectDataInitialize() {
-                const _this = this
-                window.parent.uniclient.store('get', 'currentWorkspace')
-                    .then(res => {
-                        _this.projectData = window.parent.uniclient.file('open', res)
-                            .then(res1 => {
-                                _this.projectData = res1
-                            })
-                            .catch(err1 => {
-                                console.log(err1)
-                            })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
+            handleNodeClick(data, node, el) {
+                console.log("node+", node)
+                // console.log(el.expanded)
+                // el.expanded = !el.expanded
             },
         },
         mounted() {
         },
         created() {
-            this.projectDataInitialize()
         }
     });
+</script>
+<script>
+    function getPath(node) {
+        let res = ""
+        if (node.data === undefined) {
+            return res
+        } else {
+            res = "\\" + node.data.name
+            res = getPath(node.parent) + res
+        }
+        return res
+    }
 </script>
 
 </html>

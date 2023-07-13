@@ -1,4 +1,10 @@
 /* 框架 */
+:root {
+    --font-color: #273849;
+    --font-size-level1: 16px;
+    --font-size-level2: 14px;
+    --font-size-level3: 12px;
+}
 html,
 body {
     width: 100%;
@@ -37,6 +43,5 @@ body {
     padding: 5px;
 }
 .el-tree-node__expand-icon.is-leaf {
-    color: #c0c4cc;
-    cursor: pointer;
+    opacity: 0;
 }

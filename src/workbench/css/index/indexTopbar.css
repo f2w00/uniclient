@@ -87,12 +87,12 @@
     width: 80;
     height: var(--top-bar-height);
     line-height: var(--top-bar-height);
+    background-color: #eaeaeb;
     display: inline-block;
     position: absolute;
     right: 0;
     top: 0;
     z-index: 999;
-    margin-right: 28px;
     -webkit-app-region: no-drag;
     padding: 0;
 }
@@ -104,6 +104,9 @@
     padding-right: 10px;
     padding-top: 8px;
     padding-bottom: 10px;
+}
+.operationBox.minimize-log {
+    background-color: #fafafa;
 }
 
 .operationBox > i:hover {
