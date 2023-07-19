@@ -153,7 +153,7 @@
                     param.itemsToMonitor.push({ nodeId: item.nodeId })
                     param.displayNames.push(item.displayName)
                 })
-                console.log(param)
+                // console.log(param)
                 return await subscriptApi.subscriptGroup(param)
             },
             async getSessionGroup(node, count) {
@@ -164,7 +164,7 @@
                     let res = await sessionApi.sessionBrowse(param)
                     let result = []
                     for (let i = 0; i < res.data.references.length; i++) {
-                        console.log(res.data.references[i].nodeClass)
+                        // console.log(res.data.references[i].nodeClass)
                         if (res.data.references[i].nodeClass === "Variable") {
                             result.push(JSON.stringify({ nodeId: res.data.references[i].nodeId, displayName: res.data.references[i].displayName.text }))
                         } else {
@@ -205,7 +205,7 @@
             triggerSubscript() {
                 window.parent.uniclient.windowEvent.on(`opcua:subscript.dragback`, async (e) => {
                     let data = e.detail.data
-                    console.log(data)
+                    // console.log(data)
                     let res = await this.subscriptInit()
                     if (res.code === 200) {
                         if (data.nodeClass === 'Variable') {

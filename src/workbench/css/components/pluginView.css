@@ -1,0 +1,72 @@
+/* 框架 */
+:root {
+    --font-color: #273849;
+    --font-size-level1: 16px;
+    --font-size-level2: 14px;
+    --font-size-level3: 12px;
+    --font-size-level4: 10px;
+}
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    background-color: #eaeaeb;
+}
+
+.plugin_installed {
+    height: auto;
+    width: 100%;
+}
+.plugin_uninstalled {
+    height: auto;
+    width: 100%;
+}
+.plugin_title_btn {
+    height: 20px;
+    line-height: 20px;
+    width: calc(100% - 10px);
+    padding-left: 10px;
+    font-size: var(--font-size-level3);
+    background-color: #fafafa;
+    cursor: pointer;
+    position: relative;
+}
+.plugin_title_btn .open_close {
+    transition: transform 0.1s;
+    position: absolute;
+    right: 10px;
+    top: 3px;
+}
+.animation {
+    transform: rotate(-180deg);
+}
+.plugin_card {
+    height: 60px;
+    width: calc(100% - 10px);
+    padding: 0 5px;
+    margin: 10px 0;
+    box-shadow: 8px 3px 3px #5b6671;
+}
+.plugin_card .plugin_icon_box {
+    width: 30px;
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+}
+.plugin_card .plugin_information {
+    width: calc(100% - 40px);
+    display: inline-block;
+    font-size: var(--font-size-level3);
+    position: absolute;
+    left: 40px;
+}
+.plugin_card .plugin_information .plugin_title {
+    font-size: var(--font-size-level2);
+}

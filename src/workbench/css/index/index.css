@@ -40,15 +40,6 @@ body {
     flex-direction: column;
 }
 
-header {
-    width: 100%;
-    height: var(--top-bar-height);
-    background-color: #eaeaeb;
-    position: relative;
-    overflow: hidden;
-    -webkit-app-region: drag;
-}
-
 .main-container {
     display: flex;
     flex: 1;

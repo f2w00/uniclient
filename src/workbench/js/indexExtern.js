@@ -13,17 +13,21 @@ function mainClose() {
     ipcRenderer.send('render:bench.close')
 }
 function getLogError(callback) {
+    //TODO 发过来的数据为undefined
     ipcRenderer.on('main:log.error', (_event, value) => {
+        console.log(_event)
         callback(value)
     })
 }
 function getLogInfo(callback) {
     ipcRenderer.on('main:log.info', (_event, value) => {
+        console.log(_event)
         callback(value)
     })
 }
 function getLogWarn(callback) {
     ipcRenderer.on('main:log.warn', (_event, value) => {
+        console.log(_event)
         callback(value)
     })
 }

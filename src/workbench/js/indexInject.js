@@ -1,67 +1,3 @@
-let menuList = [
-    {
-        label: '日志',
-        tips: 'Log',
-        fn: `function fn(that){
-            console.log("Log")
-        }`,
-    },
-    {
-        label: '文档',
-        tips: 'Document',
-        fn: `function fn(that){
-            console.log("Document")
-        }`
-    },
-    {
-        label: '设置',
-        tips: 'Settings',
-        fn: `function fn(that){
-            console.log("Settings")
-        }`,
-        disabled: true
-    },
-    {
-        line: true
-    },
-    {
-        label: 'OPCUA',
-        tips: '',
-        children: [
-            {
-                label: '服务',
-                tips: 'Server',
-                fn: `function fn(that){
-                    console.log("Server", "addServerView fn")
-                    that.handleAddserver({ viewPath: '../../src/plugins/ua.client/ua.render/opcua/addServerView.html' })
-                }`
-            },
-            {
-                label: '打开',
-                tips: 'Open',
-                fn: `function fn(that){
-                    console.log("OPCUA", "打开")
-                }`
-            },
-            {
-                label: '编辑',
-                tips: 'Edit',
-                disabled: true,
-                fn: `function fn(that){
-                    console.log("OPCUA", "编辑")
-                }`
-            },
-            {
-                label: '删除',
-                tips: 'Delete',
-                fn: `function fn(that){
-                    console.log("OPCUA", "删除")
-                }`
-            }
-        ]
-    }
-]
-
 let subviewLeftTabsData = [
     { title: 'mainMenu', name: 'mainMenu', iconSrc: './assets/icon/icon.svg', disabled: true },
     {
@@ -76,7 +12,7 @@ let subviewLeftTabsData = [
         name: 'plugin',
         content: '插件',
         iconSrc: './assets/icon/plugin.svg',
-        viewPath: './components/welcome.html',
+        viewPath: './components/pluginView.html',
     },
     {
         title: 'tutorial',
@@ -200,10 +136,6 @@ let subviewRightTabsData = [
         ],
     },
 ]
-let logTableData = []
-let problemTableData = []
-let attributeTableData = []
-let addressTreeData = []
 function getsubviewLeftFiledata(fileData, tabSign, itemSign) {
     for (var i = 0; i < subviewLeftTabsData.length; i++) {
         if (subviewLeftTabsData[i].itemList && subviewLeftTabsData[i].title === tabSign) {
@@ -220,39 +152,7 @@ function getsubviewLeftFiledata(fileData, tabSign, itemSign) {
         }
     }
 }
-function mainTabsF() {
-    var tabList = mainTabsData
-    return tabList
-}
-function menuListF() {
-    var list = menuList
-    return list
-}
 function subviewLeftTabsF() {
     var tabList = subviewLeftTabsData
     return tabList
-}
-function subviewRightTabsF() {
-    var tabList = subviewRightTabsData
-    return tabList
-}
-
-function subviewRightTabsF() {
-    var tabList = subviewRightTabsData
-    return tabList
-}
-
-function logTableF() {
-    var tableData = logTableData
-    return tableData
-}
-
-function problemTableF() {
-    var tableData = problemTableData
-    return tableData
-}
-
-function attributeTableF() {
-    var tableData = attributeTableData
-    return tableData
 }
