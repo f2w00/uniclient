@@ -1,8 +1,8 @@
-import {Configuration, configure, getLogger, Logger} from 'log4js'
-import {MainEmitEvents} from '../../ipc/events/ipc.events.js'
-import {ipcClient} from '../../ipc/handlers/ipc.handler.js'
-import {RunningRecord} from '../store/store.js'
-import {appDataPath} from '../paths'
+import { Configuration, configure, getLogger, Logger } from 'log4js'
+import { MainEmitEvents } from '../../ipc/events/ipc.events.js'
+import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
+import { RunningRecord } from '../store/store.js'
+import { appDataPath } from '../paths'
 
 // enum ConfigNames {
 //     log = 'LogConfig',
@@ -61,13 +61,13 @@ export class Log {
     private static clientLogger: Logger
 
     constructor(loggerName: loggerName = 'client', config?: Configuration) {
-        ipcClient.onClient('Log:info', (info: any) => {
+        ipcClient.onClient('Log.info', (info: any) => {
             ipcClient.emitToRender(MainEmitEvents.logEmitEvents.info, info)
         })
-        ipcClient.onClient('Log:error', (info: any) => {
+        ipcClient.onClient('Log.error', (info: any) => {
             ipcClient.emitToRender(MainEmitEvents.logEmitEvents.error, info)
         })
-        ipcClient.onClient('Log:warn', (info: any) => {
+        ipcClient.onClient('Log.warn', (info: any) => {
             ipcClient.emitToRender(MainEmitEvents.logEmitEvents.warn, info)
         })
         this.configureLog(config)
@@ -157,7 +157,7 @@ export class LogPrivate {
                 source: info.source,
                 ...info.message,
             })
-            this.emitToClient('Log:info', info)
+            this.emitToClient('Log.info', info)
         } catch (e: any) {
             throw e
         }
@@ -171,7 +171,7 @@ export class LogPrivate {
                 stack: info.trace,
                 ...info.message,
             })
-            this.emitToClient('Log:error', info)
+            this.emitToClient('Log.error', info)
         } catch (e: any) {
             throw e
         }
@@ -184,7 +184,7 @@ export class LogPrivate {
                 warn: info.warn,
                 ...info.message,
             })
-            this.emitToClient('Log:warn', info)
+            this.emitToClient('Log.warn', info)
         } catch (e: any) {
             throw e
         }
@@ -219,7 +219,7 @@ export class LogPrivate {
             ? process.send({
                   purpose: 'sendToClient',
                   event: event,
-                  ...args,
+                  args: args,
               })
             : null
     }

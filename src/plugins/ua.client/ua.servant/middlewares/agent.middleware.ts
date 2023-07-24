@@ -1,5 +1,5 @@
-import {Next, ParameterizedContext} from 'koa'
-import {IRouterParamContext} from 'koa-router'
+import { Next, ParameterizedContext } from 'koa'
+import { IRouterParamContext } from 'koa-router'
 import {
     BrowseDescriptionLike,
     ClientSubscriptionOptions,
@@ -11,8 +11,8 @@ import {
     WriteValueOptions,
 } from 'node-opcua'
 import 'koa-body/lib/index'
-import {is} from 'typia'
-import {TableCreateModes, UaErrors, UaInfos, UaSources} from '../../common/ua.enums'
+import { is } from 'typia'
+import { TableCreateModes, UaErrors, UaInfos, UaSources } from '../../common/ua.enums'
 import {
     EndpointParam,
     HistoryValueParam,
@@ -22,12 +22,12 @@ import {
     SubscriptGroupParam,
     SubscriptSingleParam,
 } from '../models/params.model'
-import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
-import {Certificate} from 'node-opcua-crypto'
-import {CertUtils, DbUtils, RecordUtil} from '../utils/util'
+import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
+import { Certificate } from 'node-opcua-crypto'
+import { CertUtils, DbUtils, RecordUtil } from '../utils/util'
 
-const {LogPrivate} = require('uniclient')
-const {appDataPath} = require('uniclient')
+const { LogPrivate } = require('uniclient')
+const { appDataPath } = require('uniclient')
 
 type Source = string | undefined
 type Warn = string
@@ -99,6 +99,9 @@ export module AgentMiddleware {
                 if (is<OPCUAClientOptions | undefined>(ctx.request.body)) {
                     RecordUtil.recordParams('client:init', ctx.request.body)
                     Log.info(new ClientInfo(UaSources.clientService, UaInfos.clientCreated, { ...ctx.request.body }))
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.clientService, UaInfos.clientCreated, { ...ctx.request.body }),
+                    // ])
                     await next()
                 } else {
                     throw validateError('OPCUAClientOptions | undefined')
@@ -111,6 +114,9 @@ export module AgentMiddleware {
                     Log.info(
                         new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, { ...ctx.request.body })
                     )
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, { ...ctx.request.body }),
+                    // ])
                     await next()
                 } else {
                     throw validateError('{ endpointUrl: string }')
@@ -122,6 +128,9 @@ export module AgentMiddleware {
                     Log.info(
                         new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, { ...ctx.request.body })
                     )
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, { ...ctx.request.body }),
+                    // ])
                     await next()
                 } else {
                     throw validateError('{ endpointUrl: string }')
@@ -131,7 +140,13 @@ export module AgentMiddleware {
             case '/client/disconnect': {
                 if (is<{ deleteSubscription: boolean } | undefined>(ctx.request.body)) {
                     Log.info(new ClientInfo(UaSources.clientService, UaInfos.sessionClosed))
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.clientService, UaInfos.sessionClosed),
+                    // ])
                     Log.info(new ClientInfo(UaSources.clientService, UaInfos.clientDisconnect))
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.clientService, UaInfos.clientDisconnect),
+                    // ])
                     await next()
                 } else {
                     throw validateError('{ deleteSubscription: boolean } | {}')
@@ -140,11 +155,17 @@ export module AgentMiddleware {
             }
             case '/client/private_key': {
                 Log.info(new ClientInfo(UaSources.clientService, UaInfos.getPrivateKey))
+                // CommunicateUtil.emitToClient('Log.info', [
+                //     new ClientInfo(UaSources.clientService, UaInfos.getPrivateKey),
+                // ])
                 await next()
                 break
             }
             case 'client/cert': {
                 Log.info(new ClientInfo(UaSources.clientService, UaInfos.getCertificate))
+                // CommunicateUtil.emitToClient('Log.info', [
+                //     new ClientInfo(UaSources.clientService, UaInfos.getCertificate),
+                // ])
                 await next()
                 break
             }
@@ -162,6 +183,9 @@ export module AgentMiddleware {
                 if (is<UserIdentityInfo | undefined>(ctx.request.body)) {
                     RecordUtil.recordParams('session:init', ctx.request.body)
                     Log.info(new ClientInfo(UaSources.sessionService, UaInfos.sessionCreated))
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.sessionService, UaInfos.sessionCreated),
+                    // ])
                     await next()
                 } else {
                     throw validateError('UserIdentityInfo | undefined')
@@ -196,6 +220,9 @@ export module AgentMiddleware {
             case '/session/id': {
                 if (is<{ path: string }>(ctx.query)) {
                     Log.info(new ClientInfo(UaSources.sessionService, UaInfos.getIdByName, { ...ctx.request.body }))
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.sessionService, UaInfos.getIdByName, { ...ctx.request.body }),
+                    // ])
                     await next()
                 } else {
                     throw validateError('{ path: string }')
@@ -247,6 +274,9 @@ export module AgentMiddleware {
             case '/subscript/init': {
                 if (is<ClientSubscriptionOptions | undefined>(ctx.request.body)) {
                     Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.installedSub))
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.subscriptService, UaInfos.installedSub),
+                    // ])
                     RecordUtil.recordParams('subscript:init', ctx.request.body)
                     await next()
                 } else {
@@ -259,6 +289,9 @@ export module AgentMiddleware {
                     Log.info(
                         new ClientInfo(UaSources.subscriptService, UaInfos.modifySubscription, { ...ctx.request.body })
                     )
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.subscriptService, UaInfos.modifySubscription, { ...ctx.request.body }),
+                    // ])
                     RecordUtil.recordParams('subscript:init', ctx.request.body)
                     await next()
                 } else {
@@ -271,6 +304,9 @@ export module AgentMiddleware {
                     Log.info(
                         new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemInit, { ...ctx.request.body })
                     )
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemInit, { ...ctx.request.body }),
+                    // ])
                     await next()
                 } else {
                     throw validateError('SubscriptGroupParam')
@@ -284,6 +320,11 @@ export module AgentMiddleware {
                             ...ctx.request.body,
                         })
                     )
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemInit, {
+                    //         ...ctx.request.body,
+                    //     }),
+                    // ])
                     await next()
                 } else {
                     throw validateError('SubscriptSingleParam')
@@ -297,6 +338,11 @@ export module AgentMiddleware {
                             ...ctx.request.body,
                         })
                     )
+                    // CommunicateUtil.emitToClient('Log.info', [
+                    //     new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemTerminate, {
+                    //         ...ctx.request.body,
+                    //     }),
+                    // ])
                     await next()
                 } else {
                     throw validateError('NodeID[]')

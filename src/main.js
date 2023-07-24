@@ -34,9 +34,10 @@ async function clientStart() {
  * @returns
  */
 function generateUserDataPath() {
-    const { existsSync } = require('fs')
+    const { existsSync, readFileSync } = require('fs')
     let dataPath = process.env['UNICLIENT_APPDATA']
     let cacheDir = process.env['V8_COMPILE_CACHE_CACHE_DIR']
+
     if (existsSync(dataPath) && existsSync(cacheDir)) {
         return dataPath
     } else {
@@ -46,21 +47,23 @@ function generateUserDataPath() {
             dataPath = join(__dirname, '../client.data')
             let envPath = join(__dirname, '../.env')
             if (!existsSync(envPath)) {
+                console.log('2')
                 let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
                 writeFileSync(envPath, String(data))
             } else {
-                readFile(envPath, 'utf-8', (err, data) => {
-                    if (data) {
-                        data.replace(
-                            /^V8_COMPILE_CACHE_CACHE_DIR=.*$/g,
-                            `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}/cache'`
-                        )
-                        data.replace(/^UNICLIENT_APPDATA=.*$/g, `UNICLIENT_APPDATA='${dataPath}'`)
-                    } else {
-                        let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
-                    }
+                let data = readFileSync(envPath, 'utf-8')
+                if (data.includes('V8_COMPILE_CACHE_CACHE_DIR' && data.includes('UNICLIENT_APPDATA'))) {
+                    data = data.replace(
+                        /^V8_COMPILE_CACHE_CACHE_DIR=.*$/g,
+                        `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}/cache'`
+                    )
+                    data = data.replace(/^UNICLIENT_APPDATA=.*$/g, `UNICLIENT_APPDATA='${dataPath}'`)
                     writeFileSync(envPath, String(data))
-                })
+                } else {
+                    let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
+                    writeFileSync(envPath, String(data))
+                }
+                config()
             }
             if (!existsSync(dataPath)) {
                 mkdirSync(dataPath)
