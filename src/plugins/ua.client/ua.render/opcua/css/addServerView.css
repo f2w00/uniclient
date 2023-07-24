@@ -1,0 +1,336 @@
+/* tab页样式 */
+.iframeBox {
+    width: 100%;
+    height: 660px;
+}
+.configName {
+    height: 20px;
+    line-height: 100%;
+    padding: 5px 10px 10px;
+    font-size: 12px;
+}
+.configName .configInput {
+    width: calc(100% - 135px);
+}
+.dialog-footer {
+    height: calc(100% - 600px);
+    float: right;
+}
+.dialog-footer .el-checkbox {
+    position: absolute;
+    left: 10px;
+    bottom: 25px;
+}
+.dialog-footer .el-button {
+    width: 80px;
+    padding: 5px 20px;
+    margin-top: 20px;
+    font-weight: 200;
+}
+.el-tabs--border-card {
+    width: 540px;
+    margin: 0px auto;
+    box-shadow: none;
+    border: thin solid #b8b8b8;
+}
+.el-tabs--border-card .el-tabs__header {
+    background-color: #f0f0f0;
+    height: 25px;
+    margin-top: 0;
+}
+.el-tabs--border-card .el-tabs__header .el-tabs__item {
+    height: 100%;
+    line-height: 25px;
+    margin-top: 0;
+}
+.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+    color: black;
+}
+.el-tabs--border-card > .el-tabs__header .el-tabs__item:hover {
+    color: black !important;
+}
+.el-tabs--border-card .el-tabs__content {
+    height: 564px;
+    background-color: #f0f0f0;
+    padding: 0px 10px;
+}
+.el-tabs--border-card .el-tabs__content .el-tab-pane {
+    width: 100%;
+    height: 100%;
+}
+/* 页面内通用样式 */
+
+.el-divider--horizontal {
+    margin: 16px 0;
+}
+.el-divider {
+    background-color: #b8b8b8;
+}
+.el-divider__text {
+    position: absolute;
+    background-color: #f0f0f0;
+    padding: 0 10px;
+    color: #60627c;
+}
+/* discoverySubView样式 */
+.discoverySubView {
+    height: 100%;
+    padding: 5px 0px;
+}
+.discoverySubView .discoveryfilterBox {
+    width: 100%;
+    height: 330px;
+}
+.discoveryfilterBox .filterBox {
+    width: calc(100% - 10px);
+    height: 25px;
+    line-height: 100%;
+    padding: 3px 5px;
+    font-size: 12px;
+}
+.discoveryfilterBox .filterBox .el-select {
+    width: calc(100% - 95px);
+}
+.discoveryfilterBox .filterBox .el-input--suffix {
+    height: 20px;
+    line-height: 20px;
+    padding-top: 2px;
+}
+.discoveryfilterBox .filterBox .el-input--suffix .el-input__inner {
+    height: 100%;
+}
+.discoveryfilterBox .filterBox .el-input--suffix .el-input__icon {
+    line-height: 20px;
+    margin-right: 10px;
+}
+.discoveryfilterBox .discovery-filter-tree {
+    width: 100%;
+    height: calc(100% - 31px);
+    background-color: #f0f0f0;
+    border: 1px solid #b8b8b8;
+    box-shadow: 4px 2px 2px #b8b8b8;
+}
+
+.discoverySubView .verificationBox {
+    height: 200px;
+    width: 100%;
+    border: 1px solid #b8b8b8;
+    box-shadow: 4px 2px 2px #b8b8b8;
+    border-top: none;
+    position: relative;
+}
+.discoverySubView .verificationBox .anonymousBox {
+    height: 40px;
+    line-height: 40px;
+    text-align: start;
+    border-bottom: 1px solid #b8b8b8;
+}
+.discoverySubView .verificationBox .accountBox {
+    height: 72px;
+    text-align: start;
+    border-bottom: 1px solid #b8b8b8;
+}
+.discoverySubView .verificationBox .certificateBox {
+    height: 72px;
+    text-align: start;
+}
+.discoverySubView .verificationBox .radioDefined {
+    height: 100%;
+    text-align: start;
+}
+.discoverySubView .verificationBox .radioBox {
+    height: 100%;
+    float: left;
+}
+.discoverySubView .verificationBox .radioContent {
+    width: calc(100% - 40px);
+    height: 100%;
+    margin-left: 10px;
+    color: #60627c;
+    font-size: 14px;
+    float: left;
+}
+.discoverySubView .verificationBox .radioContent .radioContentTop {
+    height: 36px;
+    line-height: 40px;
+}
+.discoverySubView .verificationBox .radioContent .radioContentBottom {
+    height: 36px;
+    line-height: 36px;
+}
+.discoverySubView .verificationBox .radioContentTop .item-input-suffix .el-checkbox {
+    padding-left: 8px;
+}
+.discoverySubView .verificationBox .radioContentTop .item-input-suffix .el-checkbox .el-checkbox__label {
+    padding-left: 5px;
+}
+.el-checkbox__input.is-checked + .el-checkbox__label {
+    color: #60627c;
+}
+.discoverySubView .verificationBox .el-input {
+    width: calc(100% - 150px);
+    height: 20px;
+    line-height: 20px;
+}
+.discoverySubView .verificationBox .el-input__inner {
+    height: 20px;
+    line-height: 20px;
+}
+.discoverySubView .verificationBox .radioContent .moreBtn {
+    width: 50px;
+    height: 19px;
+    margin-left: 10px;
+}
+/* advancedSubView 样式 */
+.advancedSubView {
+    font-size: 14px;
+    color: #60627c;
+}
+.advancedSubView .setBox {
+    margin: 15px 5px 25px;
+    border: 1px solid #b8b8b8;
+    box-shadow: 4px 2px 2px #b8b8b8;
+    border-top: none;
+    position: relative;
+}
+.advancedSubView .el-input {
+    width: calc(100% - 150px);
+    height: 20px;
+    line-height: 20px;
+}
+.advancedSubView .el-input__inner {
+    height: 20px;
+    line-height: 20px;
+}
+.advancedSubView .serInformation {
+    height: 75px;
+    margin-top: 25px;
+}
+.advancedSubView .serInformation .pointBox {
+    height: 30px;
+    line-height: 30px;
+    text-align: start;
+}
+.advancedSubView .serInformation .reverseBox {
+    height: 30px;
+    line-height: 30px;
+    text-align: start;
+}
+.advancedSubView .securitySet {
+    height: 87px;
+}
+.advancedSubView .el-select {
+    width: calc(100% - 150px);
+    height: 20px;
+    line-height: 20px;
+}
+.advancedSubView .el-select .el-input {
+    width: 100%;
+}
+.advancedSubView .el-select .el-input__suffix {
+    top: 2px;
+}
+.advancedSubView .el-select .el-input__icon {
+    line-height: inherit;
+}
+.advancedSubView .el-select .el-input__suffix-inner {
+    display: inline-block;
+}
+.advancedSubView .securitySet .policyBox {
+    height: 30px;
+    line-height: 30px;
+    text-align: start;
+}
+.advancedSubView .securitySet .modeBox {
+    height: 40px;
+    line-height: 40px;
+    text-align: start;
+}
+.advancedSubView .longContent {
+    width: 100px;
+    height: 40px;
+    line-height: 20px;
+    display: inline-block;
+    word-wrap: break-word;
+}
+.advancedSubView .securitySet .modeBox .el-select {
+    bottom: 10px;
+}
+.advancedSubView .authenticationSet {
+    height: 200px;
+    border: 1px solid #b8b8b8;
+    box-shadow: 4px 2px 2px #b8b8b8;
+    border-top: none;
+    position: relative;
+}
+.advancedSubView .authenticationSet .anonymousBox {
+    height: 40px;
+    line-height: 40px;
+    text-align: start;
+    border-bottom: 1px solid #b8b8b8;
+}
+.advancedSubView .authenticationSet .accountBox {
+    height: 72px;
+    text-align: start;
+    border-bottom: 1px solid #b8b8b8;
+}
+.advancedSubView .authenticationSet .certificateBox {
+    height: 72px;
+    text-align: start;
+}
+.advancedSubView .authenticationSet .radioDefined {
+    height: 100%;
+    text-align: start;
+}
+.advancedSubView .authenticationSet .radioBox {
+    height: 100%;
+    float: left;
+}
+.advancedSubView .authenticationSet .radioContent {
+    width: calc(100% - 40px);
+    height: 100%;
+    margin-left: 10px;
+    color: #60627c;
+    font-size: 14px;
+    float: left;
+}
+.advancedSubView .authenticationSet .radioContent .radioContentTop {
+    height: 36px;
+    line-height: 40px;
+}
+.advancedSubView .authenticationSet .radioContent .radioContentBottom {
+    height: 36px;
+    line-height: 36px;
+}
+.advancedSubView .authenticationSet .radioContentTop .item-input-suffix .el-checkbox {
+    padding-left: 8px;
+}
+.advancedSubView .authenticationSet .radioContentTop .item-input-suffix .el-checkbox .el-checkbox__label {
+    padding-left: 5px;
+}
+.el-checkbox__input.is-checked + .el-checkbox__label {
+    color: #60627c;
+}
+.advancedSubView .authenticationSet .el-input {
+    width: calc(100% - 160px);
+    height: 20px;
+    line-height: 20px;
+}
+.advancedSubView .authenticationSet .el-input__inner {
+    height: 20px;
+    line-height: 20px;
+}
+.advancedSubView .authenticationSet .radioContent .moreBtn {
+    width: 50px;
+    height: 19px;
+    margin-left: 10px;
+}
+.advancedSubView .sessionSet {
+    height: 50px;
+    margin-top: 50px;
+}
+.advancedSubView .sessionSet .sessionName {
+    height: 30px;
+    line-height: 30px;
+    text-align: start;
+}

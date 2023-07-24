@@ -9,7 +9,7 @@
 .mainviewTop .el-tabs__item {
     height: 36px;
     line-height: 36px;
-    -webkit-app-region:no-drag;
+    -webkit-app-region: no-drag;
 }
 .mainviewTop .el-tabs__item.is-active {
     color: #ca532b !important;
@@ -18,8 +18,8 @@
 }
 
 .mainviewTop .el-tabs__nav-scroll {
+    width: calc(100% - 90px);
     background-color: #eaeaeb !important;
-    box-shadow: 10px 10px 10px 10px #eaeaeb;
     -webkit-app-region: drag;
 }
 .mainviewTop .el-tabs__content {

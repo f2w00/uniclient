@@ -141,3 +141,77 @@ function getStyle(element, attr) {
         return getComputedStyle(element, null).getPropertyValue(attr);
     }
 }
+
+/* 菜单函数 */
+function showMenu(that) {
+    that.uniclientMenuConfig.showMenu = !that.uniclientMenuConfig.showMenu
+    if (that.uniclientMenuConfig.showMenu) {
+        that.$nextTick(() => {
+            let el = that.$refs.MenuWrapper
+            Object.keys(that.uniclientMenuConfig.menuItemCss).map(item => {
+                el.style.setProperty(`--menu-item-${item}`, that.uniclientMenuConfig.menuItemCss[item])
+            })
+            let arrowSize = that.uniclientMenuConfig.menuItemCss.arrowSize.match(/\d+/)
+            if (arrowSize) arrowSize = ~~arrowSize[0] || 10
+            el.style.setProperty(`--menu-item-arrowRealSize`, arrowSize / 2 + 'px')
+        })
+    }
+}
+function menuItemClick(that, item) {
+    if (item.fn && item.fn.search('function') !== -1 && !item.disabled) {
+        let funcStr = item.fn;
+        let func = new Function('return ' + funcStr);
+        func()(that)
+        that.uniclientMenuConfig.showMenu = !that.uniclientMenuConfig.showMenu
+    }
+    // if (item.fn && typeof item.fn === 'function' && !item.disabled) {
+    //     item.fn(that)
+    //     that.uniclientMenuConfig.showMenu = !that.uniclientMenuConfig.showMenu
+    // }
+}
+function subMenuItemClick(that, subItem) {
+    if (subItem.fn && subItem.fn.search('function') !== -1 && !subItem.disabled) {
+        let funcStr = subItem.fn;
+        let func = new Function('return ' + funcStr);
+        func()(that)
+        that.uniclientMenuConfig.hoverFlag = false
+        that.uniclientMenuConfig.showMenu = !that.uniclientMenuConfig.showMenu
+    }
+    // if (subItem.fn && typeof subItem.fn === 'function' && !subItem.disabled) {
+    //     subItem.fn(that)
+    //     that.uniclientMenuConfig.hoverFlag = false
+    //     that.uniclientMenuConfig.showMenu = !that.uniclientMenuConfig.showMenu
+    // }
+}
+function menuMouseEnter(that, $event, item) {
+    if (item.children && !item.disabled) {
+        that.uniclientMenuConfig.hoverFlag = true
+        const el = $event.currentTarget
+        const subEl = el.querySelector('.__menu__sub__wrapper')
+        const {
+            offsetWidth
+        } = el
+        const {
+            offsetWidth: subOffsetWidth,
+            offsetHeight: subOffsetHeight
+        } = subEl
+        const {
+            innerWidth: windowWidth,
+            innerHeight: windowHeight
+        } = window
+        const {
+            top,
+            left
+        } = el.getBoundingClientRect()
+        if (left + offsetWidth + subOffsetWidth > windowWidth - 5) {
+            that.uniclientMenuConfig.subLeft = left - subOffsetWidth + 5
+        } else {
+            that.uniclientMenuConfig.subLeft = left + offsetWidth
+        }
+        if (top + subOffsetHeight > windowHeight - 5) {
+            that.uniclientMenuConfig.subTop = windowHeight - subOffsetHeight
+        } else {
+            that.uniclientMenuConfig.subTop = top + 5
+        }
+    }
+}

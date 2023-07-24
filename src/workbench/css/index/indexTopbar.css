@@ -1,100 +1,15 @@
 /* topBar */
-.top-container {
-    position: relative;
-}
-
-.top-container .topLeft {
-    width: auto;
-    display: inline-block;
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-.top-container .topLeft .logoBox {
-    width: calc(var(--left-bar-width) - 10px);
-    height: var(--top-bar-height);
-    line-height: var(--top-bar-height);
-    align-items: center;
-    float: left;
-}
-.top-container .topLeft .logo {
-    margin: 3px 2px 3px 14px;
-}
-.top-container .topLeft .menuBox {
-    float: left;
-}
-
-.top-container .topLeft .logo {
-    margin: 3px 2px 3px 14px;
-}
-
-.top-container .topLeft .menuBox {
-    float: left;
-}
-
-.top-container .el-menu-demo {
-    width: auto;
-    height: var(--top-bar-height);
-    -webkit-app-region: no-drag;
-}
-
-.top-container .el-menu--horizontal > .el-submenu .el-submenu__title {
-    position: relative;
-    height: var(--top-bar-height);
-    line-height: var(--top-bar-height);
-    color: #909399;
-    font-size: var(--font-size-level2);
-    padding: 0 12px;
-}
-
-.top-container .el-submenu__title i {
-    display: none;
-}
-
-.top-container .el-menu--popup-bottom-start {
-    margin-top: 0px;
-}
-
-.searchBox {
-    width: 300px;
-    line-height: calc(var(--top-bar-height) - 4px);
-    text-align: center;
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    -webkit-app-region: no-drag;
-}
-
-.searchBox .el-input__inner {
-    height: calc(var(--top-bar-height) - 10px) !important;
-    border-radius: 15px;
-    background-color: #f5f5f5;
-}
-
-.searchBox input::-ms-input-placeholder {
-    text-align: center;
-}
-
-.searchBox input::-webkit-input-placeholder {
-    text-align: center;
-}
-
 .operationBox {
-    width: 80;
-    height: var(--top-bar-height);
+    width: auto;
+    height: calc(var(--top-bar-height) + 4px);
     line-height: var(--top-bar-height);
-    display: inline-block;
+    background-color: #eaeaeb;
     position: absolute;
     right: 0;
     top: 0;
     z-index: 999;
-    margin-right: 28px;
-    -webkit-app-region: no-drag;
     padding: 0;
+    -webkit-app-region: no-drag;
 }
 
 .operationBox > i {
@@ -104,8 +19,12 @@
     padding-right: 10px;
     padding-top: 8px;
     padding-bottom: 10px;
+    -webkit-app-region: no-drag;
+}
+.operationBox.minimize-log {
+    background-color: #fafafa;
 }
 
-.operationBox >i:hover{
+.operationBox > i:hover {
     background-color: #c1c5cd;
 }

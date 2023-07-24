@@ -1,0 +1,45 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../../../workbench/element-ui/css/index.css" />
+    <link rel="stylesheet" href="./css/opcua.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="attributeBox">
+            <el-table :data="attributeTableData" height="100%" style="width: 100%" row-key="id" border
+                default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                <el-table-column prop="attribute" label="attributes" width="135"> </el-table-column>
+                <el-table-column prop="value" label="values"> </el-table-column>
+            </el-table>
+        </div>
+    </div>
+</body>
+<script src="../../../../workbench/vue/vue.js"></script>
+<script src="../../../../workbench/element-ui/index.js"></script>
+<script type="module">
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                attributeTableData: [],
+            }
+        },
+        computed: {},
+        methods: {
+            dataListener() {
+                window.parent.uniclient.windowEvent.on(`opcua:attribute.push`, (e) => {
+                    this.attributeTableData = e
+                })
+            },
+        },
+        mounted() {
+            this.dataListener()
+        },
+        created() { },
+    })
+</script>
+
+</html>

@@ -38,6 +38,9 @@ function exposeInMain() {
         invoke: async (event, ...args) => {
             return ipcRenderer.invoke(event, ...args)
         },
+        onRender: async (event, handler) => {
+            ipcRenderer.on(event, handler)
+        },
         mainNotice: async (callback) => {
             ipcRenderer.on('main:notice', (_, message) => {
                 callback(message)

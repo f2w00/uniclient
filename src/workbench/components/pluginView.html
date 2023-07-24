@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../element-ui/css/index.css">
+    <link rel="stylesheet" href="../css/components/pluginView.css">
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+
+<body>
+    <div id="app">
+        <div style=" width: 100%; height: 100%; ">
+            <div class="plugin_installed">
+                <div class="plugin_title_btn" @click="handleInstalled">已安装
+                    <img class="open_close" src="../assets/icon/arrow-bottom.svg">
+                </div>
+                <div class="plugin_card" style="position: relative;" v-for="(item,index) in installedData"
+                    v-show="installedShow">
+                    <div class="plugin_icon_box">
+                        <img class="plugin_icon" :src="item.iconUrl">
+                    </div>
+                    <div class="plugin_information">
+                        <div class="plugin_title">{{item.title}}</div>
+                        <div class="plugin_content">{{item.content}}</div>
+                        <div class="plugin_author">{{item.author}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="plugin_uninstalled">
+                <div class="plugin_title_btn" @click="handleUninstalled">推荐安装
+                    <img class="open_close" src="../assets/icon/arrow-bottom.svg">
+                </div>
+                <div class="plugin_card" style="position: relative;" v-for="(item,index) in uninstalledData"
+                    v-show="uninstalledShow">
+                    <div class="plugin_icon_box">
+                        <img class="plugin_icon" :src="item.iconUrl">
+                    </div>
+                    <div class="plugin_information">
+                        <div class="plugin_title">{{item.title}}</div>
+                        <div class="plugin_content">{{item.content}}</div>
+                        <div class="plugin_author">{{item.author}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../vue/vue.js"></script>
+<script src="../element-ui/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                installedShow: true,
+                uninstalledShow: true,
+                installedData: '',
+                uninstalledData: ''
+            }
+        },
+        computed: {},
+        methods: {
+            getPlugin() {
+                this.installedData = window.parent.uniclient.sharedData.get('pluginInstalled')
+                this.uninstalledData = window.parent.uniclient.sharedData.get('pluginUnistalled')
+            },
+            handleInstalled(e) {
+                this.installedShow = !this.installedShow
+                if (e.target.children[0].classList.contains('animation')) {
+                    e.target.children[0].classList.remove('animation')
+                } else {
+                    e.target.children[0].classList.add('animation')
+                }
+            },
+            handleUninstalled(e) {
+                this.uninstalledShow = !this.uninstalledShow
+                if (e.target.children[0].classList.contains('animation')) {
+                    e.target.children[0].classList.remove('animation')
+                } else {
+                    e.target.children[0].classList.add('animation')
+                }
+            }
+        },
+        mounted() {
+        },
+        created() {
+            this.getPlugin()
+        }
+    });
+</script>
+
+</html>
