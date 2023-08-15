@@ -16,93 +16,6 @@
                     style="color: #606266" />
             </div>
             <el-tabs type="border-card">
-                <el-tab-pane label="discovery">
-                    <div class="discoverySubView">
-                        <div class="discoveryfilterBox">
-                            <div class="filterBox">
-                                Endpoint Filter:
-                                <el-select @change="selectChanged" v-model="pointFilterName" placeholder="No Filter">
-                                    <el-option v-for="item in pointFilterList" :key="item.value" :label="item.label"
-                                        :value="item.label">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <el-tree class="discovery-filter-tree" :data="discoveryFilterData" :props="defaultProps"
-                                default-expand-all :filter-node-method="discoveryfilterNode" ref="discoveryFilterTree">
-                            </el-tree>
-                        </div>
-                        <div class="verificationBox">
-                            <el-divider content-position="left">Authentication Settings</el-divider>
-                            <div style="padding: 0 15px">
-                                <div class="anonymousBox">
-                                    <div class="radioDefined">
-                                        <div class="radioBox">
-                                            <input type="radio" v-model="verification" label="1" />
-                                        </div>
-                                        <div class="radioContent">Anonymous</div>
-                                    </div>
-                                </div>
-                                <div class="accountBox">
-                                    <div class="radioDefined">
-                                        <div class="radioBox" style="line-height: 72px">
-                                            <input type="radio" v-model="verification" label="2" />
-                                        </div>
-                                        <div class="radioContent">
-                                            <div class="radioContentTop">
-                                                <div class="item-input-suffix">
-                                                    Username
-                                                    <el-input v-model="authentUsername" :disabled="true"
-                                                        style="margin-left: 10px">
-                                                    </el-input>
-                                                    <el-checkbox v-model="authentStorechecked">Store</el-checkbox>
-                                                </div>
-                                            </div>
-                                            <div class="radioContentBottom">
-                                                <div class="item-input-suffix">
-                                                    Password
-                                                    <el-input v-model="authentPassword" :disabled="true"
-                                                        style="margin-left: 15px">
-                                                    </el-input>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="certificateBox">
-                                    <div class="radioDefined">
-                                        <div class="radioBox" style="line-height: 72px">
-                                            <input type="radio" v-model="verification" label="3" />
-                                        </div>
-                                        <div class="radioContent">
-                                            <div class="radioContentTop">
-                                                <div class="item-input-suffix">
-                                                    Certificate
-                                                    <el-input v-model="authentCertificate" :disabled="true"
-                                                        style="margin-left: 10px">
-                                                    </el-input>
-                                                    <button class="moreBtn">
-                                                        <i class="el-icon-more"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="radioContentBottom">
-                                                <div class="item-input-suffix">
-                                                    Private Key
-                                                    <el-input v-model="authentKey" :disabled="true"
-                                                        style="margin-left: 5px">
-                                                    </el-input>
-                                                    <button class="moreBtn">
-                                                        <i class="el-icon-more"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </el-tab-pane>
                 <el-tab-pane label="advanced">
                     <div class="advancedSubView">
                         <div class="serInformation setBox">
@@ -116,10 +29,6 @@
                                         </el-input>
                                     </div>
                                 </div>
-                                <div class="reverseBox">
-                                    <span class="contentName">Reverse Connect</span>
-                                    <el-checkbox v-model="reversechecked" style="margin-left: 6px"></el-checkbox>
-                                </div>
                             </div>
                         </div>
                         <div class="securitySet setBox">
@@ -127,9 +36,10 @@
                             <div style="padding: 0 15px">
                                 <div class="policyBox">
                                     <span class="contentName">Security Policy </span>
-                                    <el-select v-model="securityPolicy" placeholder="None" style="margin-left: 22px">
+                                    <el-select v-model="securityPolicy" @change="selectChangedPolicy" placeholder="None"
+                                        style="margin-left: 22px">
                                         <el-option v-for="item in securityPolicyList" :key="item.value"
-                                            :label="item.label" :value="item.value">
+                                            :label="item.label" :value="item.value" :disabled="item.disabled">
                                         </el-option>
                                     </el-select>
                                 </div>
@@ -137,7 +47,7 @@
                                     <span class="contentName longContent">Message Security Mode</span>
                                     <el-select v-model="securityMode" placeholder="None" style="margin-left: 18px">
                                         <el-option v-for="item in securityModeList" :key="item.value"
-                                            :label="item.label" :value="item.value">
+                                            :label="item.label" :value="item.value" :disabled="item.disabled">
                                         </el-option>
                                     </el-select>
                                 </div>
@@ -235,6 +145,13 @@
                 <el-button type="primary" @click="handleConnectServer">OK</el-button>
             </div>
         </div>
+        <el-dialog class="record_dialog" title="记录保存" :visible.sync="dialogVisible" width="70%">
+            <li class="record_item" v-for="(item,index) in recordList" :key="index" @click="handleRestore">
+                {{item}}-----{{index}}</li>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="dialogVisible = false">关 闭</el-button>
+            </span>
+        </el-dialog>
     </div>
 </body>
 <script src="../../../../workbench/vue/vue.js"></script>
@@ -242,6 +159,7 @@
 <script type="module">
     import clientApi from './api/clientApi.js'
     import sessionApi from './api/sessionApi.js'
+    import subscriptApi from './api/subscriptApi.js'
 
     new Vue({
         el: '#app',
@@ -250,42 +168,16 @@
                 configurationName: '',
                 isAutoConnect: false,
                 addserverVisible: false,
-                verification: '1',
                 advanceVerification: '1',
-                authentStorechecked: false,
-                authentUsername: '',
-                authentPassword: '',
-                authentCertificate: '',
-                authentKey: '',
                 endpointUrl: 'opc.tcp://DESKTOP-7O3FAUK:53530/OPCUA/SimulationServer',
-                reversechecked: '',
-                pointFilterName: '',
-                securityPolicy: '',
-                securityMode: '',
+                securityPolicy: '0',
+                securityMode: '0',
                 advanceAuthentStorechecked: false,
                 advanceAuthentUsername: '',
                 advanceAuthentPassword: '',
                 advanceAuthentCertificate: '',
                 advanceAuthentKey: '',
                 sessionName: '',
-                pointFilterList: [
-                    {
-                        value: '0',
-                        label: 'No Filter',
-                    },
-                    {
-                        value: '1',
-                        label: 'opc.tcp',
-                    },
-                    {
-                        value: '2',
-                        label: 'http',
-                    },
-                    {
-                        value: '3',
-                        label: 'https',
-                    },
-                ],
                 securityPolicyList: [
                     {
                         value: '0',
@@ -315,75 +207,25 @@
                 securityModeList: [
                     {
                         value: '0',
-                        label: 'None',
+                        label: 'None'
                     },
                     {
                         value: '1',
                         label: 'Sign',
+                        disabled: true
                     },
                     {
                         value: '2',
                         label: 'Sign & Encrypt',
+                        disabled: true
                     },
                 ],
                 serverList: [
                     { serverName: 'SimulationServer@DESKTOP-REOKHRI' },
                     { serverName: 'SimulationServer@REOKHRI-DESKTOP' },
                 ],
-                discoveryFilterData: [
-                    {
-                        id: 1,
-                        label: '一级 1',
-                        children: [
-                            {
-                                id: 4,
-                                label: '二级 1-1',
-                                children: [
-                                    {
-                                        id: 9,
-                                        label: '三级 1-1-1',
-                                    },
-                                    {
-                                        id: 10,
-                                        label: '三级 1-1-2',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    {
-                        id: 2,
-                        label: '一级 2',
-                        children: [
-                            {
-                                id: 5,
-                                label: '二级 2-1',
-                            },
-                            {
-                                id: 6,
-                                label: '二级 2-2',
-                            },
-                        ],
-                    },
-                    {
-                        id: 3,
-                        label: '一级 3',
-                        children: [
-                            {
-                                id: 7,
-                                label: '二级 3-1',
-                            },
-                            {
-                                id: 8,
-                                label: '二级 3-2',
-                            },
-                        ],
-                    },
-                ],
-                defaultProps: {
-                    children: 'children',
-                    label: 'label',
-                },
+                dialogVisible: false,
+                recordList: ['111111111111', '222222222222', '333333333333', '444444444444']
             }
         },
         computed: {},
@@ -401,15 +243,67 @@
                 }
                 return await sessionApi.sessionInit(param)
             },
-            selectChanged(value) {
-                console.log(value)
-            },
-            discoveryfilterNode(value, data) {
-                if (!value) return true
-                return data.label.indexOf(value) !== -1
-            },
             clearEndpointUrl() {
                 this.endpointUrl = ''
+            },
+            selectChangedPolicy(value) {
+                let mode1 = [
+                    {
+                        value: '0',
+                        label: 'None'
+                    },
+                    {
+                        value: '1',
+                        label: 'Sign',
+                        disabled: true
+                    },
+                    {
+                        value: '2',
+                        label: 'Sign & Encrypt',
+                        disabled: true
+                    },
+                ]
+                let mode2 = [
+                    {
+                        value: '0',
+                        label: 'None',
+                        disabled: true
+                    },
+                    {
+                        value: '1',
+                        label: 'Sign'
+                    },
+                    {
+                        value: '2',
+                        label: 'Sign & Encrypt'
+                    },
+                ]
+                switch (Number(value)) {
+                    case 0:
+                        this.securityModeList = mode1
+                        this.securityMode = '0'
+                        break;
+                    case 1:
+                        this.securityModeList = mode2
+                        this.securityMode = '2'
+                        break;
+                    case 2:
+                        this.securityModeList = mode2
+                        this.securityMode = '2'
+                        break;
+                    case 3:
+                        this.securityModeList = mode2
+                        this.securityMode = '2'
+                        break;
+                    case 4:
+                        this.securityModeList = mode2
+                        this.securityMode = '2'
+                        break;
+                    case 5:
+                        this.securityModeList = mode2
+                        this.securityMode = '2'
+                        break;
+                }
             },
             handleCancle() {
                 window.parent.uniclient.windowEvent.emit(`uniclient:dialog.cancle`)
@@ -431,15 +325,70 @@
             handleParentheight() {
                 parent.document.querySelector("#dialogIframe").style.height = 0;
                 parent.document.querySelector("#dialogIframe").style.height = document.body.scrollHeight + 'px';
+            },
+            async handleRestore(e) {
+                console.log(e.target.innerText)
+                let res = await clientApi.restore({ recordName: e.target.innerText })
+                if (res.code === 200) {
+                    let requestList = res.data
+                    for (let api of requestList.keys()) {
+                        console.log(i)
+                        switch (api) {
+                            case "client:init":
+                                await clientApi.clientInit(requestList[api])
+                                break;
+                            case "client:connect":
+                                await clientApi.clientConnect(requestList[api])
+                                break;
+                            case "client:endpoints":
+                                await clientApi.clientEndpoint(requestList[api])
+                                break;
+                            case "session:init":
+                                await sessionApi.sessionInit(requestList[api])
+                                break;
+                            case "session:browse.root":
+                                await sessionApi.sessionBrowseroot(requestList[api])
+                                break;
+                            case "session:read":
+                                await sessionApi.sessionRead(requestList[api])
+                                break;
+                            case "session:browse":
+                                await sessionApi.sessionBrowse(requestList[api])
+                                break;
+                            case "subscript:init":
+                                await subscriptApi.subscriptInit(requestList[api])
+                                break;
+                            case "subscript:modify":
+                                await subscriptApi.subscriptModify(requestList[api])
+                                break;
+                            case "subscript:item.group":
+                                await subscriptApi.subscriptGroup(requestList[api])
+                                break;
+                            case "subscript:item.single":
+                                await subscriptApi.subscriptSingle(requestList[api])
+                                break;
+                            case "subscript:item.delete":
+                                await subscriptApi.subscriptDelete(requestList[api])
+                                break;
+                            default: break;
+                        }
+                    }
+                }
+            },
+
+            recordListener() {
+                let _this = this
+                window.parent.uniclient.windowEvent.on('opcua:server.open', async () => {
+                    _this.dialogVisible = true
+                    // this.recordList = await clientApi.record_names()
+                })
             }
         },
         watch: {
-            pointFilterName(val) {
-                this.$refs.discoveryFilterTree.filter(val)
-            },
         },
         mounted() {
             this.handleParentheight()
+            this.recordListener()
         },
         created() {
         },

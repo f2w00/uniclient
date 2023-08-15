@@ -166,6 +166,7 @@
 <script src="js/indexInside.js"></script>
 <script src="js/indexExtern.js"></script>
 <script type="module">
+    import clientApi from './api/clientApi.js'
     new Vue({
         el: '#app',
         data: function () {
@@ -224,6 +225,9 @@
             handleAddserver(value) {
                 this.iframeUrl = value.viewPath
                 this.dialogVisible = true
+                setTimeout(() => {
+                    window.uniclient.windowEvent.emit('opcua:server.open')
+                }, 100)
             },
             handleMin() {
                 mainMini()
@@ -315,6 +319,9 @@
             },
 
             /* 初始化类函数 */
+            projectInfoInitialize() {
+                console.log(clientApi.project_info())
+            },
             attributeObserver() {
                 var resizeDom = document.querySelectorAll('.container .resize')
                 resizeDom.forEach((item) => {
@@ -527,6 +534,7 @@
             // this.logInfoListener()
             // this.logWarnListener()
             // this.logErrorListener()
+            this.projectInfoInitialize()
             this.leftcloseListener()
             this.dialogListener()
             //TODO 我加的
@@ -553,7 +561,7 @@
 
             this.uniclientActivateInitialize()
             this.uniclientMenuConfigInitialize()
-            this.subviewLeftTabs = subviewLeftTabsF()
+            this.subviewLeftTabs = window.uniclient.sharedData.get('subviewLeftTabsData')
         },
     })
 </script>
