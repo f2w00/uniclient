@@ -230,6 +230,20 @@
         },
         computed: {},
         methods: {
+            async clientInit() {
+                const param = {
+                    applicationName: 'NodeOPCUA-Client',
+                    connectionStrategy: {
+                        initialDelay: 1000,
+                        maxRetry: 1,
+                    },
+                    securityMode: 1,
+                    keepSessionAlive: true,
+                    securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+                    endpointMustExist: false,
+                }
+                return await clientApi.clientInit(param)
+            },
             async clientConnect() {
                 const param = { endpointUrl: '' }
                 param.endpointUrl = this.endpointUrl
@@ -327,9 +341,8 @@
                 parent.document.querySelector("#dialogIframe").style.height = document.body.scrollHeight + 'px';
             },
             async handleRestore(e) {
-                console.log(e.target.innerText)
                 let res = await clientApi.restore({ recordName: e.target.innerText })
-                if (res.code === 200) {
+                if (res.code === 200 && res.data !== undefined) {
                     let requestList = res.data
                     for (let api of requestList.keys()) {
                         console.log(i)
@@ -344,7 +357,10 @@
                                 await clientApi.clientEndpoint(requestList[api])
                                 break;
                             case "session:init":
-                                await sessionApi.sessionInit(requestList[api])
+                                let res = await sessionApi.sessionInit(requestList[api])
+                                if (res.code === 200) {
+                                    window.parent.uniclient.windowEvent.emit(`opcua:session.init`, res.code)
+                                }
                                 break;
                             case "session:browse.root":
                                 await sessionApi.sessionBrowseroot(requestList[api])
@@ -374,13 +390,30 @@
                         }
                     }
                 }
+                this.dialogVisible = false
             },
 
+
+            pollingClientInit() {
+                let flag = false
+                const _this = this
+                const intervalId = setInterval(async function () {
+                    if (flag) {
+                        clearInterval(intervalId);
+                    }
+                    let res = await _this.clientInit()
+                    console.log(res)
+                    if (res.code === 200) {
+                        flag = true
+                    }
+                }, 2000);
+            },
             recordListener() {
                 let _this = this
                 window.parent.uniclient.windowEvent.on('opcua:server.open', async () => {
                     _this.dialogVisible = true
                     // this.recordList = await clientApi.record_names()
+                    _this.pollingClientInit()
                 })
             }
         },

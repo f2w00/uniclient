@@ -49,6 +49,7 @@ body {
 .subview-content .el-tabs__header,
 .subview-content .subviewItembtn,
 .subview-content .subviewItemoptions {
+    font-family: "Times New Roman", Times, serif;
     pointer-events: auto;
 }
 
@@ -80,7 +81,8 @@ body {
     width: calc(100% - 10px);
     height: 20px;
     line-height: 20px;
-    padding-left: 10px;
+    padding: 5px 0 3px 10px;
+    border-bottom: 1px solid #c0c4cc;
     font-size: var(--font-size-level2);
     background-color: #fafafa;
 }
