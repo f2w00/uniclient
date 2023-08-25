@@ -1,0 +1,142 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../../../workbench/element-ui/css/index.css" />
+    <link rel="stylesheet" href="./css/opcua.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="subviewItemoptions attributeBox">
+            <div class="subviewItembtn right">attributes</div>
+            <el-table :data="attributeTableData" row-key="id" border default-expand-all
+                :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                <el-table-column prop="attribute" label="attributes" width="135"></el-table-column>
+                <el-table-column prop="value" label="values"> </el-table-column>
+            </el-table>
+        </div>
+        <div class="subviewItemoptions dbBox">
+            <div class="subviewItembtn right">DataBase</div>
+            <div class="card">
+                <el-select class="tableMode" v-model="modeValue" placeholder="请选择模式" @change="handleTableMode">
+                    <el-option v-for="item in tablemodeList" :key="item.value" :label="item.label"
+                        :value="item.value" />
+                </el-select>
+                <el-input v-model=" tableNameValue" placeholder="请输入表名" :disabled="isDisabled"></el-input>
+                <el-select class="field" v-model="fieldsValue" multiple collapse-tags placeholder="请选择列名"
+                    @visible-change="handleField" :disabled="isDisabled">
+                    <el-option v-for="item in fieldList" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+                <div class="fieldArea" v-show="!isDisabled">
+                    <div class="fieldItem" v-for="(item,index) in fieldsItemList">
+                        <span class="fieldItemName">
+                            {{item.label}}
+                        </span>
+                        <el-input v-model="fieldInputs[`${item.value}`]" :placeholder="item.label"></el-input>
+                    </div>
+                </div>
+                <button class="dbBtn" @click="handleInitDb">
+                    初始化
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../../../../workbench/vue/vue.js"></script>
+<script src="../../../../workbench/element-ui/index.js"></script>
+<script type="module">
+    import dbApi from './api/dbApi.js'
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                attributeTableData: [],
+                tablemodeList: [
+                    { label: 'default', value: '0' },
+                    { label: 'customField', value: '1' },
+                    { label: 'customTableName', value: '2' },
+                    { label: 'customBoth', value: '3' },
+                    { label: 'createPerYear', value: '4' },
+                    { label: 'createPerMonth', value: '5' },
+                    { label: 'createPerWeek', value: '6' },
+                    { label: 'createPerDay', value: '7' },
+                ],
+                modeValue: '',
+                tableNameValue: '',
+                fieldList: [
+                    { label: 'server', value: 'serverF' },
+                    { label: 'nodeId', value: 'nodeIdF' },
+                    { label: 'displayName', value: 'displayNameF' },
+                    { label: 'statusCode', value: 'statusCodeF' },
+                    { label: 'sourceTimestamp', value: 'sourceTimestampF' },
+                    { label: 'serverTimestamp', value: 'serverTimestampF' },
+                    { label: 'value', value: 'valueF' },
+                    { label: 'dataType', value: 'dataTypeF' },
+                ],
+                fieldsValue: [],
+                fieldInputs: {
+                    serverF: 'server',
+                    nodeIdF: 'nodeId',
+                    displayNameF: 'displayName',
+                    statusCodeF: 'statusCode',
+                    sourceTimestampF: 'sourceTimestamp',
+                    serverTimestampF: 'serverTimestamp',
+                    valueF: 'value',
+                    dataTypeF: 'dataType'
+                },
+                fieldsItemList: [],
+                isDisabled: true,
+            }
+        },
+        computed: {},
+        methods: {
+            handleTableMode() {
+                switch (Number(this.modeValue)) {
+                    case 1:
+                    case 2:
+                    case 3:
+                        this.isDisabled = false;
+                        break;
+                    case 0:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        this.isDisabled = true;
+                        break;
+                    default:
+                        this.isDisabled = false;
+                        break;
+                }
+            },
+            handleField(val) {
+                if (!val) {
+                    for (let i = 0; i < this.fieldsValue.length; i++) {
+                        let str = this.fieldsValue[i]
+                        let obj = {
+                            label: str.substr(0, str.length - 1),
+                            value: str
+                        }
+                        this.fieldsItemList.push(obj);
+                    }
+                }
+            },
+            handleInitDb() {
+                console.log(this.modeValue, this.tableNameValue, this.fieldInputs)
+                // let res = dbApi.init(this.modeValue, this.tableNameValue, this.fieldInputs)
+            },
+            dataListener() {
+                window.parent.uniclient.windowEvent.on(`opcua:attribute.push`, (e) => {
+                    this.attributeTableData = e
+                })
+            },
+        },
+        mounted() {
+            this.dataListener()
+        },
+        created() { },
+    })
+</script>
+
+</html>

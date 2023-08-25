@@ -1,16 +1,16 @@
-const {Persistence} = require('uniclient')
-const {sharedData} = require('uniclient')
-import {TableCreateModes, UaErrors, UaSources} from '../../common/ua.enums'
-import {Config} from '../../config/config.default'
-import {CommunicateUtil, DbUtils} from '../utils/util'
-import {IDbData, IFieldNames} from '../models/params.model'
-import {UaMessage} from '../models/message.model'
-import {ClientError} from '../middlewares/agent.middleware'
+const { Persistence } = require("uniclient");
+const { sharedData } = require("uniclient");
+import { TableCreateModes, UaErrors, UaSources } from "../../common/ua.enums";
+import { Config } from "../../config/config.default";
+import { CommunicateUtil, DbUtils } from "../utils/util";
+import { IDbData, IFieldNames } from "../models/params.model";
+import { UaMessage } from "../models/message.model";
+import { ClientError } from "../middlewares/agent.middleware";
 
 export module DbService {
-    export let defaultTableName: string = Config.defaultTable
-    export let defaultAttributes: any = Config.defaultAttributes
-    export let persist!: any
+    export let defaultTableName: string = Config.defaultTable;
+    export let defaultAttributes: any = Config.defaultAttributes;
+    export let persist!: any;
 
     /**
      * @description 用于初始化database,如果表名不存在则创建一个新表
@@ -18,47 +18,61 @@ export module DbService {
      * @param tableName
      * @param fields
      */
-    export async function init(createMode: TableCreateModes, tableName?: string, fields?: IFieldNames) {
+    export async function init(
+        createMode: TableCreateModes,
+        tableName?: string,
+        fields?: IFieldNames
+    ) {
         try {
             switch (createMode) {
                 case TableCreateModes.default:
                 case TableCreateModes.createPerWeek: {
-                    defaultTableName = DbUtils.formatDateYMW(new Date())
-                    break
+                    defaultTableName = DbUtils.formatDateYMW(new Date());
+                    break;
                 }
                 case TableCreateModes.createPerDay: {
-                    defaultTableName = DbUtils.formatDateYMD(new Date())
-                    break
+                    defaultTableName = DbUtils.formatDateYMD(new Date());
+                    break;
                 }
                 case TableCreateModes.createPerMonth: {
-                    defaultTableName = DbUtils.formatDateYM(new Date())
-                    break
+                    defaultTableName = DbUtils.formatDateYM(new Date());
+                    break;
                 }
                 case TableCreateModes.createPerYear: {
-                    defaultTableName = DbUtils.formatDateY(new Date())
-                    break
+                    defaultTableName = DbUtils.formatDateY(new Date());
+                    break;
                 }
                 case TableCreateModes.customTableName:
                 case TableCreateModes.customField:
                 case TableCreateModes.customBoth: {
-                    if (tableName) defaultTableName = tableName
+                    if (tableName) defaultTableName = tableName;
                     if (fields) {
-                        defaultAttributes = Config.defaultAttributes
+                        defaultAttributes = Config.defaultAttributes;
                     }
-                    break
+                    break;
                 }
                 default:
-                    throw new ClientError(UaSources.dbService, UaErrors.errorTableMode)
+                    throw new ClientError(UaSources.dbService, UaErrors.errorTableMode);
             }
-            await DbService.createTable()
+            await DbService.createTable();
             // 注意这里需要创建一个pipe然后再进行注册
-            CommunicateUtil.emitToClient('Broker.create', [{ name: Config.defaultPipeName }])
-            CommunicateUtil.emitToClient('pipe:' + Config.defaultPipeName + '.registerIpc', [{ module: 'uaclient' }])
-            CommunicateUtil.events.on('pipe:' + Config.defaultPipeName + '.full', (data: UaMessage[]) => {
-                DbService.insertMany(data)
-            })
+            CommunicateUtil.emitToClient("Broker.create", [{ name: Config.defaultPipeName }]);
+            CommunicateUtil.emitToClient("pipe:" + Config.defaultPipeName + ".registerIpc", [
+                { module: "uaclient" },
+            ]);
+            CommunicateUtil.events.on(
+                "pipe:" + Config.defaultPipeName + ".full",
+                (data: UaMessage[]) => {
+                    DbService.insertMany(data);
+                }
+            );
         } catch (e: any) {
-            throw new ClientError(UaSources.dbService, UaErrors.errorCreateClient, e.message, e.stack)
+            throw new ClientError(
+                UaSources.dbService,
+                UaErrors.errorCreateClient,
+                e.message,
+                e.stack
+            );
         }
     }
 
@@ -68,9 +82,9 @@ export module DbService {
      */
     export async function insert(data: IDbData) {
         try {
-            persist.insert(data)
+            persist.insert(data);
         } catch (e: any) {
-            throw new ClientError(UaSources.dbService, UaErrors.errorInsert, e.message, e.stack)
+            throw new ClientError(UaSources.dbService, UaErrors.errorInsert, e.message, e.stack);
         }
     }
 
@@ -80,9 +94,9 @@ export module DbService {
      */
     export async function insertMany(dataList: IDbData[]) {
         try {
-            persist.insertMany(dataList)
+            persist.insertMany(dataList);
         } catch (e: any) {
-            throw new ClientError(UaSources.dbService, UaErrors.errorInsert, e.message, e.stack)
+            throw new ClientError(UaSources.dbService, UaErrors.errorInsert, e.message, e.stack);
         }
     }
 
@@ -93,16 +107,21 @@ export module DbService {
      */
     export async function createTable(tableName?: string, attributes?: any) {
         try {
-            let table = tableName ? tableName : defaultTableName
-            let attribute = attributes ? attributes : defaultAttributes
-            let projectPath = sharedData.get('projectInfo')
+            let table = tableName ? tableName : defaultTableName;
+            let attribute = attributes ? attributes : defaultAttributes;
+            let projectPath = sharedData.get("projectInfo");
             persist = new Persistence(
                 attribute,
-                {dialect: 'sqlite', storage: projectPath + '/database/data.db', logging: false},
+                { dialect: "sqlite", storage: projectPath + "/database/data.db", logging: false },
                 table
-            )
+            );
         } catch (e: any) {
-            throw new ClientError(UaSources.dbService, UaErrors.errorCreatTable, e.message, e.stack)
+            throw new ClientError(
+                UaSources.dbService,
+                UaErrors.errorCreatTable,
+                e.message,
+                e.stack
+            );
         }
     }
 }
