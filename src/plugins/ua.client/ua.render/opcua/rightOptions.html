@@ -112,6 +112,7 @@
             },
             handleField(val) {
                 if (!val) {
+                    this.fieldsItemList.length = 0
                     for (let i = 0; i < this.fieldsValue.length; i++) {
                         let str = this.fieldsValue[i]
                         let obj = {
@@ -124,7 +125,8 @@
             },
             handleInitDb() {
                 console.log(this.modeValue, this.tableNameValue, this.fieldInputs)
-                // let res = dbApi.init(this.modeValue, this.tableNameValue, this.fieldInputs)
+                let res = dbApi.init(this.modeValue, this.tableNameValue, this.fieldInputs)
+                console.log(res)
             },
             dataListener() {
                 window.parent.uniclient.windowEvent.on(`opcua:attribute.push`, (e) => {
