@@ -29,6 +29,22 @@ async function clientStart() {
     new Client()
 }
 
+function aesDecrypt(encrypted, key) {
+    const crypto = require('crypto')
+    const decipher = crypto.createDecipher('aes192', key)
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8')
+    decrypted += decipher.final('utf8')
+    return decrypted
+}
+
+function authenticate(code, key) {
+    if (aesDecrypt(code, key) == 'UniclientByHhjAndWq') {
+        return true
+    } else {
+        return false
+    }
+}
+
 /**
  * 如果是第一次运行(client.data文件夹不存在),那么会初始化client.data文件夹,然后创建ClientStore服务并且初始化存储文件
  * @returns
@@ -47,7 +63,6 @@ function generateUserDataPath() {
             dataPath = join(__dirname, '../client.data')
             let envPath = join(__dirname, '../.env')
             if (!existsSync(envPath)) {
-                console.log('2')
                 let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
                 writeFileSync(envPath, String(data))
             } else {
@@ -114,14 +129,14 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
         fileExtension: 'json',
         clearInvalidConfig: false,
     })
-    ClientStore.create({ name: 'render', fileExtension: 'json', clearInvalidConfig: false })
-    ClientStore.set('render', 'uniclientActivate', {
+    ClientStore.create({ name: 'share', fileExtension: 'json', clearInvalidConfig: false })
+    ClientStore.set('share', 'uniclientActivate', {
         leftTabActivate: 'space',
         rightTabActivate: '',
         bottomTabActivate: '',
         mainTabsActivate: 'welcome',
     })
-    ClientStore.set('render', 'uniclientMenuConfig', [
+    ClientStore.set('share', 'uniclientMenuConfig', [
         {
             label: '日志',
             tips: 'Log',
@@ -169,6 +184,138 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
             ],
         },
     ])
+    ClientStore.set('share', 'workbenchConfig', {
+        rightSide: {
+            display: false,
+        },
+        leftSide: {
+            display: true,
+        },
+        bottomSide: {
+            display: true,
+        },
+    })
+    ClientStore.set('share', 'pluginInstalled', [
+        {
+            title: 'opcua',
+            content: '解决opcua连接配置,以及数据库功能',
+            iconUrl: '../../../src/plugins/ua.client/ua.render/opcua/assets/PluginIcon.svg',
+            author: 'f2w00',
+        },
+        {
+            title: 'esay-report',
+            content: '快速生成样式多变的报表,功能简洁而强大',
+            iconUrl: '../../../src/plugins/easy-report/assets/PluginIcon.svg',
+            author: 'wangqi2002',
+        },
+    ])
+    ClientStore.set('share', 'subviewLeftTabsData', [
+        {
+            title: 'mainMenu',
+            name: 'mainMenu',
+            iconSrc: './assets/icon/icon.svg',
+            disabled: true,
+        },
+        {
+            title: 'space',
+            name: 'space',
+            content: '项目',
+            iconSrc: './assets/icon/space.svg',
+            viewPath: './components/projectView.html',
+        },
+        {
+            title: 'plugin',
+            name: 'plugin',
+            content: '插件',
+            iconSrc: './assets/icon/plugin.svg',
+            viewPath: './components/pluginView.html',
+        },
+        {
+            title: 'tutorial',
+            name: 'tutorial',
+            content: '用户手册',
+            iconSrc: './assets/icon/tutorial.svg',
+            viewPath: './components/tutorial/tutorial.html',
+            clickSendToWindow: [
+                {
+                    event: 'leftBar:click.tutorial',
+                    params: [
+                        {
+                            title: 'tutorial',
+                            name: 'tutorial',
+                            content: 'Tab 1 content',
+                            src: './components/tutorial/uniclient.html',
+                        },
+                        {
+                            title: 'uaclient',
+                            name: 'uaclient',
+                            content: 'uaclient',
+                            src: './components/tutorial/uniclient.html',
+                        },
+                        {
+                            title: 'ok',
+                            name: 'ok',
+                            content: 'ok',
+                            src: './components/tutorial/uniclient.html',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            title: 'opcua',
+            name: 'opcua',
+            content: 'opcua',
+            iconSrc: '../../src/plugins/ua.client/ua.render/opcua/assets/project.svg',
+            viewPath: '../../src/plugins/ua.client/ua.render/opcua/address.html',
+            clickSendToWindow: [],
+            clickCreateTab: [
+                {
+                    event: 'leftBar:created.opcua',
+                    params: [
+                        {
+                            title: 'dataView',
+                            name: 'dataView',
+                            content: 'dataView',
+                            position: 'main',
+                            src: '../../src/plugins/ua.client/ua.render/opcua/dataView.html',
+                        },
+                        {
+                            title: 'attributes',
+                            name: 'attributes',
+                            content: 'attributes',
+                            iconSrc: './assets/icon/attribute-management.svg',
+                            position: 'right',
+                            src: '../../src/plugins/ua.client/ua.render/opcua/attributes.html',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            title: 'easy-report',
+            name: 'easy-report',
+            content: 'easy-report',
+            iconSrc: '../../src/plugins/easy-report/assets/report.svg',
+            viewPath: '../../src/plugins/easy-report/index.html',
+            clickSendToWindow: [],
+            clickCreateTab: [
+                {
+                    event: 'leftBar:created.easy-report',
+                    params: [
+                        {
+                            title: 'easy-report',
+                            name: 'easy-report',
+                            content: 'easy-report',
+                            position: 'main',
+                            src: '../../src/plugins/easy-report/dist/index.html',
+                        },
+                    ],
+                },
+            ],
+        },
+    ])
+
     ClientStore.set('workspace', 'recentManagers', [])
     ClientStore.set('workspace', 'projectExtend', pluginsInfo.infos.projectExtend)
     let defaultPath = join(__dirname, '../default')
@@ -184,3 +331,5 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
         onStart: [],
     })
 }
+
+//todo 写入配置文件,验证激活码

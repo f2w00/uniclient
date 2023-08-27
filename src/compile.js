@@ -7,6 +7,7 @@ function encryptFile() {
         output: __dirname + '/main.jsc',
         compileAsModule: true,
     })
-    writeFileSync(__dirname + '/main2.js', "require('bytenode');\nrequire('./main.jsc');")
+    writeFileSync(__dirname + '/starter.js', "require('bytenode');\nrequire('./main.jsc');")
 }
 encryptFile()
+console.log('complete compile')
