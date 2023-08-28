@@ -203,8 +203,12 @@
                                 </span>
                                 <div class="grid-box">
                                     <div class="titleBox">{{item.content}}</div>
-                                    <iframe :src="item.src" :id="'iframe:'+item.name"
-                                        :class="item.name+'Right right-iframe'" frameborder="none"></iframe>
+                                    <iframe
+                                        :src="item.src"
+                                        :id="'iframe:'+item.name"
+                                        :class="item.name+'Right right-iframe'"
+                                        frameborder="none"
+                                    ></iframe>
                                 </div>
                             </div>
                             <div class="__menu__line" v-if="item.line" :key="index"></div>
@@ -257,28 +261,6 @@
                     },
                 }
                 return flag
-            }
-        },
-        methods: {
-            /* 元素调用类函数 */
-            handleCancledialog() {
-                this.dialogVisible = false
-            },
-            handleAddserver(value) {
-                this.iframeUrl = value.viewPath
-                this.dialogVisible = true
-                setTimeout(() => {
-                    window.uniclient.windowEvent.emit('opcua:server.open')
-                }, 100)
-            },
-            handleMin() {
-                mainMini()
-            },
-            handleMax() {
-                mainMax()
-            },
-            handleClose() {
-                mainClose()
             },
             computed: {
                 //菜单调用
@@ -304,6 +286,9 @@
                 handleAddserver(value) {
                     this.iframeUrl = value.viewPath
                     this.dialogVisible = true
+                    setTimeout(() => {
+                        window.uniclient.windowEvent.emit('opcua:server.open')
+                    }, 100)
                 },
                 handleMin() {
                     mainMini()
@@ -636,11 +621,10 @@
                 // })
 
                 // console.log(window.uniclient.sharedData.get('currentWorkspace'))
-            this.uniclientActivateInitialize()
-            this.uniclientMenuConfigInitialize()
-            this.subviewLeftTabs = window.uniclient.sharedData.get('subviewLeftTabsData')
-        },
-    })
-</script>
-
+                this.uniclientActivateInitialize()
+                this.uniclientMenuConfigInitialize()
+                this.subviewLeftTabs = window.uniclient.sharedData.get('subviewLeftTabsData')
+            },
+        })
+    </script>
 </html>

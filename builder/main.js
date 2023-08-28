@@ -192,22 +192,22 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
             display: false,
         },
         leftSide: {
-            display: true,
+            display: false,
         },
         bottomSide: {
-            display: true,
+            display: false,
         },
     })
     ClientStore.set('share', 'pluginInstalled', [
         {
             title: 'opcua',
-            content: '解决opcua连接配置,以及数据库功能',
+            content: '提供opcua相关功能',
             iconUrl: '../../../src/plugins/ua.client/ua.render/opcua/assets/PluginIcon.svg',
             author: 'f2w00',
         },
         {
             title: 'esay-report',
-            content: '快速生成样式多变的报表,功能简洁而强大',
+            content: '快速生成样式多变的报表',
             iconUrl: '../../../src/plugins/easy-report/assets/PluginIcon.svg',
             author: 'wangqi2002',
         },
@@ -270,7 +270,7 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
             name: 'opcua',
             content: 'opcua',
             iconSrc: '../../src/plugins/ua.client/ua.render/opcua/assets/project.svg',
-            viewPath: '../../src/plugins/ua.client/ua.render/opcua/address.html',
+            viewPath: '../../src/plugins/ua.client/ua.render/opcua/leftOptions.html',
             clickSendToWindow: [],
             clickCreateTab: [
                 {
@@ -284,12 +284,12 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
                             src: '../../src/plugins/ua.client/ua.render/opcua/dataView.html',
                         },
                         {
-                            title: 'attributes',
-                            name: 'attributes',
-                            content: 'attributes',
+                            title: 'rightOptions',
+                            name: 'rightOptions',
+                            content: '',
                             iconSrc: './assets/icon/attribute-management.svg',
                             position: 'right',
-                            src: '../../src/plugins/ua.client/ua.render/opcua/attributes.html',
+                            src: '../../src/plugins/ua.client/ua.render/opcua/rightOptions.html',
                         },
                     ],
                 },
