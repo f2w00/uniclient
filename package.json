@@ -2,14 +2,15 @@
     "name": "uniclient",
     "productName": "uniclient",
     "version": "1.0.0",
-    "description": "This client solve problems with plugins for any person or organization",
-    "main": "src/main2.js",
+    "description": "This client solve problems with plugins for you",
+    "main": "src/starter.js",
     "type": "commonjs",
     "scripts": {
         "dev": "nodemon -e js,html,cjs,css --exec electron . --delay 2",
         "lint": "echo \"No linting configured\"",
         "compile": "nodemon -e ts --exec npx tsc",
         "show": "electron .",
+        "encrypt": "electron ./builder/encrypt.js",
         "rebuild": "electron-rebuild",
         "electron-v": "electron -v"
     },
