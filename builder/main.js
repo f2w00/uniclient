@@ -37,12 +37,15 @@ function aesDecrypt(encrypted, key) {
     return decrypted
 }
 
-function authenticate(code, key) {
-    if (aesDecrypt(code, key) == 'UniclientByHhjAndWq') {
-        return true
-    } else {
-        return false
+function authenticate() {
+    let auth_code = process.env['AUTHENTICATE_CODE']
+    let auth_key = process.env['AUTHENTICATE_KEY']
+    if (auth_code && auth_key) {
+        if (aesDecrypt(code, key) == 'UniclientByHhjAndWq') {
+            return true
+        }
     }
+    return false
 }
 
 /**
@@ -63,7 +66,7 @@ function generateUserDataPath() {
             dataPath = join(__dirname, '../client.data')
             let envPath = join(__dirname, '../.env')
             if (!existsSync(envPath)) {
-                let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
+                let data = `V8_COMPILE_CACHE_CACHE_DIR='${dataPath}\\cache'\nUNICLIENT_APPDATA='${dataPath}'\n`
                 writeFileSync(envPath, String(data))
             } else {
                 let data = readFileSync(envPath, 'utf-8')
@@ -332,4 +335,4 @@ function generateConfigs(dataPath, join, existsSync, mkdirSync) {
     })
 }
 
-//todo 写入配置文件,验证激活码
+//todo 写入配置文件,验证激活码(页面?)
