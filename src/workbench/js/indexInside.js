@@ -188,6 +188,8 @@ function menuMouseEnter(that, $event, item) {
         that.uniclientMenuConfig.hoverFlag = true
         const el = $event.currentTarget
         const subEl = el.querySelector('.__menu__sub__wrapper')
+        console.log(el)
+        console.log($event, subEl)
         const {
             offsetWidth
         } = el

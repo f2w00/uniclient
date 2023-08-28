@@ -1,630 +1,574 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" href="element-ui/css/index.css" />
-        <link rel="stylesheet" href="css/index/index.css" />
-        <link rel="stylesheet" href="css/index/indexTopbar.css" />
-        <link rel="stylesheet" href="css/index/indexSubview.css" />
-        <link rel="stylesheet" href="css/index/indexMainview.css" />
-        <link rel="stylesheet" href="css/index/indexLogview.css" />
-        <link rel="stylesheet" href="css/dialog/dialog.css" />
-        <link rel="stylesheet" href="css/dialog/menuWrapper.css" />
-    </head>
 
-    <body>
-        <div id="app">
-            <div class="container">
-                <div class="main-container">
-                    <div class="operationBox">
-                        <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
-                        <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
-                        <i class="el-icon-close close-btn" @click="handleClose"></i>
-                    </div>
-                    <div class="subview subviewLeft">
-                        <div class="resizeShow">
-                            <!-- 可能会影响拖动 -->
-                            <div class="resize horizontal"></div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="subview-content subviewLeft-content">
-                            <el-tabs
-                                :value="uniclientActivate.leftTabActivate"
-                                tab-position="left"
-                                @tab-click="handleTableft"
-                            >
-                                <el-tab-pane
-                                    v-for="(item, index) in subviewLeftTabs"
-                                    :id="item.name"
-                                    :name="item.name"
-                                    :disabled="item.disabled"
-                                >
-                                    <span slot="label">
-                                        <img class="icon" :src="item.iconSrc" />
-                                    </span>
-                                    <div class="grid-box">
-                                        <!-- TODO titleBox高度会被顶的变小 -->
-                                        <div class="titleBox">{{item.content}}</div>
-                                        <iframe :src="item.viewPath" class="left-iframe"></iframe>
-                                    </div>
-                                </el-tab-pane>
-                            </el-tabs>
-                        </div>
-                        <div class="subviewLeft-bottom">
-                            <img class="icon" src="./assets/icon/log-management.svg" @click="handleTabbottom" />
-                        </div>
-                    </div>
-                    <main class="main content-box" id="main-content-box">
-                        <div id="decisonBox" class="mainviewTop">
-                            <el-tabs
-                                v-model="uniclientActivate.mainTabsActivate"
-                                type="border-card"
-                                closable
-                                @tab-remove="removeTab"
-                            >
-                                <el-tab-pane
-                                    v-for="(item, index) in mainTabs"
-                                    :key="item.name"
-                                    :label="item.title"
-                                    :name="item.name"
-                                    :class="item.name+'Tabpane'"
-                                    :id="item.name"
-                                >
-                                    <iframe
-                                        :class="item.name+'Iframe'"
-                                        :src="item.src"
-                                        :id="'iframe:'+item.name"
-                                    ></iframe>
-                                </el-tab-pane>
-                            </el-tabs>
-                        </div>
-                        <footer class="main-bottom" id="main-bottom">
-                            <div class="resize mian-vertical"></div>
-                            <div class="line"></div>
-                            <div class="logview">
-                                <el-tabs :value="uniclientActivate.bottomTabActivate">
-                                    <el-tab-pane label="日志" name="log">
-                                        <el-table
-                                            class="logTable"
-                                            :data="logTableData"
-                                            :row-class-name="tableRowClassName"
-                                            height="100%"
-                                            stripe
-                                            style="width: 100%"
-                                            border
-                                        >
-                                            <el-table-column prop="timeStamp" label="Timestamp" width="150">
-                                            </el-table-column>
-                                            <el-table-column prop="source" label="Source" width="100">
-                                            </el-table-column>
-                                            <el-table-column prop="information" label="Information"> </el-table-column>
-                                            <el-table-column prop="error" label="Error"> </el-table-column>
-                                            <el-table-column prop="warn" label="Warn"> </el-table-column>
-                                        </el-table>
-                                    </el-tab-pane>
-                                    <el-tab-pane label="问题" name="problem">
-                                        <el-table
-                                            class="logTable"
-                                            :data="problemTableData"
-                                            height="100%"
-                                            stripe
-                                            border
-                                            style="width: 100%"
-                                        >
-                                            <el-table-column prop="timestamp" label="Timestamp" width="150">
-                                            </el-table-column>
-                                            <el-table-column prop="source" label="Source" width="100">
-                                            </el-table-column>
-                                            <el-table-column prop="information" label="Information"> </el-table-column>
-                                            <el-table-column prop="error" label="Error"> </el-table-column>
-                                        </el-table>
-                                    </el-tab-pane>
-                                </el-tabs>
-                            </div>
-                            <div class="operationBox minimize-log">
-                                <i class="el-icon-minus" @click="handleTabbottom"></i>
-                            </div>
-                        </footer>
-                    </main>
-                    <div class="subview subviewRight">
-                        <div class="resizeShow">
-                            <div class="resize horizontal"></div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="subview-content subviewRight-content">
-                            <el-tabs
-                                :value="uniclientActivate.rightTabActivate"
-                                tab-position="right"
-                                @tab-click="handleTabright"
-                            >
-                                <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
-                                    <span slot="label">
-                                        <img class="icon" :src="item.iconSrc" />
-                                    </span>
-                                    <div class="grid-box">
-                                        <div class="titleBox">{{item.content}}</div>
-                                        <iframe
-                                            :src="item.src"
-                                            :id="'iframe:'+item.name"
-                                            :class="item.name+'Right'"
-                                            frameborder="none"
-                                        ></iframe>
-                                    </div>
-                                </el-tab-pane>
-                            </el-tabs>
-                        </div>
-                    </div>
-                    <!-- TODO 右侧边栏顶部图层 -->
-                    <!-- <span class="rightBarTopmark"></span> -->
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="element-ui/css/index.css" />
+    <link rel="stylesheet" href="css/index/index.css" />
+    <link rel="stylesheet" href="css/index/indexTopbar.css" />
+    <link rel="stylesheet" href="css/index/indexSubview.css" />
+    <link rel="stylesheet" href="css/index/indexMainview.css" />
+    <link rel="stylesheet" href="css/index/indexLogview.css" />
+    <link rel="stylesheet" href="css/dialog/dialog.css" />
+    <link rel="stylesheet" href="css/dialog/menuWrapper.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="main-container">
+                <div class="operationBox">
+                    <i class="el-icon-minus minimize-btn" @click="handleMin"></i>
+                    <i class="el-icon-copy-document max-unmax-btn" @click="handleMax"></i>
+                    <i class="el-icon-close close-btn" @click="handleClose"></i>
                 </div>
-                <el-dialog
-                    class="addDialog"
-                    :visible.sync="dialogVisible"
-                    top="50px"
-                    :close-on-click-modal="false"
-                    @close="handleCancledialog"
-                >
-                    <iframe
-                        name="dialogIframe"
-                        id="dialogIframe"
-                        :src="iframeUrl"
-                        framebordering="0"
-                        scrolling="no"
-                        style="width: 100%"
-                    ></iframe>
-                </el-dialog>
-                <div class="menu_dialog" v-if="uniclientMenuConfig.showMenu">
-                    <div class="__menu__wrapper" ref="MenuWrapper">
-                        <template v-for="(item, index) in uniclientMenuConfig.menuList">
-                            <div
-                                class="__menu__item"
-                                v-if="!item.hidden && !item.line"
-                                :key="index"
-                                :class="{ disabled: item.disabled }"
-                                @mousedown.stop="handleMenuItemClick(item)"
-                                @mouseenter="handleMenuMouseEnter($event, item)"
-                            >
-                                <span class="__menu__item-icon" v-if="uniclientMenuConfig.hasIcon">
-                                    <i
-                                        v-if="uniclientMenuConfig.IconType === 'font-icon'"
-                                        v-show="item.icon"
-                                        :class="item.icon"
-                                    ></i>
+                <div class="subview subviewLeft">
+                    <div class="resizeShow">
+                        <!-- 可能会影响拖动 -->
+                        <div class="resize horizontal"></div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewLeft-content">
+                        <el-tabs :value="uniclientActivate.leftTabActivate" tab-position="left"
+                            @tab-click="handleTableft">
+                            <el-tab-pane v-for="(item, index) in subviewLeftTabs" :id="item.name" :name="item.name"
+                                :disabled="item.disabled">
+                                <span slot="label">
+                                    <img class="icon" :src="item.iconSrc" />
                                 </span>
-                                <span class="__menu__item-label">{{ item.label }}</span>
-                                <span class="__menu__item-tips">{{ item.tips || '' }}</span>
-                                <span
-                                    class="__menu__item-arrow"
-                                    v-if="hasSubMenu"
-                                    :class="{ show: hasSubMenu && item.children }"
-                                    :style="{ width: uniclientMenuConfig.menuItemCss['arrowSize'], height: uniclientMenuConfig.menuItemCss['arrowSize'] }"
-                                >
-                                    <span class="__menu__item-arrow-after" v-show="hasSubMenu && item.children"></span>
+                                <div class="grid-box">
+                                    <!-- TODO titleBox高度会被顶的变小 -->
+                                    <div class="titleBox">{{item.content}}</div>
+                                    <iframe :src="item.viewPath" class="left-iframe"></iframe>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                    <div class="subviewLeft-bottom">
+                        <img class="icon" src="./assets/icon/log-management.svg" @click="handleTabbottom" />
+                    </div>
+                </div>
+                <main class="main content-box" id="main-content-box">
+                    <div id="decisonBox" class="mainviewTop">
+                        <el-tabs v-model="uniclientActivate.mainTabsActivate" type="border-card" closable
+                            @tab-remove="removeTab">
+                            <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
+                                :name="item.name" :class="item.name+'Tabpane'" :id="item.name">
+                                <iframe :class="item.name+'Iframe'" :src="item.src" :id="'iframe:'+item.name"></iframe>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                    <footer class="main-bottom" id="main-bottom">
+                        <div class="resize mian-vertical"></div>
+                        <div class="line"></div>
+                        <div class="logview">
+                            <el-tabs :value="uniclientActivate.bottomTabActivate">
+                                <el-tab-pane label="日志" name="log">
+                                    <el-table class="logTable" :data="logTableData" :row-class-name="tableRowClassName"
+                                        height="100%" stripe style="width: 100%" border>
+                                        <el-table-column prop="timeStamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information"> </el-table-column>
+                                        <el-table-column prop="error" label="Error"> </el-table-column>
+                                        <el-table-column prop="warn" label="Warn"> </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="问题" name="problem">
+                                    <el-table class="logTable" :data="problemTableData" height="100%" stripe border
+                                        style="width: 100%">
+                                        <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information"> </el-table-column>
+                                        <el-table-column prop="error" label="Error"> </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                            </el-tabs>
+                        </div>
+                        <div class="operationBox minimize-log">
+                            <i class="el-icon-minus" @click="handleTabbottom"></i>
+                        </div>
+                    </footer>
+                </main>
+                <div class="subview subviewRight">
+                    <div class="resizeShow">
+                        <div class="resize horizontal"></div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewRight-content">
+                        <el-tabs :value="uniclientActivate.rightTabActivate" tab-position="right"
+                            @tab-click="handleTabright">
+                            <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
+                                <span slot="label">
+                                    <img class="icon" :src="item.iconSrc" />
                                 </span>
                                 <div class="grid-box">
                                     <div class="titleBox">{{item.content}}</div>
-                                    <iframe
-                                        :src="item.src"
-                                        :id="'iframe:'+item.name"
-                                        :class="item.name+'Right right-iframe'"
-                                        frameborder="none"
-                                    ></iframe>
+                                    <iframe :src="item.src" :id="'iframe:'+item.name" :class="item.name+'Right'"
+                                        frameborder="none"></iframe>
                                 </div>
-                            </div>
-                            <div class="__menu__line" v-if="item.line" :key="index"></div>
-                        </template>
+                            </el-tab-pane>
+                        </el-tabs>
                     </div>
+                </div>
+                <!-- TODO 右侧边栏顶部图层 -->
+                <!-- <span class="rightBarTopmark"></span> -->
+            </div>
+            <el-dialog class="addDialog" :visible.sync="dialogVisible" top="50px" :close-on-click-modal="false"
+                @close="handleCancledialog">
+                <iframe name="dialogIframe" id="dialogIframe" :src="iframeUrl" framebordering="0" scrolling="no"
+                    style="width: 100%"></iframe>
+            </el-dialog>
+            <div class="menu_dialog" v-if="uniclientMenuConfig.showMenu">
+                <div class="__menu__wrapper" ref="MenuWrapper">
+                    <template v-for="(item, index) in uniclientMenuConfig.menuList">
+                        <div class="__menu__item" v-if="!item.hidden && !item.line" :key="index"
+                            :class="{ disabled: item.disabled }" @mousedown.stop="handleMenuItemClick(item)"
+                            @mouseenter="handleMenuMouseEnter($event, item)">
+                            <span class="__menu__item-icon" v-if="uniclientMenuConfig.hasIcon">
+                                <i v-if="uniclientMenuConfig.IconType === 'font-icon'" v-show="item.icon"
+                                    :class="item.icon"></i>
+                            </span>
+                            <span class="__menu__item-label">{{ item.label }}</span>
+                            <span class="__menu__item-tips">{{ item.tips || '' }}</span>
+                            <span class="__menu__item-arrow" v-if="hasSubMenu"
+                                :class="{ show: hasSubMenu && item.children }"
+                                :style="{ width: uniclientMenuConfig.menuItemCss['arrowSize'], height: uniclientMenuConfig.menuItemCss['arrowSize'] }">
+                                <span class="__menu__item-arrow-after" v-show="hasSubMenu && item.children"></span>
+                            </span>
+                            <div class="__menu__sub__wrapper"
+                                :style="{ top: `${uniclientMenuConfig.subTop}px`, left: `${uniclientMenuConfig.subLeft}px` }"
+                                v-show="uniclientMenuConfig.hoverFlag" v-if="item.children && item.children.length > 0">
+                                <template v-for="(subItem, subIndex) in item.children">
+                                    <div class="__menu__sub__item" :key="subIndex"
+                                        v-if="!subItem.hidden && !subItem.line" :class="{ disabled: subItem.disabled }"
+                                        @mousedown.stop="handleSubMenuItemClick(subItem)">
+                                        <span class="__menu__sub__item-label">{{ subItem.label }}</span>
+                                        <span class="__menu__sub__item-tips">{{ subItem.tips || '' }}</span>
+                                    </div>
+                                    <div class="__menu__line" v-if="subItem.line" :key="subIndex"></div>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="__menu__line" v-if="item.line" :key="index"></div>
+                    </template>
                 </div>
             </div>
         </div>
-    </body>
-    <script src="vue/vue.js"></script>
-    <script src="element-ui/index.js"></script>
-    <script src="js/indexInject.js"></script>
-    <script src="js/indexInside.js"></script>
-    <script src="js/indexExtern.js"></script>
-    <script type="module">
-        new Vue({
-            el: '#app',
-            data: function () {
-                return {
-                    //主应用展开索引
-                    uniclientActivate: {
-                        leftTabActivate: 'space',
-                        rightTabActivate: '',
-                        bottomTabActivate: 'problem',
-                        mainTabsActivate: 'welcome',
+    </div>
+</body>
+<script src="vue/vue.js"></script>
+<script src="element-ui/index.js"></script>
+<script src="js/indexInject.js"></script>
+<script src="js/indexInside.js"></script>
+<script src="js/indexExtern.js"></script>
+<script type="module">
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                //主应用展开索引
+                uniclientActivate: {
+                    leftTabActivate: 'space',
+                    rightTabActivate: '',
+                    bottomTabActivate: 'problem',
+                    mainTabsActivate: 'welcome',
+                },
+                //弹出框
+                dialogVisible: false,
+                iframeUrl: '',
+                //tab页数据
+                mainTabs: [],
+                subviewLeftTabs: [],
+                subviewRightTabs: [],
+                //表格数据
+                logTableData: [],
+                problemTableData: [],
+                //菜单
+                uniclientMenuConfig: {
+                    subLeft: 0,
+                    subTop: 0,
+                    hoverFlag: false,
+                    showMenu: false,
+                    menuWidth: 200,
+                    menuList: [],
+                    hasIcon: false,
+                    IconType: 'font-icon',
+                    menuItemCss: {
+                        arrowSize: '10px',
                     },
-                    //弹出框
-                    dialogVisible: false,
-                    iframeUrl: '',
-                    //tab页数据
-                    mainTabs: [],
-                    subviewLeftTabs: [],
-                    subviewRightTabs: [],
-                    //表格数据
-                    logTableData: [],
-                    problemTableData: [],
-                    //菜单
-                    uniclientMenuConfig: {
-                        subLeft: 0,
-                        subTop: 0,
-                        hoverFlag: false,
-                        showMenu: false,
-                        menuWidth: 200,
-                        menuList: [],
-                        hasIcon: false,
-                        IconType: 'font-icon',
-                        menuItemCss: {
-                            arrowSize: '10px',
-                        },
-                    },
+                },
+            }
+            return flag
+        },
+        computed: {
+            //菜单调用
+            hasSubMenu() {
+                let flag = false
+                for (let i = 0; i < this.uniclientMenuConfig.menuList.length; i++) {
+                    if (
+                        this.uniclientMenuConfig.menuList[i].children &&
+                        this.uniclientMenuConfig.menuList[i].children.length > 0
+                    ) {
+                        flag = true
+                        break
+                    }
                 }
                 return flag
             },
-            computed: {
-                //菜单调用
-                hasSubMenu() {
-                    let flag = false
-                    for (let i = 0; i < this.uniclientMenuConfig.menuList.length; i++) {
-                        if (
-                            this.uniclientMenuConfig.menuList[i].children &&
-                            this.uniclientMenuConfig.menuList[i].children.length > 0
-                        ) {
-                            flag = true
-                            break
-                        }
-                    }
-                    return flag
-                },
+        },
+        methods: {
+            /* 元素调用类函数 */
+            handleCancledialog() {
+                this.dialogVisible = false
             },
-            methods: {
-                /* 元素调用类函数 */
-                handleCancledialog() {
-                    this.dialogVisible = false
-                },
-                handleAddserver(value) {
-                    this.iframeUrl = value.viewPath
-                    this.dialogVisible = true
-                    setTimeout(() => {
-                        window.uniclient.windowEvent.emit('opcua:server.open')
-                    }, 100)
-                },
-                handleMin() {
-                    mainMini()
-                },
-                handleMax() {
-                    mainMax()
-                },
-                handleClose() {
-                    mainClose()
-                },
-                //TODO 修改了
-                handleTableft(tab, event) {
-                    let info = window.exsistLeftTabs.get(tab._props.name)
-                    if (info) {
-                        if (info.clickSendToWindow) {
-                            info.clickSendToWindow.forEach((value) => {
-                                window.uniclient.windowEvent.emit(value.event, ...value.params)
-                            })
-                        }
-                        if (info.clickCreateTab) {
-                            info.clickCreateTab.forEach((value) => {
-                                window.uniclient.windowEvent.emit(value.event, value.params)
-                            })
-                        }
+            handleAddserver(value) {
+                this.iframeUrl = value.viewPath
+                this.dialogVisible = true
+                setTimeout(() => {
+                    window.uniclient.windowEvent.emit('opcua:server.open')
+                }, 100)
+            },
+            handleMin() {
+                mainMini()
+            },
+            handleMax() {
+                mainMax()
+            },
+            handleClose() {
+                mainClose()
+            },
+            //TODO 修改了
+            handleTableft(tab, event) {
+                let info = window.exsistLeftTabs.get(tab._props.name)
+                if (info) {
+                    if (info.clickSendToWindow) {
+                        info.clickSendToWindow.forEach((value) => {
+                            window.uniclient.windowEvent.emit(value.event, ...value.params)
+                        })
                     }
-                    let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
-                    let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                    if (this.uniclientActivate.leftTabActivate != tab._props.name) {
-                        this.uniclientActivate.leftTabActivate = tab._props.name
-                        tabsContent.style.display = 'block'
-                        resizeItem.style.display = 'block'
-                    } else {
-                        if (tabsContent.style.display == 'none') {
-                            tabsContent.style.display = 'block'
-                            resizeItem.style.display = 'block'
-                        } else {
-                            tabsContent.style.display = 'none'
-                            resizeItem.style.display = 'none'
-                        }
+                    if (info.clickCreateTab) {
+                        info.clickCreateTab.forEach((value) => {
+                            window.uniclient.windowEvent.emit(value.event, value.params)
+                        })
                     }
-                },
-                handleTabright(tab, event) {
-                    let info = window.exsistRightTabs.get(tab._props.name)
-                    if (info) {
-                        if (info.clickSendToWindow) {
-                            info.clickSendToWindow.forEach((value) => {
-                                window.uniclient.windowEvent.emit(value.event, ...value.params)
-                            })
-                        }
-                        if (info.clickCreateTab) {
-                            window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
-                        }
-                    }
-                    let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
-                    let resizeItem = document.querySelector('.subviewRight .resizeShow')
-                    if (this.uniclientActivate.rightTabActivate !== tab._props.name) {
-                        this.uniclientActivate.rightTabActivate = tab._props.name
-                        tabsContent.style.display = 'block'
-                        resizeItem.style.display = 'block'
-                    } else {
-                        if (tabsContent.style.display == 'none') {
-                            tabsContent.style.display = 'block'
-                            resizeItem.style.display = 'block'
-                        } else {
-                            tabsContent.style.display = 'none'
-                            resizeItem.style.display = 'none'
-                        }
-                    }
-                },
-                handleTabbottom() {
-                    // let tabsContent = document.querySelector(".main-bottom .el-tabs__content")
-                    // let resizeItem = document.querySelector(".main-bottom .resize")
-                    let tabsContent = document.querySelector('.main-bottom')
+                }
+                let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
+                let resizeItem = document.querySelector('.subviewLeft .resizeShow')
+                if (this.uniclientActivate.leftTabActivate != tab._props.name) {
+                    this.uniclientActivate.leftTabActivate = tab._props.name
+                    tabsContent.style.display = 'block'
+                    resizeItem.style.display = 'block'
+                } else {
                     if (tabsContent.style.display == 'none') {
                         tabsContent.style.display = 'block'
-                        // resizeItem.style.display = "block"
+                        resizeItem.style.display = 'block'
                     } else {
                         tabsContent.style.display = 'none'
-                        // resizeItem.style.display = "none"
+                        resizeItem.style.display = 'none'
                     }
-                },
-                tableRowClassName({ row, rowIndex }) {
-                    if ('warn' in row) {
-                        return 'warning-row'
-                    } else if ('error' in row) {
-                        return 'success-row'
-                    }
-                    return ''
-                },
-
-                /* 初始化类函数 */
-                attributeObserver() {
-                    var resizeDom = document.querySelectorAll('.container .resize')
-                    resizeDom.forEach((item) => {
-                        resizeObserve.observe(item, {
-                            attributes: true,
+                }
+            },
+            handleTabright(tab, event) {
+                let info = window.exsistRightTabs.get(tab._props.name)
+                if (info) {
+                    if (info.clickSendToWindow) {
+                        info.clickSendToWindow.forEach((value) => {
+                            window.uniclient.windowEvent.emit(value.event, ...value.params)
                         })
+                    }
+                    if (info.clickCreateTab) {
+                        window.uniclient.windowEvent.emit('mainTab:create', info.clickCreateTab)
+                    }
+                }
+                let tabsContent = document.querySelector('.subviewRight-content .el-tabs__content')
+                let resizeItem = document.querySelector('.subviewRight .resizeShow')
+                if (this.uniclientActivate.rightTabActivate !== tab._props.name) {
+                    this.uniclientActivate.rightTabActivate = tab._props.name
+                    tabsContent.style.display = 'block'
+                    resizeItem.style.display = 'block'
+                } else {
+                    if (tabsContent.style.display == 'none') {
+                        tabsContent.style.display = 'block'
+                        resizeItem.style.display = 'block'
+                    } else {
+                        tabsContent.style.display = 'none'
+                        resizeItem.style.display = 'none'
+                    }
+                }
+            },
+            handleTabbottom() {
+                // let tabsContent = document.querySelector(".main-bottom .el-tabs__content")
+                // let resizeItem = document.querySelector(".main-bottom .resize")
+                let tabsContent = document.querySelector('.main-bottom')
+                if (tabsContent.style.display == 'none') {
+                    tabsContent.style.display = 'block'
+                    // resizeItem.style.display = "block"
+                } else {
+                    tabsContent.style.display = 'none'
+                    // resizeItem.style.display = "none"
+                }
+            },
+            tableRowClassName({ row, rowIndex }) {
+                if ('warn' in row) {
+                    return 'warning-row'
+                } else if ('error' in row) {
+                    return 'success-row'
+                }
+                return ''
+            },
+
+            /* 初始化类函数 */
+            attributeObserver() {
+                var resizeDom = document.querySelectorAll('.container .resize')
+                resizeDom.forEach((item) => {
+                    resizeObserve.observe(item, {
+                        attributes: true,
                     })
-                },
-                uniclientActivateInitialize() {
-                    const _this = this
-                    let res = window.uniclient.sharedData.get('uniclientActivate')
-                    for (var key in res) {
-                        if (res.hasOwnProperty(key) === true) {
-                            if (res[key] !== null && res[key] !== undefined) {
-                                _this.uniclientActivateInitialize[key] = res[key]
-                            }
+                })
+            },
+            uniclientActivateInitialize() {
+                const _this = this
+                let res = window.uniclient.sharedData.get('uniclientActivate')
+                for (var key in res) {
+                    if (res.hasOwnProperty(key) === true) {
+                        if (res[key] !== null && res[key] !== undefined) {
+                            _this.uniclientActivateInitialize[key] = res[key]
                         }
                     }
-                    _this.uniclientActivate = res
-                },
-                uniclientMenuConfigInitialize() {
-                    const _this = this
-                    _this.uniclientMenuConfig.menuList = window.uniclient.sharedData.get('uniclientMenuConfig')
-                },
+                }
+                _this.uniclientActivate = res
+            },
+            uniclientMenuConfigInitialize() {
+                const _this = this
+                _this.uniclientMenuConfig.menuList = window.uniclient.sharedData.get('uniclientMenuConfig')
+            },
 
-                /* 监听类函数 */
-                leftcloseListener() {
-                    const _this = this
-                    window.uniclient.windowEvent.on(`leftBar:close`, (e) => {
-                        let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
-                        let resizeItem = document.querySelector('.subviewLeft .resizeShow')
-                        if (_this.uniclientActivate.leftTabActivate != e) {
-                            _this.uniclientActivate.leftTabActivate = e
+            /* 监听类函数 */
+            leftcloseListener() {
+                const _this = this
+                window.uniclient.windowEvent.on(`leftBar:close`, (e) => {
+                    let tabsContent = document.querySelector('.subviewLeft-content .el-tabs__content')
+                    let resizeItem = document.querySelector('.subviewLeft .resizeShow')
+                    if (_this.uniclientActivate.leftTabActivate != e) {
+                        _this.uniclientActivate.leftTabActivate = e
+                        tabsContent.style.display = 'block'
+                        resizeItem.style.display = 'block'
+                    } else {
+                        if (tabsContent.style.display == 'none') {
                             tabsContent.style.display = 'block'
                             resizeItem.style.display = 'block'
                         } else {
-                            if (tabsContent.style.display == 'none') {
-                                tabsContent.style.display = 'block'
-                                resizeItem.style.display = 'block'
-                            } else {
-                                tabsContent.style.display = 'none'
-                                resizeItem.style.display = 'none'
-                            }
-                        }
-                    })
-                },
-                dialogListener() {
-                    window.uniclient.windowEvent.on(`uniclient:dialog.cancle`, (e) => {
-                        this.handleCancledialog()
-                    })
-                },
-                async logErrorListener() {
-                    getLogError((result) => {
-                        this.logTableData.push(result)
-                    })
-                },
-                async logWarnListener() {
-                    getLogWarn((result) => {
-                        this.logTableData.push(result)
-                    })
-                },
-                async logInfoListener() {
-                    getLogInfo((result) => {
-                        this.logTableData.push(result)
-                    })
-                },
-
-                /* 菜单函数 */
-                handleShowMenu() {
-                    showMenu(this)
-                },
-                handleMenuItemClick(item) {
-                    menuItemClick(this, item)
-                },
-                handleSubMenuItemClick(subItem) {
-                    subMenuItemClick(this, subItem)
-                },
-                handleMenuMouseEnter($event, item) {
-                    menuMouseEnter(this, $event, item)
-                },
-
-                //TODO 我加的
-                async benchInit() {
-                    document.addEventListener('DOMContentLoaded', async () => {
-                        let mainMenu = document.getElementById('tab-mainMenu')
-                        mainMenu.onclick = () => {
-                            //TODO 定义mainMenu
-                            this.handleShowMenu()
-                        }
-                        window.benchConfigs = window.uniclient.sharedData.get('workbenchConfig')
-                        // window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
-                        let bottom = document.getElementById('main-bottom')
-                        let tabsLeft = document.querySelector('.subviewLeft-content .el-tabs__content')
-                        let resizeItemLeft = document.querySelector('.subviewLeft .resizeShow')
-                        let tabsRight = document.querySelector('.subviewRight-content .el-tabs__content')
-                        let resizeItemRight = document.querySelector('.subviewRight .resizeShow')
-                        tabsRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
-                        resizeItemRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
-                        tabsLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
-                        resizeItemLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
-                        bottom.style.display = window.benchConfigs.bottomSide.display ? 'block' : 'none'
-                        window.uniclient.windowEvent.emit('domLoaded')
-
-                        window.uniclient.windowEvent.on('bench:config', () => {
-                            window.uniclient.windowEvent.emit('bench:config.return', window.benchConfigs)
-                        })
-                    })
-                },
-                tabInit() {
-                    let tryTabCount = 0
-                    const getTab = (attribute) => {
-                        let tab = document.getElementById('iframe:' + attribute.name)
-                        if (!tab) {
-                            if (tryTabCount++ > 5) {
-                                tryTabCount = 0
-                                return undefined
-                            }
-                            setTimeout(() => getTab(attribute), 1000)
-                        } else {
-                            tryTabCount = 0
-                            window.uniclient.windowEvent.emit(`mainTab:created.${attribute.name}`, tab)
+                            tabsContent.style.display = 'none'
+                            resizeItem.style.display = 'none'
                         }
                     }
-                    window.exsistTabs = new Map()
-                    window.exsistLeftTabs = new Map()
-                    window.exsistRightTabs = new Map()
-                    this.mainTabs.forEach((value) => {
-                        window.exsistTabs.set(value.name, value)
-                    })
-                    this.subviewLeftTabs.forEach((value) => {
-                        window.exsistLeftTabs.set(value.name, value)
-                    })
-                    this.subviewRightTabs.forEach((value) => {
-                        window.exsistRightTabs.set(value.name, value)
-                    })
+                })
+            },
+            dialogListener() {
+                window.uniclient.windowEvent.on(`uniclient:dialog.cancle`, (e) => {
+                    this.handleCancledialog()
+                })
+            },
+            async logErrorListener() {
+                getLogError((result) => {
+                    this.logTableData.push(result)
+                })
+            },
+            async logWarnListener() {
+                getLogWarn((result) => {
+                    this.logTableData.push(result)
+                })
+            },
+            async logInfoListener() {
+                getLogInfo((result) => {
+                    this.logTableData.push(result)
+                })
+            },
 
-                    window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
-                        if (!window.exsistTabs.has(attribute.name)) {
-                            this.mainTabs.push(attribute)
-                            window.exsistTabs.set(attribute.name, attribute)
-                            this.uniclientActivate.mainTabsActivate = attribute.name
-                            getTab(attribute)
-                            if (attribute.name != 'welcome') {
-                                window.uniclient.windowEvent.emit('mainTab:remove', 'welcome')
-                            }
+            /* 菜单函数 */
+            handleShowMenu() {
+                showMenu(this)
+            },
+            handleMenuItemClick(item) {
+                console.log(item)
+                menuItemClick(this, item)
+            },
+            handleSubMenuItemClick(subItem) {
+                subMenuItemClick(this, subItem)
+            },
+            handleMenuMouseEnter($event, item) {
+                menuMouseEnter(this, $event, item)
+            },
+
+            //TODO 我加的
+            async benchInit() {
+                document.addEventListener('DOMContentLoaded', async () => {
+                    let mainMenu = document.getElementById('tab-mainMenu')
+                    mainMenu.onclick = () => {
+                        //TODO 定义mainMenu
+                        this.handleShowMenu()
+                    }
+                    window.benchConfigs = window.uniclient.sharedData.get('workbenchConfig')
+                    // window.benchConfigs = await window.uniclient.store('get', 'workbenchConfig')
+                    let bottom = document.getElementById('main-bottom')
+                    let tabsLeft = document.querySelector('.subviewLeft-content .el-tabs__content')
+                    let resizeItemLeft = document.querySelector('.subviewLeft .resizeShow')
+                    let tabsRight = document.querySelector('.subviewRight-content .el-tabs__content')
+                    let resizeItemRight = document.querySelector('.subviewRight .resizeShow')
+                    tabsRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
+                    resizeItemRight.style.display = window.benchConfigs.rightSide.display ? 'block' : 'none'
+                    tabsLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
+                    resizeItemLeft.style.display = window.benchConfigs.leftSide.display ? 'block' : 'none'
+                    bottom.style.display = window.benchConfigs.bottomSide.display ? 'block' : 'none'
+                    window.uniclient.windowEvent.emit('domLoaded')
+
+                    window.uniclient.windowEvent.on('bench:config', () => {
+                        window.uniclient.windowEvent.emit('bench:config.return', window.benchConfigs)
+                    })
+                })
+            },
+            tabInit() {
+                let tryTabCount = 0
+                const getTab = (attribute) => {
+                    let tab = document.getElementById('iframe:' + attribute.name)
+                    if (!tab) {
+                        if (tryTabCount++ > 5) {
+                            tryTabCount = 0
+                            return undefined
                         }
-                    })
-                    window.uniclient.windowEvent.on('mainTab:create.right', (attribute) => {
-                        if (!window.exsistRightTabs.has(attribute.name)) {
-                            this.subviewRightTabs.push(attribute)
-                            window.exsistRightTabs.set(attribute.name, attribute)
-                            this.uniclientActivate.rightTabActivate = attribute.name
+                        setTimeout(() => getTab(attribute), 1000)
+                    } else {
+                        tryTabCount = 0
+                        window.uniclient.windowEvent.emit(`mainTab:created.${attribute.name}`, tab)
+                    }
+                }
+                window.exsistTabs = new Map()
+                window.exsistLeftTabs = new Map()
+                window.exsistRightTabs = new Map()
+                this.mainTabs.forEach((value) => {
+                    window.exsistTabs.set(value.name, value)
+                })
+                this.subviewLeftTabs.forEach((value) => {
+                    window.exsistLeftTabs.set(value.name, value)
+                })
+                this.subviewRightTabs.forEach((value) => {
+                    window.exsistRightTabs.set(value.name, value)
+                })
+
+                window.uniclient.windowEvent.on('mainTab:create', (attribute) => {
+                    if (!window.exsistTabs.has(attribute.name)) {
+                        this.mainTabs.push(attribute)
+                        window.exsistTabs.set(attribute.name, attribute)
+                        this.uniclientActivate.mainTabsActivate = attribute.name
+                        getTab(attribute)
+                        if (attribute.name != 'welcome') {
+                            window.uniclient.windowEvent.emit('mainTab:remove', 'welcome')
                         }
-                    })
-                    window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
-                        window.exsistTabs.delete(targetName)
-                        this.mainTabs = Array.from(window.exsistTabs.values())
-                        if (this.mainTabs.length == 0) {
-                            window.uniclient.windowEvent.emit('showWelcome')
-                        } else {
-                            this.uniclientActivate.mainTabsActivate = this.mainTabs[this.mainTabs.length - 1].name
-                        }
-                    })
-                    window.uniclient.windowEvent.on('mainTab:change', (tabName) => {
-                        this.uniclientActivate.mainTabsActivate = tabName
-                    })
+                    }
+                })
+                window.uniclient.windowEvent.on('mainTab:create.right', (attribute) => {
+                    if (!window.exsistRightTabs.has(attribute.name)) {
+                        this.subviewRightTabs.push(attribute)
+                        window.exsistRightTabs.set(attribute.name, attribute)
+                        this.uniclientActivate.rightTabActivate = attribute.name
+                    }
+                })
+                window.uniclient.windowEvent.on('mainTab:remove', (targetName) => {
+                    window.exsistTabs.delete(targetName)
+                    this.mainTabs = Array.from(window.exsistTabs.values())
                     if (this.mainTabs.length == 0) {
+                        window.uniclient.windowEvent.emit('showWelcome')
+                    } else {
+                        this.uniclientActivate.mainTabsActivate = this.mainTabs[this.mainTabs.length - 1].name
+                    }
+                })
+                window.uniclient.windowEvent.on('mainTab:change', (tabName) => {
+                    this.uniclientActivate.mainTabsActivate = tabName
+                })
+                if (this.mainTabs.length == 0) {
+                    window.uniclient.windowEvent.emit('mainTab:create', {
+                        title: 'welcome',
+                        name: 'welcome',
+                        src: './components/welcome.html',
+                    })
+                    window.uniclient.windowEvent.on('showWelcome', () => {
                         window.uniclient.windowEvent.emit('mainTab:create', {
                             title: 'welcome',
                             name: 'welcome',
                             src: './components/welcome.html',
                         })
-                        window.uniclient.windowEvent.on('showWelcome', () => {
-                            window.uniclient.windowEvent.emit('mainTab:create', {
-                                title: 'welcome',
-                                name: 'welcome',
-                                src: './components/welcome.html',
-                            })
-                        })
-                    }
-                },
-                removeTab(targetName) {
-                    window.uniclient.windowEvent.emit('mainTab:remove', targetName)
-                },
+                    })
+                }
+            },
+            removeTab(targetName) {
+                window.uniclient.windowEvent.emit('mainTab:remove', targetName)
+            },
 
-                //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
-                getTutorialTitle() {
-                    setTimeout(() => {
-                        let tutorial = document.querySelector('.tutorialIframe')
-                        let elements = tutorial.contentWindow.document.querySelectorAll('h1,h2,h3,h4,h5,h6')
-                        let headers = []
-                        elements.forEach((value) => {
-                            headers.push({
-                                tag: value.tagName,
-                                id: value.id,
-                                level: parseInt(value.tagName.replace('H', '')),
-                                element: value,
-                            })
-                        })
-                    }, 10000)
-                },
-                onNoticeFromMain() {
-                    window.uniclient.mainNotice((message) => {
-                        console.log(message)
-                        const h = this.$createElement
-                        this.$notify({
-                            title: message.title,
-                            message: h('i', { style: 'color: teal' }, message.message),
-                            duration: 2500,
+            //TODO 获取教程iframe下的所有h元素并且分级,例如h1,1,只需要给出1个缩进,不需要构建树结构
+            getTutorialTitle() {
+                setTimeout(() => {
+                    let tutorial = document.querySelector('.tutorialIframe')
+                    let elements = tutorial.contentWindow.document.querySelectorAll('h1,h2,h3,h4,h5,h6')
+                    let headers = []
+                    elements.forEach((value) => {
+                        headers.push({
+                            tag: value.tagName,
+                            id: value.id,
+                            level: parseInt(value.tagName.replace('H', '')),
+                            element: value,
                         })
                     })
-                },
+                }, 10000)
             },
-            mounted() {
-                // this.attributeObserver()
-                this.logInfoListener()
-                this.logWarnListener()
-                this.logErrorListener()
-                this.leftcloseListener()
-                this.dialogListener()
-                //TODO 我加的
-                this.benchInit()
-                this.tabInit()
-                this.onNoticeFromMain()
+            onNoticeFromMain() {
+                window.uniclient.mainNotice((message) => {
+                    console.log(message)
+                    const h = this.$createElement
+                    this.$notify({
+                        title: message.title,
+                        message: h('i', { style: 'color: teal' }, message.message),
+                        duration: 2500,
+                    })
+                })
             },
-            created() {
-                // -----------存
-                // window.uniclient.sharedData.set('currentWorkspace', "D:\\Code\\Vscode\\uniclient\\default")
-                // window.uniclient.sharedData.set('workbenchConfig', {
-                //     "rightSide": {
-                //         "display": true
-                //     },
-                //     "leftSide": {
-                //         "display": true
-                //     },
-                //     "bottomSide": {
-                //         "display": true
-                //     }
-                // })
+        },
+        mounted() {
+            // this.attributeObserver()
+            this.logInfoListener()
+            this.logWarnListener()
+            this.logErrorListener()
+            this.leftcloseListener()
+            this.dialogListener()
+            //TODO 我加的
+            this.benchInit()
+            this.tabInit()
+            this.onNoticeFromMain()
+        },
+        created() {
+            // -----------存
+            // window.uniclient.sharedData.set('currentWorkspace', "D:\\Code\\Vscode\\uniclient\\default")
+            // window.uniclient.sharedData.set('workbenchConfig', {
+            //     "rightSide": {
+            //         "display": true
+            //     },
+            //     "leftSide": {
+            //         "display": true
+            //     },
+            //     "bottomSide": {
+            //         "display": true
+            //     }
+            // })
 
-                // console.log(window.uniclient.sharedData.get('currentWorkspace'))
-                this.uniclientActivateInitialize()
-                this.uniclientMenuConfigInitialize()
-                this.subviewLeftTabs = window.uniclient.sharedData.get('subviewLeftTabsData')
-            },
-        })
-    </script>
+            // console.log(window.uniclient.sharedData.get('currentWorkspace'))
+            this.uniclientActivateInitialize()
+            this.uniclientMenuConfigInitialize()
+            this.subviewLeftTabs = window.uniclient.sharedData.get('subviewLeftTabsData')
+        },
+    })
+</script>
+
 </html>
