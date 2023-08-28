@@ -29,6 +29,9 @@
 .mainviewTop .el-tabs--border-card > .el-tabs__content {
     padding: 0;
 }
+.mainviewTop .el-tabs__nav-wrap {
+    background-color: #eaeaeb !important;
+}
 .mainviewTop .el-tabs__nav-wrap.is-scrollable {
     padding: 0 15px;
 }

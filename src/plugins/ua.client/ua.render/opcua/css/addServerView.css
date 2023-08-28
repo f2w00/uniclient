@@ -12,16 +12,16 @@
 .configName .configInput {
     width: calc(100% - 135px);
 }
-.dialog-footer {
+.iframeBox .dialog-footer {
     height: calc(100% - 600px);
     float: right;
 }
-.dialog-footer .el-checkbox {
+.iframeBox .dialog-footer .el-checkbox {
     position: absolute;
     left: 10px;
     bottom: 25px;
 }
-.dialog-footer .el-button {
+.iframeBox .dialog-footer .el-button {
     width: 80px;
     padding: 5px 20px;
     margin-top: 20px;
@@ -203,7 +203,7 @@
     line-height: 20px;
 }
 .advancedSubView .serInformation {
-    height: 75px;
+    height: 60px;
     margin-top: 25px;
 }
 .advancedSubView .serInformation .pointBox {
@@ -211,13 +211,8 @@
     line-height: 30px;
     text-align: start;
 }
-.advancedSubView .serInformation .reverseBox {
-    height: 30px;
-    line-height: 30px;
-    text-align: start;
-}
 .advancedSubView .securitySet {
-    height: 87px;
+    height: 95px;
 }
 .advancedSubView .el-select {
     width: calc(100% - 150px);
@@ -257,7 +252,7 @@
     bottom: 10px;
 }
 .advancedSubView .authenticationSet {
-    height: 200px;
+    height: 215px;
     border: 1px solid #b8b8b8;
     box-shadow: 4px 2px 2px #b8b8b8;
     border-top: none;
@@ -326,11 +321,41 @@
     margin-left: 10px;
 }
 .advancedSubView .sessionSet {
-    height: 50px;
-    margin-top: 50px;
+    height: 60px;
+    margin-top: 30px;
 }
 .advancedSubView .sessionSet .sessionName {
     height: 30px;
     line-height: 30px;
     text-align: start;
+}
+.record_dialog .el-dialog {
+    height: 300px;
+}
+.record_dialog .el-dialog__header {
+    padding: 10px 20px;
+}
+.record_dialog .el-dialog__header .el-dialog__title {
+    font-size: 16px;
+}
+.record_dialog .el-dialog__header .el-dialog__headerbtn {
+    top: 10px;
+}
+.record_dialog .el-dialog__body {
+    height: calc(100% - 110px);
+    padding: 10px 20px;
+    overflow-y: auto;
+}
+.record_item {
+    margin-bottom: 10px;
+    padding-left: 5px;
+    cursor: pointer;
+}
+.record_dialog .el-dialog__footer {
+    padding: 10px 20px;
+}
+.record_dialog .dialog-footer .el-button {
+    width: 80px;
+    padding: 5px 20px;
+    font-weight: 200;
 }

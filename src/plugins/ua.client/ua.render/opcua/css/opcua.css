@@ -49,6 +49,7 @@ body {
 .subview-content .el-tabs__header,
 .subview-content .subviewItembtn,
 .subview-content .subviewItemoptions {
+    font-family: "Times New Roman", Times, serif;
     pointer-events: auto;
 }
 
@@ -80,9 +81,19 @@ body {
     width: calc(100% - 10px);
     height: 20px;
     line-height: 20px;
-    padding-left: 10px;
+    padding: 5px 0 3px 10px;
+    border-bottom: 1px solid #c0c4cc;
     font-size: var(--font-size-level2);
     background-color: #fafafa;
+    cursor: pointer;
+}
+
+.subviewItembtn.left {
+    border-radius: 0px 5px 5px 0px;
+}
+
+.subviewItembtn.right {
+    border-radius: 5px 0px 0px 5px;
 }
 
 .subviewItembtn::before {
@@ -132,8 +143,12 @@ body {
     color: #c0c4cc;
     cursor: pointer;
 }
+.attributeBox {
+    width: 100%;
+    height: 50%;
+}
 .attributeBox .el-table {
-    height: 100%;
+    height: calc(100% - 30px);
     width: 100%;
     background-color: #eaeaeb;
 }
@@ -148,4 +163,82 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     word-break: break-all;
+}
+
+.dbBox {
+    width: 100%;
+    height: 50%;
+}
+.dbBox .card {
+    height: calc(100% - 30px);
+    width: 100%;
+    background-color: #eaeaeb;
+    text-align: center;
+}
+.dbBox .card .el-select {
+    width: 80%;
+    height: 25px;
+    margin: 5px 10%;
+}
+.dbBox .card .el-select .el-input__inner {
+    width: 100%;
+    /* height: 25px !important; */
+    line-height: 25px;
+    margin: 0;
+}
+.dbBox .el-select .el-input__suffix .el-input__icon {
+    height: 40px;
+    position: relative;
+    top: -6px;
+}
+.dbBox .card .el-input__inner {
+    width: 80%;
+    height: 25px;
+    line-height: 25px;
+    margin: 5px 10%;
+    font-size: 12px;
+    font-family: "Times New Roman", Times, serif;
+}
+.dbBox .card .field .el-tag--small {
+    height: 18px;
+    padding: 0 8px;
+    line-height: 18px;
+}
+.dbBox .card .field .el-tag--small:first-child {
+    width: 100px;
+}
+.dbBox .card .field .el-tag--small:first-child .el-select__tags-text {
+    min-width: 60px;
+}
+.dbBox .card .fieldArea .fieldItem {
+    height: 35px;
+    line-height: 35px;
+}
+.dbBox .card .fieldArea .fieldItem .fieldItemName {
+    width: 100px;
+    padding-left: 7px;
+    font-size: 12px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.dbBox .card .fieldArea .fieldItem .el-input {
+    display: inline-block;
+    width: calc(100% - 120px);
+}
+.dbBox .card .fieldArea .fieldItem .el-input__inner {
+    width: calc(100% - 10px);
+    height: 25px;
+    line-height: 25px;
+    margin: 5px;
+}
+.dbBox .card .dbBtn {
+    width: 80px;
+    height: 25px;
+    line-height: 20px;
+    margin: 5px auto;
+    font-size: var(--font-size-level3);
+    font-family: "Times New Roman", Times, serif;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 5px;
 }
